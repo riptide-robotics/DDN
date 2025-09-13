@@ -4,10 +4,13 @@ package org.firstinspires.ftc.teamcode.Autonomous.Utils;
 public class Matrix<T extends Number> {
 
     private T[][] matrix;
-    private int n;
+    private int rows;
+    private int cols;
 
     public Matrix(int rows, int cols) {
-        this.n = rows;
+        this.rows = rows;
+        this.cols = cols;
+
         @SuppressWarnings("unchecked")
         T[][] arr = (T[][]) new Number[rows][cols];  // you need this cast cuz of type erasure
         this.matrix = arr;
@@ -28,7 +31,8 @@ public class Matrix<T extends Number> {
         }
 
         this.matrix = copy;
-        this.n = o.length;
+        this.rows = o.length;
+        this.cols = o[0].length;
     }
 
     public T getElement(int row, int col) {
@@ -41,8 +45,8 @@ public class Matrix<T extends Number> {
 
     public T[] getColumn(int colNum) {
         @SuppressWarnings("unchecked")
-        T[] col = (T[]) new Number[n];
-        for(int i = 0; i < n; i++) {
+        T[] col = (T[]) new Number[rows];
+        for(int i = 0; i < rows; i++) {
             col[i] = matrix[i][colNum];
         }
         return col;
@@ -61,12 +65,27 @@ public class Matrix<T extends Number> {
     }
 
     public void setColumn(T[] column, int colNum) {
-        for(int i = 0; i < n; i++){
+        for(int i = 0; i < rows; i++){
             matrix[i][colNum] = column[i];
         }
     }
 
-//    public Matrix<T> rref() {
-//
-//    }
+    public boolean isSquare(){
+        return rows == cols;
+    }
+
+    public void swapRows(int r1, int r2){
+
+    }
+
+    /**
+     *
+     * @param b a 1xn matrix
+     * @return The solution vector
+     */
+    public Matrix<T> AxEqualsBSolver(Matrix<T> b) {
+        // find the row with the wanted column to be not zero
+        // set that row to be the next row, (swap rows) make sure to swap the b vector to.
+        //
+    }
 }

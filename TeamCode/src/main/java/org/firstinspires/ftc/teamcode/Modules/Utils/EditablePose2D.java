@@ -12,7 +12,6 @@ public class EditablePose2D {
     private double h; // h Will always be in radians.
 
     private final DistanceUnit distanceUnit;
-
     public EditablePose2D(double x, double y, double h, DistanceUnit distanceUnit) {
         this.x = x;
         this.y = y;
