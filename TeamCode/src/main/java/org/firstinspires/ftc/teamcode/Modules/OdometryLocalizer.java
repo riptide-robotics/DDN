@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Modules;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
 
 // ----- READY TO TRANSFER ----- //
 
@@ -16,12 +17,12 @@ public class OdometryLocalizer implements Runnable {
 
     private final double ODO_POD_RADIUS = 2.4; //in Cm
     private final int TICKS_PER_REVOLUTION = 2000;
-    private final double LATERAL_DISTANCE = DistanceUnit.INCH.toCm(9.25); // Measured to the best of my ability
+    private final double LATERAL_DISTANCE = DistanceUnit.INCH.toCm(9.7); // Measured to the best of my ability
     private final double PERP_TO_CENTER = DistanceUnit.INCH.toCm(1.5); // Measured to the best of my ability
     private final double C = 2 * Math.PI * ODO_POD_RADIUS / TICKS_PER_REVOLUTION;
 
     private final double X_FACTOR = 1;
-    private final double Y_FACTOR = 1.01818182; // Needs to be set
+    private final double Y_FACTOR = 1; // Needs to be set
     private final double ANGLE_FACTOR = 1; // Needs to be set
 
     private int leftParallelTicks;
