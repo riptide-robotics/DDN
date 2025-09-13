@@ -1,15 +1,23 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
+import android.util.Size;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 // vision stuff
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
+
+import java.util.List;
 
 /*
  * We have to have two classes because java does not support multiple inheritance
@@ -29,48 +37,39 @@ public class Camera {
     // this used to be called webcamdude, I'm looking at you Aaron (actually Aroon)
     OpenCvWebcam webcam = null;
 
+    AprilTagProcessor tag_processor;
+    VisionPortal vision_portal;
+    List<AprilTagDetection> detections;
+
     ///////////////////////////////////////////////
     ////                                     /////
     ////              FUNCTIONS              /////
     ////                                     /////
     //////////////////////////////////////////////
 
-    public Camera(HardwareMap hardwareMap) {
+    public Camera(CameraName cameraname) {
 
-        // get webcam name
-        WebcamName webcamname = hardwareMap.get(WebcamName.class, "Webcam 1");
+        tag_processor = new AprilTagProcessor.Builder()
+                .setTagLibrary(AprilTagCustomDatabase.getLibrary())
+                .setDrawAxes(true)
+                .setDrawCubeProjection(true)
+                .setDrawTagID(true)
+                .setDrawTagOutline(true)
+                .build();
+        // can also be 640 and 488
+        // there is also YUY2
+        vision_portal = new VisionPortal.Builder()
+                .addProcessor(tag_processor)
+                //.addProcessor(new CameraPipeline(0.047, 578.272, 578.272, 402.145, 221.506, hardwareMap.get(WebcamName.class, "Webcam 1")))
+                .setCamera(cameraname)
+                .setCameraResolution(new Size(640, 480))
+                .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
+                //.enableCameraMonitoring(true)
+                .setAutoStopLiveView(true)
+                .build();
+    }
 
-        // get camera ID
-        // this is to display the camera feed on the robot controller screen
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-
-        // set webcam to the camera name and id
-        // can omit cameraMonitorViewId if you don't want to display the live feed
-        webcam = OpenCvCameraFactory.getInstance().createWebcam(webcamname, cameraMonitorViewId);
-
-        // set webcam pipeline
-        // the arguments passed in are the camera intrinsics in pixels for the Logitech HD Webcam C270
-        webcam.setPipeline(new CameraPipeline(0.047, 578.272, 578.272, 402.145, 221.506, hardwareMap));
-
-        // this is the asyncrounous camera open listener class
-        // it has the methods : onOpened and onError
-        // we are overriding these methods
-        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-            // starts the webcam when click play (?)
-            @Override
-            public void onOpened() {
-                webcam.startStreaming(640, 360, OpenCvCameraRotation.UPRIGHT);
-//                telemetry.addLine("Webcam started streaming...");
-            }
-
-            // called if the camera could not be opened
-            @Override
-            public void onError(int errorCode) {
-//                telemetry.addLine("Welp you screwed up.");
-//                telemetry.addLine("Or maybe I\'m stupid.");
-//                telemetry.addLine("Or maybe there\'s just an error with the camera.");
-
-            }
-        });
+    public List<AprilTagDetection> getDetections() {
+        return detections;
     }
 }
