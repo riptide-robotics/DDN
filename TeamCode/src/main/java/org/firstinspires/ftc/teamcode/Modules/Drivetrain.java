@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
+import org.firstinspires.ftc.teamcode.Robot;
 
 // ----- READY TO TRANSFER ----- //
 
@@ -28,6 +29,7 @@ public class Drivetrain {
     private ElapsedTime timer;
 
     private final OdometryLocalizer robotPos;
+    Robot robot;
 
     ///////////////////////////////////////////////
     ////                                     /////
@@ -100,9 +102,11 @@ public class Drivetrain {
         return robotPos.getCurrPos();
     }
 
-    public void startOdometry() {
-        Thread localizer = new Thread(robotPos);
-        localizer.start();
+    public void startOdometry(boolean isPinPoint) {
+        if (!isPinPoint) {
+            Thread localizer = new Thread(robotPos);
+            localizer.start();
+        }
     }
 
     public OdometryLocalizer getRobotPos() {

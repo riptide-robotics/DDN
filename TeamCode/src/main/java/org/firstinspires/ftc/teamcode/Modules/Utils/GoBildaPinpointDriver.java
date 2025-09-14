@@ -61,6 +61,7 @@ public class GoBildaPinpointDriver extends I2cDeviceSynchDevice<I2cDeviceSynchSi
     private float xVelocity    = 0;
     private float yVelocity    = 0;
     private float hVelocity    = 0;
+    private final EditablePose2D currPos = new EditablePose2D(0,0,Math.toRadians(90), DistanceUnit.CM);
 
     private static final float goBILDA_SWINGARM_POD = 13.26291192f; //ticks-per-mm for the goBILDA Swingarm Pod
     private static final float goBILDA_4_BAR_POD    = 19.89436789f; //ticks-per-mm for the goBILDA 4-Bar Pod
@@ -721,6 +722,10 @@ public class GoBildaPinpointDriver extends I2cDeviceSynchDevice<I2cDeviceSynchSi
                 AngleUnit.RADIANS,
                 //this wraps the hOrientation variable from -180° to +180°
                 ((hOrientation + Math.PI) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI) - Math.PI);
+    }
+
+    public EditablePose2D getCurrPos(){
+        return new EditablePose2D(xPosition, yPosition, hOrientation, DistanceUnit.MM);
     }
 
     /**

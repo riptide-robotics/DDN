@@ -70,7 +70,7 @@ public class PidToPointTuner extends LinearOpMode {
         // * * * * * * * * * * * * * * *
 
         telemetry.clear();
-        robot.getDrivetrain().startOdometry();
+        robot.getDrivetrain().startOdometry(false);
 
         goal = new EditablePose2D(robot.getDrivetrain().getCurrPos().getX(DistanceUnit.INCH),
                 robot.getDrivetrain().getCurrPos().getY(DistanceUnit.INCH),

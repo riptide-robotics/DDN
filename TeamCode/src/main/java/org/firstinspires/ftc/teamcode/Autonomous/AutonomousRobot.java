@@ -15,6 +15,7 @@ import static org.firstinspires.ftc.teamcode.riptideUtil.VERT_KP;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Autonomous.Utils.Path;
 import org.firstinspires.ftc.teamcode.Autonomous.Utils.TrapezoidalMotionProfile;
@@ -29,7 +30,7 @@ import org.firstinspires.ftc.teamcode.Modules.Drivetrain;
 
 public class AutonomousRobot extends Robot {
     Drivetrain drivetrain;
-    Robot robot;
+
     public AutonomousRobot(HardwareMap hardwareMap) {
         super(hardwareMap);
     }
@@ -134,9 +135,9 @@ public class AutonomousRobot extends Robot {
 
 
                 //Find the current field positions
-                double currentX = this.robot.getDrivetrain().getCurrPos().getX(DistanceUnit.INCH);
-                double currentY = this.robot.getDrivetrain().getCurrPos().getY(DistanceUnit.INCH);
-                double currentH = this.robot.getDrivetrain().getCurrPos().getH();
+                double currentX = this.getOdoComputer().getCurrPos().getX(DistanceUnit.INCH);
+                double currentY = this.getOdoComputer().getCurrPos().getY(DistanceUnit.INCH);
+                double currentH = this.getOdoComputer().getCurrPos().getH();
 
                 //Find the expected position along the path, as a magnitude of a vector with angle lineSlope
                 // then use some trig to find x and y components
@@ -185,9 +186,9 @@ public class AutonomousRobot extends Robot {
 
                 //set current position point as start point
                 start = new EditablePose2D(
-                        this.robot.getDrivetrain().getCurrPos().getX(DistanceUnit.INCH),
-                        this.robot.getDrivetrain().getCurrPos().getY(DistanceUnit.INCH),
-                        this.robot.getDrivetrain().getCurrPos().getH(),
+                        this.getOdoComputer().getPosX(DistanceUnit.INCH),
+                        this.getOdoComputer().getPosY(DistanceUnit.INCH),
+                        this.getOdoComputer().getHeading(AngleUnit.DEGREES),
                         DistanceUnit.INCH
                 );
 
@@ -225,8 +226,8 @@ public class AutonomousRobot extends Robot {
                 goalPoint = path.get(pathIndex);
                 elapsedTime = (System.nanoTime() / (Math.pow(10, 9)) - time);
 
-                cP = super.getDrivetrain().getCurrPos();
-                boolean y = atPoint(super.getDrivetrain().getCurrPos(), goalPoint.getWaypoint());
+                cP = super.getOdoComputer().getCurrPos();
+                boolean y = atPoint(super.getOdoComputer().getCurrPos(), goalPoint.getWaypoint());
 
                 atPoint = y;
                 delayUntilNextPointClear =  elapsedTime > goalPoint.getDelayUntilNextPoint();
@@ -314,7 +315,7 @@ public class AutonomousRobot extends Robot {
         Path.PathPoint firstPoint = path.get(0);
         Waypoint firstPose = firstPoint.getWaypoint();
 
-        if (atPoint(firstPose, robot.getDrivetrain().getCurrPos())) {
+        if (atPoint(firstPose, this.getOdoComputer().getCurrPos())) {
             pathIndex = 1;
         }
     }

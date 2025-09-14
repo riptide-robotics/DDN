@@ -69,7 +69,7 @@ public class Odemtry extends LinearOpMode {
          * * * * * * * * * * * * * * *
          */
         telemetry.clear();
-        robot.getDrivetrain().startOdometry();
+        robot.getDrivetrain().startOdometry(false);
 
         /*
          * * * * * * * * * * * * * * *

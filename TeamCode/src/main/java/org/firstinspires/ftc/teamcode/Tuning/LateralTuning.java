@@ -80,7 +80,7 @@ public class LateralTuning extends LinearOpMode {
         // * * * * * * * * * * * * * * *
 
         telemetry.clear();
-        robot.getDrivetrain().startOdometry();
+        robot.getDrivetrain().startOdometry(false);
         /*
          * * * * * * * * * * * * * * *
          * LOOP

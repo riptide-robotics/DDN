@@ -9,6 +9,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
 
+import java.util.Locale;
+
 @Config
 @TeleOp(name = "P2W computer")
 public class GoBildaPinpoint extends LinearOpMode {
@@ -36,8 +38,8 @@ public class GoBildaPinpoint extends LinearOpMode {
 
 
         telemetry.addData("Status", "Initialized");
-        telemetry.addData("X offset", odoComputer.getXOffset(DistanceUnit.MM));
-        telemetry.addData("Y offset", odoComputer.getYOffset(DistanceUnit.MM));
+        telemetry.addData("X offset", odoComputer.getXOffset(DistanceUnit.INCH));
+        telemetry.addData("Y offset", odoComputer.getYOffset(DistanceUnit.INCH));
         telemetry.addData("Device Version Number:", odoComputer.getDeviceVersion());
         telemetry.addData("Heading Scalar", odoComputer.getYawScalar());
         telemetry.update();
@@ -49,7 +51,7 @@ public class GoBildaPinpoint extends LinearOpMode {
             odoComputer.update();
 
             if (gamepad1.y){
-                odoComputer.recalibrateIMU();
+                odoComputer.resetPosAndIMU();
             }
 
             // Calculates time per each cycle and finds number of updates per seconds (frequency)
@@ -60,15 +62,11 @@ public class GoBildaPinpoint extends LinearOpMode {
 
             Pose2D pos = odoComputer.getPosition();
 
-            telemetry.addLine("\n Positions and Heading \n")
-                    .addData("X Position", pos.getX(DistanceUnit.MM))
-                    .addData("Y Position", pos.getY(DistanceUnit.MM))
-                    .addData("Orientation (Degrees)", Math.toDegrees(pos.getHeading(AngleUnit.DEGREES)));
+            String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getX(DistanceUnit.INCH), pos.getY(DistanceUnit.INCH), pos.getHeading(AngleUnit.DEGREES));
+            telemetry.addData("Position", data);
 
-            telemetry.addLine("\n Velocities \n")
-                    .addData("X Velocity", odoComputer.getVelX(DistanceUnit.MM))
-                    .addData("Y Velocity", odoComputer.getVelY(DistanceUnit.MM))
-                    .addData("H Velocity", odoComputer.getHeadingVelocity(UnnormalizedAngleUnit.DEGREES));
+            String velocity = String.format(Locale.US,"{XVel: %.3f, YVel: %.3f, HVel: %.3f}", odoComputer.getVelX(DistanceUnit.INCH), odoComputer.getVelY(DistanceUnit.INCH), odoComputer.getHeadingVelocity(UnnormalizedAngleUnit.DEGREES));
+            telemetry.addData("Velocity", velocity);
 
             telemetry.addData("Status", odoComputer.getDeviceStatus());
 
