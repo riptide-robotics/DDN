@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 // vision stuff
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.riptideUtil;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -50,7 +51,7 @@ public class Camera {
     public Camera(CameraName cameraname) {
 
         tag_processor = new AprilTagProcessor.Builder()
-                .setTagLibrary(AprilTagCustomDatabase.getLibrary())
+                .setTagLibrary(riptideUtil.getLibrary())
                 .setDrawAxes(true)
                 .setDrawCubeProjection(true)
                 .setDrawTagID(true)
@@ -70,6 +71,20 @@ public class Camera {
     }
 
     public List<AprilTagDetection> getDetections() {
+        detections = tag_processor.getDetections();
+        detections.removeIf(detection -> System.nanoTime() - detection.frameAcquisitionNanoTime > riptideUtil.DETECTION_TIMEOUT);
         return detections;
+    }
+
+    public void stop() {
+        vision_portal.close();
+    }
+
+    public void stop_streaming() {
+        vision_portal.stopStreaming();
+    }
+
+    public void resume_streaming() {
+        vision_portal.resumeStreaming();
     }
 }

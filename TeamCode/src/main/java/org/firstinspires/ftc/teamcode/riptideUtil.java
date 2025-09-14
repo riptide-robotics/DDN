@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.config.Config;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.vision.apriltag.AprilTagLibrary;
+
 @Config
 public class riptideUtil {
 
@@ -39,4 +42,47 @@ public class riptideUtil {
     // Speed relationships
     public static double MAX_A = 72;                 // UNDETERMINED
     public static double MAX_V = 96;                 // UNDETERMINED
+
+    // ----- VISION ----- //
+
+    public static double DETECTION_TIMEOUT = 25e+7;
+
+    public static AprilTagLibrary getLibrary() {
+        return new AprilTagLibrary.Builder()
+                .addTag(
+                        20,
+                        "Blue Goal",
+                        6.5,
+                        //new VectorF(),
+                        DistanceUnit.INCH
+                        //Quaternion.identityQuaternion()
+                )
+                .addTag(
+                        21,
+                        "Green Purple Purple (GPP)",
+                        6.5,
+                        DistanceUnit.INCH
+                )
+                .addTag(
+                        22,
+                        "Purple Green Purple (PGP)",
+                        6.5,
+                        DistanceUnit.INCH
+                )
+                .addTag(
+                        23,
+                        "Purple Purple Green (PPG)",
+                        6.5,
+                        DistanceUnit.INCH
+                )
+                .addTag(
+                        24,
+                        "Red Goal",
+                        6.5,
+                        //new VectorF(),
+                        DistanceUnit.INCH
+                        //Quaternion.identityQuaternion()
+                )
+                .build();
+    }
 }

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Tuning;
 
+import android.annotation.SuppressLint;
 import android.util.Size;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -16,6 +17,7 @@ import java.util.List;
 
 @TeleOp
 public class TestVision extends LinearOpMode {
+    @SuppressLint("DefaultLocale")
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -24,12 +26,22 @@ public class TestVision extends LinearOpMode {
         waitForStart();
         while (!isStopRequested() && opModeIsActive()) {
             List<AprilTagDetection> detections = camera.getDetections();
-            if(!detections.isEmpty()) {
-                AprilTagDetection tag = detections.get(0);
-                telemetry.addData("ID: ", tag.metadata.id);
-                telemetry.addData("Name: ", tag.metadata.name);
+
+            telemetry.addLine(String.format(" --- %d AprilTags Detected --- ", detections.size()));
+
+            for (AprilTagDetection detection : detections) {
+                if (detection.metadata != null) {
+                    telemetry.addLine(String.format("%s (ID %d)", detection.metadata.name, detection.id));
+                } else {
+                    telemetry.addLine(String.format("Unknown Name (ID %d)", detection.id));
+                }
+                telemetry.addLine(String.format("Center %6.0f %6.0f (pixels)", detection.center.x, detection.center.y));
+
             }
+
             telemetry.update();
         }
+
+        camera.stop();
     }
 }
