@@ -5,16 +5,15 @@ import org.firstinspires.ftc.teamcode.riptideUtil;
 
 // --- CAMERA --- //
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
-import org.opencv.core.Mat;
-import org.opencv.core.RotatedRect;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-// --- PORTALS & PROCESSORS --- //
+// --- PORTALS & PROCESSORS & SIMILAR STUFF --- //
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
 import org.firstinspires.ftc.vision.opencv.ColorRange;
+import org.firstinspires.ftc.vision.opencv.Circle;
 
 // --- LISTS --- //
 import java.util.ArrayList;
@@ -76,6 +75,9 @@ public class Camera {
                 .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)
                 .setDrawContours(true)
                 .setBlurSize(5)
+                .setDilateSize(15)
+                .setErodeSize(15)
+                .setMorphOperationType(ColorBlobLocatorProcessor.MorphOperationType.CLOSING)
                 .build();
 
         // can also be 640 and 488
@@ -121,11 +123,11 @@ public class Camera {
         );
 
         for (ColorBlobLocatorProcessor.Blob blob : blobs_detected) {
-            // bounding box
-            RotatedRect bbox = blob.getBoxFit();
+            // the circle which fits the artifacts
+            Circle circle_fit = blob.getCircle();
             double distance = (riptideUtil.LENS_FOCAL_LEN_INCHES * riptideUtil.ARTIFACT_SIZE_INCHES * 480)
-                    / (bbox.size.height * riptideUtil.LENS_HEIGHT_OFF_GROUND_INCHES);
-            blobs.add(Arrays.asList(bbox.center.x, bbox.center.y, distance));
+                    / (circle_fit.getRadius() * 2 * riptideUtil.LENS_HEIGHT_OFF_GROUND_INCHES);
+            blobs.add(Arrays.asList((double) circle_fit.getX(), (double) circle_fit.getY(), distance));
         }
         return blobs;
     }
