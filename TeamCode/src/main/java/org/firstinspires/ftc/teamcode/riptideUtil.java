@@ -47,6 +47,10 @@ public class riptideUtil {
 
     public static double DETECTION_TIMEOUT = 25e+7;
 
+    public static double ARTIFACT_SIZE_INCHES = 5;
+    public static double LENS_FOCAL_LEN_INCHES = 0.15748;
+    public static double LENS_HEIGHT_OFF_GROUND_INCHES = 2;
+
     public static AprilTagLibrary getLibrary() {
         return new AprilTagLibrary.Builder()
                 .addTag(

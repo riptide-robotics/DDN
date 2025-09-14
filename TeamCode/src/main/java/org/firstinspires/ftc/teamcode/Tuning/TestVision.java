@@ -1,21 +1,17 @@
 package org.firstinspires.ftc.teamcode.Tuning;
 
 import android.annotation.SuppressLint;
-import android.util.Size;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.Modules.AprilTagCustomDatabase;
 import org.firstinspires.ftc.teamcode.Modules.Camera;
-import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
-import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 
-@TeleOp
+@TeleOp(name="Test Vision")
 public class TestVision extends LinearOpMode {
     @SuppressLint("DefaultLocale")
     @Override
@@ -25,7 +21,7 @@ public class TestVision extends LinearOpMode {
 
         waitForStart();
         while (!isStopRequested() && opModeIsActive()) {
-            List<AprilTagDetection> detections = camera.getDetections();
+            List<AprilTagDetection> detections = camera.get_tag_detections();
 
             telemetry.addLine(String.format(" --- %d AprilTags Detected --- ", detections.size()));
 

@@ -1,24 +1,35 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
-import android.util.Size;
-
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-
-// vision stuff
-import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+// --- CONSTANTS & OTHER STUFF --- //
 import org.firstinspires.ftc.teamcode.riptideUtil;
+
+// --- CAMERA --- //
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
+import org.opencv.core.Mat;
+import org.opencv.core.RotatedRect;
+import org.openftc.easyopencv.OpenCvWebcam;
+
+// --- PORTALS & PROCESSORS --- //
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvWebcam;
+import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
+import org.firstinspires.ftc.vision.opencv.ColorRange;
 
+// --- LISTS --- //
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import android.util.Size;
+
+import com.qualcomm.robotcore.util.SortOrder;
+
+/*
+    Resources:
+        - https://github.com/FIRST-Tech-Challenge/FtcRobotController/blob/master/FtcRobotController/src/main/java/org/firstinspires/ftc/robotcontroller/external/samples/ConceptVisionColorLocator_Rectangle.java
+        -
+ */
 
 /*
  * We have to have two classes because java does not support multiple inheritance
@@ -39,8 +50,10 @@ public class Camera {
     OpenCvWebcam webcam = null;
 
     AprilTagProcessor tag_processor;
+    ColorBlobLocatorProcessor blob_processor;
     VisionPortal vision_portal;
     List<AprilTagDetection> detections;
+    List<List<Double>> blobs;
 
     ///////////////////////////////////////////////
     ////                                     /////
@@ -57,10 +70,18 @@ public class Camera {
                 .setDrawTagID(true)
                 .setDrawTagOutline(true)
                 .build();
+
+        blob_processor = new ColorBlobLocatorProcessor.Builder()
+                .setTargetColorRange(ColorRange.ARTIFACT_PURPLE)
+                .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)
+                .setDrawContours(true)
+                .setBlurSize(5)
+                .build();
+
         // can also be 640 and 488
         // there is also YUY2
         vision_portal = new VisionPortal.Builder()
-                .addProcessor(tag_processor)
+                .addProcessors(tag_processor, blob_processor)
                 //.addProcessor(new CameraPipeline(0.047, 578.272, 578.272, 402.145, 221.506, hardwareMap.get(WebcamName.class, "Webcam 1")))
                 .setCamera(cameraname)
                 .setCameraResolution(new Size(640, 480))
@@ -70,10 +91,43 @@ public class Camera {
                 .build();
     }
 
-    public List<AprilTagDetection> getDetections() {
+    public List<AprilTagDetection> get_tag_detections() {
         detections = tag_processor.getDetections();
         detections.removeIf(detection -> System.nanoTime() - detection.frameAcquisitionNanoTime > riptideUtil.DETECTION_TIMEOUT);
         return detections;
+    }
+
+    public List<List<Double>> get_blob_detections() {
+        List<ColorBlobLocatorProcessor.Blob> blobs_detected = blob_processor.getBlobs();
+
+        ColorBlobLocatorProcessor.Util.filterByCriteria(
+                ColorBlobLocatorProcessor.BlobCriteria.BY_CONTOUR_AREA,
+                50,
+                2000,
+                blobs_detected
+        );
+
+        ColorBlobLocatorProcessor.Util.filterByCriteria(
+                ColorBlobLocatorProcessor.BlobCriteria.BY_CIRCULARITY,
+                0.75,
+                1,
+                blobs_detected
+        );
+
+        ColorBlobLocatorProcessor.Util.sortByCriteria(
+                ColorBlobLocatorProcessor.BlobCriteria.BY_CONTOUR_AREA,
+                SortOrder.DESCENDING,
+                blobs_detected
+        );
+
+        for (ColorBlobLocatorProcessor.Blob blob : blobs_detected) {
+            // bounding box
+            RotatedRect bbox = blob.getBoxFit();
+            double distance = (riptideUtil.LENS_FOCAL_LEN_INCHES * riptideUtil.ARTIFACT_SIZE_INCHES * 480)
+                    / (bbox.size.height * riptideUtil.LENS_HEIGHT_OFF_GROUND_INCHES);
+            blobs.add(Arrays.asList(bbox.center.x, bbox.center.y, distance));
+        }
+        return blobs;
     }
 
     public void stop() {
