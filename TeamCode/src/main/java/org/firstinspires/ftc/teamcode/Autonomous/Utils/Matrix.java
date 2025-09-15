@@ -1,91 +1,162 @@
 package org.firstinspires.ftc.teamcode.Autonomous.Utils;
 
 //Do not delete
-public class Matrix<T extends Number> {
+public class Matrix {
 
-    private T[][] matrix;
+    private double[][] matrix;
     private int rows;
     private int cols;
 
     public Matrix(int rows, int cols) {
         this.rows = rows;
         this.cols = cols;
-
-        @SuppressWarnings("unchecked")
-        T[][] arr = (T[][]) new Number[rows][cols];  // you need this cast cuz of type erasure
-        this.matrix = arr;
+        this.matrix = new double[rows][cols];
     }
 
     /**
      * Initializes this matrix to be a deep copy of the provided matrix.
-     * @param matrix another matrix to deep copy
+     * @param other another matrix to deep copy
      */
-    public Matrix(Matrix<T> matrix) {
-        T[][] o = (T[][]) matrix.getMatrix();
-
-        @SuppressWarnings("unchecked")
-        T[][] copy = (T[][]) new Number[o.length][o[0].length];
-
-        for (int i = 0; i < o.length; i++) {
-            System.arraycopy(o[i], 0, copy[i], 0, o[i].length);
-        }
-
-        this.matrix = copy;
+    public Matrix(Matrix other) {
+        double[][] o = other.getMatrix();
         this.rows = o.length;
         this.cols = o[0].length;
+        this.matrix = new double[rows][cols];
+
+        for (int i = 0; i < rows; i++) {
+            System.arraycopy(o[i], 0, this.matrix[i], 0, cols);
+        }
     }
 
-    public T getElement(int row, int col) {
+    public double getElement(int row, int col) {
         return this.matrix[row][col];
     }
 
-    public T[] getRow(int row) {
+    public double[] getRow(int row) {
         return this.matrix[row];
     }
 
-    public T[] getColumn(int colNum) {
-        @SuppressWarnings("unchecked")
-        T[] col = (T[]) new Number[rows];
-        for(int i = 0; i < rows; i++) {
+    public double[] getColumn(int colNum) {
+        double[] col = new double[rows];
+        for (int i = 0; i < rows; i++) {
             col[i] = matrix[i][colNum];
         }
         return col;
     }
 
-    public T[][] getMatrix(){
+    public double[][] getMatrix() {
         return matrix;
     }
 
-    public void setElement(T element, int rowNum, int colNum) {
+    public void setElement(double element, int rowNum, int colNum) {
         matrix[rowNum][colNum] = element;
     }
 
-    public void setRow(T[] row, int rowNum) {
-        matrix[rowNum] = row;
+    public void setRow(double[] row, int rowNum) {
+        if (row.length != cols) throw new IllegalArgumentException("Row length mismatch");
+        matrix[rowNum] = row.clone();
     }
 
-    public void setColumn(T[] column, int colNum) {
-        for(int i = 0; i < rows; i++){
+    public void setColumn(double[] column, int colNum) {
+        if (column.length != rows) throw new IllegalArgumentException("Column length mismatch");
+        for (int i = 0; i < rows; i++) {
             matrix[i][colNum] = column[i];
         }
     }
 
-    public boolean isSquare(){
+    public boolean isSquare() {
         return rows == cols;
     }
 
-    public void swapRows(int r1, int r2){
+    public void swapRows(int r1, int r2) {
+        double[] temp = matrix[r1];
+        matrix[r1] = matrix[r2];
+        matrix[r2] = temp;
+    }
 
+    public void subtractRows(int r1, int r2, int outRow) {
+        double[] temp1 = matrix[r1];
+        double[] temp2 = matrix[r2];
+
+        double[] out = new double[cols];
+        for (int i = 0; i < cols; i++) {
+            out[i] = temp1[i] - temp2[i];
+        }
+        matrix[outRow] = out;
     }
 
     /**
-     *
-     * @param b a 1xn matrix
+     * Uses Gauss-Jordan algorithm to solve matrix equation Ax = b.
+     * Where A is this object
+     * x is the solution vector
+     * b is the right-hand side column vector
+     * @param b a (rows x 1) column vector
      * @return The solution vector
      */
-    public Matrix<T> AxEqualsBSolver(Matrix<T> b) {
-        // find the row with the wanted column to be not zero
-        // set that row to be the next row, (swap rows) make sure to swap the b vector to.
-        //
+    public Matrix AxEqualsBSolver(Matrix b) {
+        if (!this.isSquare() || b.cols != 1 || b.rows != this.rows) {
+            throw new IllegalArgumentException("Incompatible dimensions");
+        }
+
+        double[][] augmentedMatrix = new double[rows][cols + 1];
+        for(int i = 0; i < rows; i++){
+            for(int j = 0; j < cols; j++){
+               augmentedMatrix[i][j] = this.getElement(i, j);
+            }
+            augmentedMatrix[i][cols] = b.getElement(i, 0);
+        }
+
+        //find pivots
+
+        for(int i = 0; i < rows; i++){
+            int switchRow = i;
+
+            // Find largest number for stable number crunching
+
+            for(int j = i + 1; j < rows; j++){
+                if (Math.abs(augmentedMatrix[j][i]) > Math.abs(augmentedMatrix[switchRow][i])){
+                    switchRow = j;
+                }
+            }
+
+            if(Math.abs(augmentedMatrix[switchRow][i]) < 1e-12 ){
+                throw new IllegalArgumentException("This Matrix has linearly dependent columns");
+            }
+
+            if(switchRow != i){
+                //switch
+                double[] tempRow = augmentedMatrix[i];
+                augmentedMatrix[i] = augmentedMatrix[switchRow];
+                augmentedMatrix[switchRow] = tempRow;
+            }
+
+            // scale everything by the first
+            double scaleFactor = augmentedMatrix[i][i];
+            for(int c = i; c < cols+1; c++){
+                augmentedMatrix[i][c] /= scaleFactor;
+            }
+
+            augmentedMatrix[i][i] = 1.0;
+
+            for (int r = 0; r < rows; r++) {
+                if (r == i) continue;
+                double factor = augmentedMatrix[r][i];
+                for (int c = i; c < cols+1; c++) {
+                    augmentedMatrix[r][c] -= factor * augmentedMatrix[i][c];
+                }
+                augmentedMatrix[r][i] = 0.0;
+            }
+        }
+
+        double[] tx = new double[rows];
+        for(int c = 0; c < rows; c++){
+            tx[c] = augmentedMatrix[c][cols];
+        }
+
+        Matrix x = new Matrix(rows, 1);
+        x.setColumn(tx, 0);
+
+        return x;
+
     }
 }

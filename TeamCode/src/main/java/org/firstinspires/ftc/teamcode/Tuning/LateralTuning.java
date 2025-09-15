@@ -188,24 +188,6 @@ public class LateralTuning extends LinearOpMode {
 
         robot.getDrivetrain().setWheelPowers(flWheelPower, frWheelPower, brWheelPower, blWheelPower);
 
-
-        //Visual effects
-
-        int robotSize = 18;
-//
-//        p.fieldOverlay().drawGrid( -72,-72, 144, 144, 7, 7)
-//                .setTranslation(36, 72 - (double) robotSize /2)
-//                .setFill("Blue")
-//                .setRotation(currentAngleRadians)
-//                .fillRect(currentY - (double) robotSize /2, currentX - (double) robotSize /2, robotSize, robotSize)
-//                .setFill("Red")
-//                .setRotation(Math.toRadians(goalHINDEGREES))
-//                .fillRect(expY - (double) robotSize /2, expX - (double) robotSize /2, robotSize, robotSize)
-//                .setFill("Red")
-//                .fillCircle(nextGoalXInInches, nextGoalYInInches, 2)
-//                .setFill("Blue")
-//                .fillCircle(startPos.getX(DistanceUnit.INCH), startPos.getY(DistanceUnit.INCH), 2);
-
         return p;
 
     }
