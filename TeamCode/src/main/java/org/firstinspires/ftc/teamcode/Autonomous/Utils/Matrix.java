@@ -106,13 +106,10 @@ public class Matrix {
             augmentedMatrix[i][cols] = b.getElement(i, 0);
         }
 
-        //find pivots
-
         for(int i = 0; i < rows; i++){
             int switchRow = i;
 
             // Find largest number for stable number crunching
-
             for(int j = i + 1; j < rows; j++){
                 if (Math.abs(augmentedMatrix[j][i]) > Math.abs(augmentedMatrix[switchRow][i])){
                     switchRow = j;

@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.Autonomous.Utils;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
 
-// ----- READY TO TRANSFER ----- //
 
 public class Waypoint extends EditablePose2D {
     private boolean isAnchor;
@@ -14,8 +13,6 @@ public class Waypoint extends EditablePose2D {
     public enum types {
         START,
         GENERAL,
-        INTERRUPTED,
-        POINTTURN,
         END
     }
 
@@ -37,6 +34,11 @@ public class Waypoint extends EditablePose2D {
 
     public Waypoint(double x, double y, double headingINDEGREES, double goalVelocity, double maxAccel, DistanceUnit units){
         this(x, y, headingINDEGREES, types.GENERAL, false, goalVelocity, maxAccel, units);
+    }
+
+    // for cubic spline point
+    public Waypoint(double x, double y, double headingINDEGREES, DistanceUnit units){
+        this(x, y, headingINDEGREES, types.GENERAL, false, 0, 0, units);
     }
 
 
