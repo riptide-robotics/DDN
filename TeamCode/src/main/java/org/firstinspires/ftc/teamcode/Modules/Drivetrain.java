@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 import static java.lang.Thread.sleep;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -10,7 +11,10 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.Autonomous.AutonomousRobot;
 import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
+import org.firstinspires.ftc.teamcode.Modules.Utils.GoBildaPinpointDriver;
 import org.firstinspires.ftc.teamcode.Robot;
 
 // ----- READY TO TRANSFER ----- //
@@ -27,6 +31,7 @@ public class Drivetrain {
     private final DcMotor frWheel, flWheel, brWheel, blWheel;
     private final IMU imu;
     private ElapsedTime timer;
+    AutonomousRobot autoRobot;
 
     private final OdometryLocalizer robotPos;
     Robot robot;
@@ -74,7 +79,6 @@ public class Drivetrain {
 
         imu.resetYaw();
         imu.initialize(parameters);
-
     }
 
     // ----------- START/STOP ----------- //
@@ -106,6 +110,16 @@ public class Drivetrain {
         if (!isPinPoint) {
             Thread localizer = new Thread(robotPos);
             localizer.start();
+        }
+        if (isPinPoint){
+            autoRobot = new AutonomousRobot(hardwareMap);
+            autoRobot.getOdoComputer().setOffsets(127, 299.72, DistanceUnit.MM);
+
+            autoRobot.getOdoComputer().setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+
+            autoRobot.getOdoComputer().setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+
+            autoRobot.getOdoComputer().resetPosAndIMU();
         }
     }
 

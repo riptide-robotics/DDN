@@ -30,6 +30,12 @@ import org.firstinspires.ftc.teamcode.Modules.Drivetrain;
 
 public class AutonomousRobot extends Robot {
     Drivetrain drivetrain;
+    Robot robot;
+
+    double currentX = 0;
+    double currentY = 0;
+    double currentH = 0;
+    boolean isPinPoint = true;
 
     public AutonomousRobot(HardwareMap hardwareMap) {
         super(hardwareMap);
@@ -133,11 +139,18 @@ public class AutonomousRobot extends Robot {
                 break;
             case GOTOPOINT:
 
-
                 //Find the current field positions
-                double currentX = this.getOdoComputer().getCurrPos().getX(DistanceUnit.INCH);
-                double currentY = this.getOdoComputer().getCurrPos().getY(DistanceUnit.INCH);
-                double currentH = this.getOdoComputer().getCurrPos().getH();
+                if (isPinPoint){
+                    currentX = this.getOdoComputer().getCurrPos().getX(DistanceUnit.INCH);
+                    currentY = this.getOdoComputer().getCurrPos().getY(DistanceUnit.INCH);
+                    currentH = this.getOdoComputer().getCurrPos().getH();
+                } else if (!isPinPoint){
+                    currentX = this.robot.getDrivetrain().getCurrPos().getX(DistanceUnit.INCH);
+                    currentY = this.robot.getDrivetrain().getCurrPos().getY(DistanceUnit.INCH);
+                    currentH = this.robot.getDrivetrain().getCurrPos().getH();
+                }
+
+
 
                 //Find the expected position along the path, as a magnitude of a vector with angle lineSlope
                 // then use some trig to find x and y components
@@ -154,6 +167,8 @@ public class AutonomousRobot extends Robot {
                 turnPid.setPID(TURN_KP, TURN_KI, TURN_KD);
 
                 //shift the errors to robot centric errors
+
+
                 double xError = xComponent - currentX;
                 double yError = yComponent - currentY;
 
@@ -185,12 +200,23 @@ public class AutonomousRobot extends Robot {
                 }
 
                 //set current position point as start point
-                start = new EditablePose2D(
-                        this.getOdoComputer().getPosX(DistanceUnit.INCH),
-                        this.getOdoComputer().getPosY(DistanceUnit.INCH),
-                        this.getOdoComputer().getHeading(AngleUnit.DEGREES),
-                        DistanceUnit.INCH
-                );
+                if (isPinPoint){
+                    start = new EditablePose2D(
+                            this.getOdoComputer().getPosX(DistanceUnit.INCH),
+                            this.getOdoComputer().getPosY(DistanceUnit.INCH),
+                            this.getOdoComputer().getHeading(AngleUnit.DEGREES),
+                            DistanceUnit.INCH
+                    );
+                }
+                if (!isPinPoint){
+                    start = new EditablePose2D(
+                            this.robot.getDrivetrain().getCurrPos().getX(DistanceUnit.INCH),
+                            this.robot.getDrivetrain().getCurrPos().getY(DistanceUnit.INCH),
+                            this.robot.getDrivetrain().getCurrPos().getH(),
+                            DistanceUnit.INCH
+                    );
+                }
+
 
                 //Find distance between two points for motion profile
                 double dx = goalPoint.getWaypoint().getX(DistanceUnit.INCH) - start.getX(DistanceUnit.INCH);
@@ -226,8 +252,16 @@ public class AutonomousRobot extends Robot {
                 goalPoint = path.get(pathIndex);
                 elapsedTime = (System.nanoTime() / (Math.pow(10, 9)) - time);
 
-                cP = super.getOdoComputer().getCurrPos();
-                boolean y = atPoint(super.getOdoComputer().getCurrPos(), goalPoint.getWaypoint());
+                boolean y = false;
+                if (isPinPoint){
+                    cP = super.getOdoComputer().getCurrPos();
+                    y = atPoint(super.getOdoComputer().getCurrPos(), goalPoint.getWaypoint());
+                }
+                if (!isPinPoint){
+                    cP = super.getDrivetrain().getCurrPos();
+                    y = atPoint(super.getDrivetrain().getCurrPos(), goalPoint.getWaypoint());
+                }
+
 
                 atPoint = y;
                 delayUntilNextPointClear =  elapsedTime > goalPoint.getDelayUntilNextPoint();
@@ -315,9 +349,18 @@ public class AutonomousRobot extends Robot {
         Path.PathPoint firstPoint = path.get(0);
         Waypoint firstPose = firstPoint.getWaypoint();
 
-        if (atPoint(firstPose, this.getOdoComputer().getCurrPos())) {
-            pathIndex = 1;
+        if (isPinPoint){
+            if (atPoint(firstPose, this.getOdoComputer().getCurrPos())) {
+                pathIndex = 1;
+            }
         }
+
+        if (!isPinPoint){
+            if (atPoint(firstPose, robot.getDrivetrain().getCurrPos())) {
+                pathIndex = 1;
+            }
+        }
+
     }
 
     public Path getPath() {
@@ -335,6 +378,12 @@ public class AutonomousRobot extends Robot {
 
     public void calculateDistance(double distance) {
         trapezoidalMotionProfile.calculateProfile(distance);
+    }
+
+
+
+    public void setPinPoint(boolean IsPinPoint){
+        isPinPoint = IsPinPoint;
     }
 
 
