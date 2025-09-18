@@ -202,7 +202,7 @@ public class AutonomousRobot extends Robot {
                 lineSlope = Math.atan2(dy, dx);
 
                 //Set the motion profile with the new calculated distance
-                motionProfile.setProfile(goalPoint.getWaypoint().getMaxAccel(), goalPoint.getWaypoint().getGoalVelocity());
+                motionProfile.setProfile(goalPoint.getGoalAcceleration(), goalPoint.getGoalVelocity());
                 motionProfile.calculateProfile(distance);
 
                 //Clear pid integral windups
@@ -280,7 +280,7 @@ public class AutonomousRobot extends Robot {
         return pathIndex;
     }
 
-    public Waypoint autonPos(){
+    public EditablePose2D autonPos(){
         return goalPoint.getWaypoint();
     }
 
@@ -312,7 +312,7 @@ public class AutonomousRobot extends Robot {
         currentState = moveStates.CALCULATE;
 
         Path.PathPoint firstPoint = path.get(0);
-        Waypoint firstPose = firstPoint.getWaypoint();
+        EditablePose2D firstPose = firstPoint.getWaypoint();
 
         if (atPoint(firstPose, robot.getDrivetrain().getCurrPos())) {
             pathIndex = 1;

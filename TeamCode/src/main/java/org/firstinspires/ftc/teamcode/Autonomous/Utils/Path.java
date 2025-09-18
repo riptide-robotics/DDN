@@ -1,5 +1,10 @@
 package org.firstinspires.ftc.teamcode.Autonomous.Utils;
 
+import static org.firstinspires.ftc.teamcode.riptideUtil.MAX_A_VERT;
+import static org.firstinspires.ftc.teamcode.riptideUtil.MAX_V_VERT;
+
+import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
+
 import java.util.ArrayList;
 
 // maybe usable, idk  usable, needs some edits.
@@ -42,7 +47,9 @@ public class Path {
     public static class PathPoint{
 
         private RobotAction a = null;
-        private Waypoint w;
+        private EditablePose2D w;
+        private double goalVelocity;
+        private double goalAcceleration;
         private double delayUntilNextPoint = 0;
 
         // The grave of setRobotAction(RobotAction a)
@@ -53,7 +60,7 @@ public class Path {
         //     It feels like we should be using this :|
         //     It was basically just "this.w = w" in case you wanna revive it
 
-        public Waypoint getWaypoint(){
+        public EditablePose2D getWaypoint(){
             return w;
         }
 
@@ -65,10 +72,20 @@ public class Path {
             return delayUntilNextPoint;
         }
 
-        public PathPoint(Waypoint w, RobotAction a, double delayUntilNextPoint){
+        public double getGoalVelocity() {return goalVelocity;}
+
+        public double getGoalAcceleration() {return goalAcceleration;}
+
+        public PathPoint(EditablePose2D w, RobotAction a, double delayUntilNextPoint, double goalVelocity, double goalAcceleration){
             this.a = a;
             this.w = w;
             this.delayUntilNextPoint = delayUntilNextPoint;
+            this.goalVelocity = goalVelocity;
+            this.goalAcceleration = goalAcceleration;
+        }
+
+        public PathPoint(Waypoint w, RobotAction a, double delayUntilNextPoint){
+            this(w, a, delayUntilNextPoint, MAX_V_VERT, MAX_A_VERT);
         }
 
     }
