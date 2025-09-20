@@ -7,6 +7,11 @@ public class Matrix {
     private int rows;
     private int cols;
 
+    /**
+     * Creates a matrix object.
+     * @param rows number of rows
+     * @param cols number of columns
+     */
     public Matrix(int rows, int cols) {
         this.rows = rows;
         this.cols = cols;
