@@ -14,19 +14,11 @@ public class Path {
         void Action();
     }
 
-    // This is the grave of the enum known as FollowMethod.
-    //     It was useless because we were only using one
-    //     type of "follow method" in the first place.
-
     private ArrayList<PathPoint> path = new ArrayList<PathPoint>();
 
     public Path(PathBuilder b){
         this.path = b.getPath();
     }
-
-    // This is the grave of getPath, which I feel like should have
-    //     been used but for some reason it wasn't.
-    //     This version returned ArrayList<PathPoint>
 
     /**
      * @param i index of the waypoint list
@@ -40,28 +32,24 @@ public class Path {
         return path.size();
     }
 
-    // This is the grave of removePoint() which I honestly feel like
-    //     is useless unless the path was completely fucked up.
-
-
     public static class PathPoint{
 
         private RobotAction a = null;
-        private EditablePose2D w;
+        private EditablePose2D pos;
         private double goalVelocity;
         private double goalAcceleration;
         private double delayUntilNextPoint = 0;
 
-        // The grave of setRobotAction(RobotAction a)
-        //     Dunno what this was about -_- T-T ToT
+        public PathPoint(EditablePose2D position, double goalVelocity, double goalAcceleration, RobotAction a, double delayUntilNextPoint){
+            this.a = a;
+            this.pos = position;
+            this.delayUntilNextPoint = delayUntilNextPoint;
+            this.goalVelocity = goalVelocity;
+            this.goalAcceleration = goalAcceleration;
+        }
 
-        // The grave of setWayPoint(Waypoint w)
-        //     The fact that we didn't use this feels kind of stupid
-        //     It feels like we should be using this :|
-        //     It was basically just "this.w = w" in case you wanna revive it
-
-        public EditablePose2D getWaypoint(){
-            return w;
+        public PathPoint(EditablePose2D position, RobotAction a, double delayUntilNextPoint){
+            this(position, MAX_V_VERT, MAX_A_VERT, a, delayUntilNextPoint);
         }
 
         public RobotAction getAction(){
@@ -76,18 +64,9 @@ public class Path {
 
         public double getGoalAcceleration() {return goalAcceleration;}
 
-        public PathPoint(EditablePose2D w, RobotAction a, double delayUntilNextPoint, double goalVelocity, double goalAcceleration){
-            this.a = a;
-            this.w = w;
-            this.delayUntilNextPoint = delayUntilNextPoint;
-            this.goalVelocity = goalVelocity;
-            this.goalAcceleration = goalAcceleration;
+        public EditablePose2D getLocation(){
+            return pos;
         }
-
-        public PathPoint(Waypoint w, RobotAction a, double delayUntilNextPoint){
-            this(w, a, delayUntilNextPoint, MAX_V_VERT, MAX_A_VERT);
-        }
-
     }
 
     public static class PathBuilder{
@@ -95,8 +74,8 @@ public class Path {
 
         // This is the grave of a few PathBuilders that nobody knows why they existed
 
-        public PathBuilder addNewFullPoint(Waypoint w, RobotAction a, double delay){
-            PathPoint p = new PathPoint(w, a, delay);
+        public PathBuilder addNewFullPoint(EditablePose2D position, RobotAction a, double delay){
+            PathPoint p = new PathPoint(position, a, delay);
             path.add(p);
             return this;
         }

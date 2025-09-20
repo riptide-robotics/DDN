@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Autonomous.Utils;
 
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+
 import java.util.ArrayList;
 
 //Know that these are hermite splines
@@ -19,6 +21,7 @@ public class CubicSplinePath {
             Path.PathPoint p = new Path.PathPoint(w, a, delay);
             path.add(p);
             return this;
+            Pose2D
         }
 
         public ArrayList<Path.PathPoint> getPath(){

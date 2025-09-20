@@ -8,7 +8,8 @@ public class riptideUtil {
     /**
      * Table of contents:
      * 1. General constants (things that are used gneerally, not specific locations)
-     * 3. Autonomous Constants
+     * 2. Autonomous Constants
+     * 3. Static Functions that are useful.
      */
 
     /** General constants */
@@ -39,4 +40,12 @@ public class riptideUtil {
     // Speed relationships
     public static double MAX_A = 72;                 // UNDETERMINED
     public static double MAX_V = 96;                 // UNDETERMINED
+
+    /** Static Functions */
+    public static double getAngleError(double targetAngle, double currentAngle) {
+        double error = targetAngle - currentAngle;
+        error = ((error + 180) % 360 + 360) % 360 - 180;
+        return error;
+    }
+
 }
