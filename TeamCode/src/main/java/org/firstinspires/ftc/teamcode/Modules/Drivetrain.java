@@ -77,17 +77,40 @@ public class Drivetrain {
 
     // ----------- START/STOP ----------- //
 
+    /**
+     * This method resets the robot's Y angle to 0. The orientation will be relative to
+     * that of the robot in its current position - it does not move the robot.
+     * <p></p>
+     * This is identical to retrieving the IMU of this (only possible through odd means)
+     * and resetting the yaw there. However, it is recommended to use this.
+     * */
     public void resetImu() {
         imu.resetYaw();
     }
 
+    /**
+     * Gets the orientation of the robot, with regard to AngleUnit (self explanatory).
+     * It is recommended to stick to radians for this.
+     * */
     public double getRobotHeading(AngleUnit unit) {
         return imu.getRobotYawPitchRollAngles().getYaw(unit); // heading of bot in radians
     }
 
     // ------------ SETTERS ------------ //
 
-
+    /**
+     * <p>
+     *     This sets power to the wheels, effectively controlling their speed and direction.
+     *     Use a negative number for moving backwards.
+     * </p>
+     * <p>
+     *     The power ranges from -1 to 1, with 0 representing no movement, negative numbers
+     *     representing moving backwards, and positive numbers representing moving forward.
+     * </p>
+     * @param flWheelPower front left wheel power
+     * @param frWheelPower
+     *
+     */
     public void setWheelPowers(double flWheelPower, double frWheelPower, double brWheelPower, double blWheelPower) {
         frWheel.setPower(frWheelPower);
         flWheel.setPower(flWheelPower);
@@ -96,15 +119,25 @@ public class Drivetrain {
     }
 
     // ------------ GETTERS ------------ //
+    /**
+     * Gets the current position of the bot. Although it uses odometry, it is very capable
+     * of being called many times very quickly.
+     * */
     public EditablePose2D getCurrPos() {
         return robotPos.getCurrPos();
     }
-
+    /**
+     * Starts the whole odometry process. This puts it in a separate thread, so be
+     * careful when using this.
+     * */
     public void startOdometry() {
         Thread localizer = new Thread(robotPos);
         localizer.start();
     }
-
+    /**
+     * Gets the position of the robot. A getter for its OdometryLocalizer.
+     * <p>There is no setter.</p>
+     * */
     public OdometryLocalizer getRobotPos() {
         return robotPos;
     }

@@ -27,6 +27,13 @@ public class TrapezoidalMotionProfile {
         this.maxV = maxV;
     }
 
+    /**
+     * Sets the profile. This handles the same variables as a constructor, and could be treated similarly.
+     * <br>
+     * The difference is that it keeps all of the other variables.
+     * <br>
+     * This is usually used for calculating the motion again.
+     * */
     public void setProfile(double mA, double mV) {
         maxA = mA;
         maxV = mV;
@@ -36,7 +43,7 @@ public class TrapezoidalMotionProfile {
     // This version calculates using the absolute distance and then re-applies the direction.
 
     /**
-     * Creates the accelerate/decelerate portions of the path given. Most Crucially, this version stores the direction of travel.
+     * Creates the accelerate/decelerate portions of the path given. Most crucially, this version stores the direction of travel.
      * @param goal End distance
      * @param currPos current position
      */
@@ -76,6 +83,8 @@ public class TrapezoidalMotionProfile {
     }
 
     // Convenience overload if you just have a distance (assumes starting at 0)
+
+    /**This is a shortcut for calculateProfile, starting at 0.*/
     public void calculateProfile(double distance) {
         calculateProfile(distance, 0);
     }
