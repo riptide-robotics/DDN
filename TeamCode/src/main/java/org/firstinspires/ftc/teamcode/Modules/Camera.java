@@ -13,6 +13,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
 import org.firstinspires.ftc.vision.opencv.ColorRange;
+import org.opencv.core.Scalar;
 import org.firstinspires.ftc.vision.opencv.Circle;
 
 // --- LISTS --- //
@@ -51,8 +52,14 @@ public class Camera {
     AprilTagProcessor tag_processor;
     ColorBlobLocatorProcessor blob_processor;
     VisionPortal vision_portal;
-    List<AprilTagDetection> detections;
-    List<List<Double>> blobs;
+    ArrayList<AprilTagDetection> detections;
+    ArrayList<ArrayList<Double>> blobs = new ArrayList<>();
+    public enum processors_enabled {
+        NONE,
+        TAG,
+        COLOR,
+        ALL
+    }
 
     ///////////////////////////////////////////////
     ////                                     /////
@@ -75,8 +82,8 @@ public class Camera {
                 .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)
                 .setDrawContours(true)
                 .setBlurSize(5)
-                .setDilateSize(15)
-                .setErodeSize(15)
+                .setDilateSize(6)
+                .setErodeSize(1)
                 .setMorphOperationType(ColorBlobLocatorProcessor.MorphOperationType.CLOSING)
                 .build();
 
@@ -99,19 +106,20 @@ public class Camera {
         return detections;
     }
 
-    public List<List<Double>> get_blob_detections() {
+    public ArrayList<ArrayList<Double>> get_blob_detections() {
+        blobs.clear();
         List<ColorBlobLocatorProcessor.Blob> blobs_detected = blob_processor.getBlobs();
 
         ColorBlobLocatorProcessor.Util.filterByCriteria(
                 ColorBlobLocatorProcessor.BlobCriteria.BY_CONTOUR_AREA,
-                50,
+                100,
                 2000,
                 blobs_detected
         );
 
         ColorBlobLocatorProcessor.Util.filterByCriteria(
                 ColorBlobLocatorProcessor.BlobCriteria.BY_CIRCULARITY,
-                0.75,
+                0.6,
                 1,
                 blobs_detected
         );
@@ -122,18 +130,42 @@ public class Camera {
                 blobs_detected
         );
 
-        for (ColorBlobLocatorProcessor.Blob blob : blobs_detected) {
-            // the circle which fits the artifacts
-            Circle circle_fit = blob.getCircle();
-            double distance = (riptideUtil.LENS_FOCAL_LEN_INCHES * riptideUtil.ARTIFACT_SIZE_INCHES * 480)
-                    / (circle_fit.getRadius() * 2 * riptideUtil.LENS_HEIGHT_OFF_GROUND_INCHES);
-            blobs.add(Arrays.asList((double) circle_fit.getX(), (double) circle_fit.getY(), distance));
-        }
+//        for (ColorBlobLocatorProcessor.Blob blob : blobs_detected) {
+//            // the circle which fits the artifacts
+//            Circle circle_fit = blob.getCircle();
+////            double distance = (riptideUtil.LENS_FOCAL_LEN_INCHES * riptideUtil.ARTIFACT_SIZE_INCHES * 480)
+////                    / (circle_fit.getRadius() * 2 * riptideUtil.LENS_HEIGHT_OFF_GROUND_INCHES);
+//            ArrayList<Double> temp = new ArrayList<>(Arrays.asList((double) circle_fit.getX(), (double) circle_fit.getY(), blob.getCircularity()/*, distance*/));
+//            blobs.add(temp);
+//        }
+
+        if(blobs_detected.isEmpty()) {return new ArrayList<>();}
+        Circle circle_fit = blobs_detected.get(0).getCircle();
+        blobs.add(new ArrayList<>(Arrays.asList((double) circle_fit.getX(), (double) circle_fit.getY() /*blob.getCircularity(), distance*/)));
+        //return blobs;
+
         return blobs;
     }
 
-    public void stop() {
-        vision_portal.close();
+    // the default is ALL
+    public void set_pipeline(processors_enabled processors) {
+        switch (processors) {
+            case TAG:
+                vision_portal.setProcessorEnabled(tag_processor, true);
+                vision_portal.setProcessorEnabled(blob_processor, false);
+                break;
+            case COLOR:
+                vision_portal.setProcessorEnabled(tag_processor, false);
+                vision_portal.setProcessorEnabled(blob_processor, true);
+                break;
+            case NONE:
+                vision_portal.setProcessorEnabled(tag_processor, false);
+                vision_portal.setProcessorEnabled(blob_processor, false);
+                break;
+            default:
+                vision_portal.setProcessorEnabled(tag_processor, true);
+                vision_portal.setProcessorEnabled(blob_processor, true);
+        }
     }
 
     public void stop_streaming() {
@@ -142,5 +174,9 @@ public class Camera {
 
     public void resume_streaming() {
         vision_portal.resumeStreaming();
+    }
+
+    public void stop() {
+        vision_portal.close();
     }
 }

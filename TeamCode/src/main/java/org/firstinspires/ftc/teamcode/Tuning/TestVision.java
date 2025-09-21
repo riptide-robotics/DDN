@@ -8,36 +8,76 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Modules.Camera;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @TeleOp(name="Test Vision")
 public class TestVision extends LinearOpMode {
-    @SuppressLint("DefaultLocale")
+
     @Override
     public void runOpMode() throws InterruptedException {
 
         Camera camera = new Camera(hardwareMap.get(WebcamName.class, "Webcam 1"));
+        Camera.processors_enabled processor = Camera.processors_enabled.ALL;
+        boolean a_debounce = false;
 
         waitForStart();
         while (!isStopRequested() && opModeIsActive()) {
-            List<AprilTagDetection> detections = camera.get_tag_detections();
-
-            telemetry.addLine(String.format(" --- %d AprilTags Detected --- ", detections.size()));
-
-            for (AprilTagDetection detection : detections) {
-                if (detection.metadata != null) {
-                    telemetry.addLine(String.format("%s (ID %d)", detection.metadata.name, detection.id));
-                } else {
-                    telemetry.addLine(String.format("Unknown Name (ID %d)", detection.id));
+            // this will switch the viewed pipeline on the driver hub
+            // in this order: ALL -> TAG -> COLOR
+            if (gamepad1.a) {
+                if(gamepad1.a ^ a_debounce) {
+                    switch (processor) {
+                        case ALL:
+                            processor = Camera.processors_enabled.TAG;
+                            camera.set_pipeline(processor);
+                            break;
+                        case TAG:
+                            processor = Camera.processors_enabled.COLOR;
+                            camera.set_pipeline(processor);
+                            break;
+                        case COLOR:
+                            processor = Camera.processors_enabled.ALL;
+                            camera.set_pipeline(processor);
+                            break;
+                    }
                 }
-                telemetry.addLine(String.format("Center %6.0f %6.0f (pixels)", detection.center.x, detection.center.y));
-
+                a_debounce = true;
+            } else {
+                a_debounce = false;
             }
-
-            telemetry.update();
         }
 
         camera.stop();
+    }
+
+    @SuppressLint("DefaultLocale")
+    public void telemetryStuff(Camera camera) {
+        List<AprilTagDetection> detections = camera.get_tag_detections();
+        ArrayList<ArrayList<Double>> color_blobs = camera.get_blob_detections();
+
+        telemetry.addLine(String.format(" --- %d AprilTags Detected --- ", detections.size()));
+
+        for (AprilTagDetection detection : detections) {
+            if (detection.metadata != null) {
+                telemetry.addLine(String.format("%s (ID %d)", detection.metadata.name, detection.id));
+            } else {
+                telemetry.addLine(String.format("Unknown Name (ID %d)", detection.id));
+            }
+            telemetry.addLine(String.format("Center %6.0f %6.0f (pixels)", detection.center.x, detection.center.y));
+
+        }
+
+        telemetry.addLine(String.format(" --- %d Artifacts Detected --- ", color_blobs.size()));
+
+        for (List<Double> blob : color_blobs) {
+            telemetry.addLine(String.format("Position: (%f, %f)", blob.get(0), blob.get(1)));
+            //telemetry.addLine(String.format("Circularity: %f", blob.get(2)));
+            //telemetry.addLine(String.format("Distance"));
+        }
+
+        telemetry.update();
     }
 }
