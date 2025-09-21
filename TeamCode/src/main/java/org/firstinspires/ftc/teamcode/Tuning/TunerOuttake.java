@@ -23,7 +23,7 @@ public class TunerOuttake extends LinearOpMode {
 //        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //        motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 //        motor.setPower(0);
-        motor.setDirection(Servo.Direction.FORWARD)
+        motor.setDirection(Servo.Direction.FORWARD);
 
         waitForStart();
         if (isStopRequested()) return;
