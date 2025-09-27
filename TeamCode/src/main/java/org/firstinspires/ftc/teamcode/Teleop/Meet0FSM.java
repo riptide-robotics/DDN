@@ -3,20 +3,25 @@ package org.firstinspires.ftc.teamcode.Teleop;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.Autonomous.AutonomousRobot;
+import org.firstinspires.ftc.teamcode.DummyClasses.Outtake;
 import org.firstinspires.ftc.teamcode.Robot;
 
 
 @Config
 @TeleOp(name = "Meet 0 FSM")
 public class Meet0FSM extends LinearOpMode {
+    //HardwareMap hardwareMap;
+
+    Outtake outtake;
 
     Robot robot;
+    AutonomousRobot autoRobot;
 
     boolean hasrun = false;
-
-
 
 
 
@@ -32,6 +37,10 @@ public class Meet0FSM extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         hasrun = false;
+        outtake = new Outtake(hardwareMap);
+
+        autoRobot.setPinPoint(true);
+
         telemetry.addData("Robot status:", "succesfully initiated");
         telemetry.update();
 
@@ -92,6 +101,12 @@ public class Meet0FSM extends LinearOpMode {
                     //Do outtake setup
                     hasrun = true;
                 }
+
+                if (gamepad2.x){
+                    outtake.start(1);
+                }
+
+
 
                 if (gamepad2.b){
                     currentState = states.IDLE;
