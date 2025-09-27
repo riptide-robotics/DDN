@@ -5,6 +5,7 @@ import org.firstinspires.ftc.teamcode.riptideUtil;
 
 // --- CAMERA --- //
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
+import org.firstinspires.ftc.vision.opencv.ImageRegion;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 // --- PORTALS & PROCESSORS & SIMILAR STUFF --- //
@@ -13,6 +14,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
 import org.firstinspires.ftc.vision.opencv.ColorRange;
+import android.graphics.Color;
 import org.opencv.core.Scalar;
 import org.firstinspires.ftc.vision.opencv.Circle;
 
@@ -20,6 +22,7 @@ import org.firstinspires.ftc.vision.opencv.Circle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 
 import android.util.Size;
 
@@ -77,13 +80,29 @@ public class Camera {
                 .setDrawTagOutline(true)
                 .build();
 
-        blob_processor = new ColorBlobLocatorProcessor.Builder()
+        blob_processor_purple = new ColorBlobLocatorProcessor.Builder()
                 .setTargetColorRange(ColorRange.ARTIFACT_PURPLE)
                 .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)
+                .setRoi(ImageRegion.asUnityCenterCoordinates(-1, 1, 1, -1))
                 .setDrawContours(true)
+                .setBoxFitColor(0)
+                .setCircleFitColor(Color.rgb(255, 0, 255))
                 .setBlurSize(5)
-                .setDilateSize(6)
-                .setErodeSize(1)
+                .setDilateSize(15)
+                .setErodeSize(15)
+                .setMorphOperationType(ColorBlobLocatorProcessor.MorphOperationType.CLOSING)
+                .build();
+
+        blob_processor_green = new ColorBlobLocatorProcessor.Builder()
+                .setTargetColorRange(ColorRange.ARTIFACT_GREEN)
+                .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)
+                .setRoi(ImageRegion.asUnityCenterCoordinates(-1, 1, 1, -1))
+                .setDrawContours(true)
+                .setBoxFitColor(0)
+                .setCircleFitColor(Color.rgb(255, 0, 255))
+                .setBlurSize(5)
+                .setDilateSize(15)
+                .setErodeSize(15)
                 .setMorphOperationType(ColorBlobLocatorProcessor.MorphOperationType.CLOSING)
                 .build();
 
@@ -112,14 +131,14 @@ public class Camera {
 
         ColorBlobLocatorProcessor.Util.filterByCriteria(
                 ColorBlobLocatorProcessor.BlobCriteria.BY_CONTOUR_AREA,
-                100,
-                2000,
+                10,
+                5000,
                 blobs_detected
         );
 
         ColorBlobLocatorProcessor.Util.filterByCriteria(
                 ColorBlobLocatorProcessor.BlobCriteria.BY_CIRCULARITY,
-                0.6,
+                0.1,
                 1,
                 blobs_detected
         );
@@ -130,19 +149,18 @@ public class Camera {
                 blobs_detected
         );
 
-//        for (ColorBlobLocatorProcessor.Blob blob : blobs_detected) {
-//            // the circle which fits the artifacts
-//            Circle circle_fit = blob.getCircle();
-////            double distance = (riptideUtil.LENS_FOCAL_LEN_INCHES * riptideUtil.ARTIFACT_SIZE_INCHES * 480)
-////                    / (circle_fit.getRadius() * 2 * riptideUtil.LENS_HEIGHT_OFF_GROUND_INCHES);
-//            ArrayList<Double> temp = new ArrayList<>(Arrays.asList((double) circle_fit.getX(), (double) circle_fit.getY(), blob.getCircularity()/*, distance*/));
-//            blobs.add(temp);
-//        }
+        for (ColorBlobLocatorProcessor.Blob blob : blobs_detected) {
+            // the circle which fits the artifacts
+            Circle circle_fit = blob.getCircle();
+//            double distance = (riptideUtil.LENS_FOCAL_LEN_INCHES * riptideUtil.ARTIFACT_SIZE_INCHES * 480)
+//                    / (circle_fit.getRadius() * 2 * riptideUtil.LENS_HEIGHT_OFF_GROUND_INCHES);
+            ArrayList<Double> temp = new ArrayList<>(Arrays.asList((double) circle_fit.getX(), (double) circle_fit.getY(), blob.getCircularity(), (double) blob.getContourArea()/*, distance*/));
+            blobs.add(temp);
+        }
 
-        if(blobs_detected.isEmpty()) {return new ArrayList<>();}
-        Circle circle_fit = blobs_detected.get(0).getCircle();
-        blobs.add(new ArrayList<>(Arrays.asList((double) circle_fit.getX(), (double) circle_fit.getY() /*blob.getCircularity(), distance*/)));
-        //return blobs;
+//        if(blobs_detected.isEmpty()) {return new ArrayList<>();}
+//        Circle circle_fit = blobs_detected.get(0).getCircle();
+//        blobs.add(new ArrayList<>(Arrays.asList((double) circle_fit.getX(), (double) circle_fit.getY() /*blob.getCircularity(), distance*/)));
 
         return blobs;
     }

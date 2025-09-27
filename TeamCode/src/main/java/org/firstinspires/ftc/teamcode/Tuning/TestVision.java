@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Modules.Camera;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -21,7 +22,11 @@ public class TestVision extends LinearOpMode {
 
         Camera camera = new Camera(hardwareMap.get(WebcamName.class, "Webcam 1"));
         Camera.processors_enabled processor = Camera.processors_enabled.ALL;
+        camera.set_pipeline(processor);
         boolean a_debounce = false;
+
+        telemetry.setMsTransmissionInterval(100);   // speed up telemetry updates for debugging
+        telemetry.setDisplayFormat(Telemetry.DisplayFormat.MONOSPACE);
 
         waitForStart();
         while (!isStopRequested() && opModeIsActive()) {
@@ -48,6 +53,7 @@ public class TestVision extends LinearOpMode {
             } else {
                 a_debounce = false;
             }
+            telemetryStuff(camera);
         }
 
         camera.stop();
@@ -74,10 +80,12 @@ public class TestVision extends LinearOpMode {
 
         for (List<Double> blob : color_blobs) {
             telemetry.addLine(String.format("Position: (%f, %f)", blob.get(0), blob.get(1)));
-            //telemetry.addLine(String.format("Circularity: %f", blob.get(2)));
+            telemetry.addLine(String.format("Circularity: %f", blob.get(2)));
+            telemetry.addLine(String.format("Contour Area: %f", blob.get(3)));
             //telemetry.addLine(String.format("Distance"));
         }
 
         telemetry.update();
+        sleep(100);
     }
 }
