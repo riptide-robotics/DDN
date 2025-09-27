@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
 // --- CONSTANTS & OTHER STUFF --- //
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.riptideUtil;
 
 // --- CAMERA --- //
@@ -15,7 +17,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
 import org.firstinspires.ftc.vision.opencv.ColorRange;
 import android.graphics.Color;
-import org.opencv.core.Scalar;
+
 import org.firstinspires.ftc.vision.opencv.Circle;
 
 // --- LISTS --- //
@@ -53,7 +55,8 @@ public class Camera {
     OpenCvWebcam webcam = null;
 
     AprilTagProcessor tag_processor;
-    ColorBlobLocatorProcessor blob_processor;
+    ColorBlobLocatorProcessor blob_processor_purple;
+    ColorBlobLocatorProcessor blob_processor_green;
     VisionPortal vision_portal;
     ArrayList<AprilTagDetection> detections;
     ArrayList<ArrayList<Double>> blobs = new ArrayList<>();
@@ -78,6 +81,8 @@ public class Camera {
                 .setDrawCubeProjection(true)
                 .setDrawTagID(true)
                 .setDrawTagOutline(true)
+                .setOutputUnits(DistanceUnit.INCH, AngleUnit.DEGREES)
+                //.setCameraPose(cameraPosition, cameraOrientation)
                 .build();
 
         blob_processor_purple = new ColorBlobLocatorProcessor.Builder()
@@ -99,7 +104,7 @@ public class Camera {
                 .setRoi(ImageRegion.asUnityCenterCoordinates(-1, 1, 1, -1))
                 .setDrawContours(true)
                 .setBoxFitColor(0)
-                .setCircleFitColor(Color.rgb(255, 0, 255))
+                .setCircleFitColor(Color.rgb(0, 255, 0))
                 .setBlurSize(5)
                 .setDilateSize(15)
                 .setErodeSize(15)
@@ -109,7 +114,7 @@ public class Camera {
         // can also be 640 and 488
         // there is also YUY2
         vision_portal = new VisionPortal.Builder()
-                .addProcessors(tag_processor, blob_processor)
+                .addProcessors(tag_processor, blob_processor_purple, blob_processor_green)
                 //.addProcessor(new CameraPipeline(0.047, 578.272, 578.272, 402.145, 221.506, hardwareMap.get(WebcamName.class, "Webcam 1")))
                 .setCamera(cameraname)
                 .setCameraResolution(new Size(640, 480))
@@ -127,12 +132,13 @@ public class Camera {
 
     public ArrayList<ArrayList<Double>> get_blob_detections() {
         blobs.clear();
-        List<ColorBlobLocatorProcessor.Blob> blobs_detected = blob_processor.getBlobs();
+        List<ColorBlobLocatorProcessor.Blob> blobs_detected = blob_processor_purple.getBlobs();
+        blobs_detected.addAll(blob_processor_green.getBlobs());
 
         ColorBlobLocatorProcessor.Util.filterByCriteria(
                 ColorBlobLocatorProcessor.BlobCriteria.BY_CONTOUR_AREA,
-                10,
-                5000,
+                250,
+                9000,
                 blobs_detected
         );
 
@@ -152,9 +158,9 @@ public class Camera {
         for (ColorBlobLocatorProcessor.Blob blob : blobs_detected) {
             // the circle which fits the artifacts
             Circle circle_fit = blob.getCircle();
-//            double distance = (riptideUtil.LENS_FOCAL_LEN_INCHES * riptideUtil.ARTIFACT_SIZE_INCHES * 480)
-//                    / (circle_fit.getRadius() * 2 * riptideUtil.LENS_HEIGHT_OFF_GROUND_INCHES);
-            ArrayList<Double> temp = new ArrayList<>(Arrays.asList((double) circle_fit.getX(), (double) circle_fit.getY(), blob.getCircularity(), (double) blob.getContourArea()/*, distance*/));
+            double distance = (riptideUtil.LENS_FOCAL_LEN_INCHES * riptideUtil.ARTIFACT_SIZE_INCHES * 480)
+                    / (circle_fit.getRadius() * 2 * riptideUtil.SENSOR_HEIGHT);
+            ArrayList<Double> temp = new ArrayList<>(Arrays.asList((double) circle_fit.getX(), (double) circle_fit.getY(), blob.getCircularity(), (double) blob.getContourArea(), distance));
             blobs.add(temp);
         }
 
@@ -170,19 +176,23 @@ public class Camera {
         switch (processors) {
             case TAG:
                 vision_portal.setProcessorEnabled(tag_processor, true);
-                vision_portal.setProcessorEnabled(blob_processor, false);
+                vision_portal.setProcessorEnabled(blob_processor_purple, false);
+                vision_portal.setProcessorEnabled(blob_processor_green, false);
                 break;
             case COLOR:
                 vision_portal.setProcessorEnabled(tag_processor, false);
-                vision_portal.setProcessorEnabled(blob_processor, true);
+                vision_portal.setProcessorEnabled(blob_processor_purple, true);
+                vision_portal.setProcessorEnabled(blob_processor_green, true);
                 break;
             case NONE:
                 vision_portal.setProcessorEnabled(tag_processor, false);
-                vision_portal.setProcessorEnabled(blob_processor, false);
+                vision_portal.setProcessorEnabled(blob_processor_purple, false);
+                vision_portal.setProcessorEnabled(blob_processor_green, false);
                 break;
             default:
                 vision_portal.setProcessorEnabled(tag_processor, true);
-                vision_portal.setProcessorEnabled(blob_processor, true);
+                vision_portal.setProcessorEnabled(blob_processor_purple, true);
+                vision_portal.setProcessorEnabled(blob_processor_green, true);
         }
     }
 

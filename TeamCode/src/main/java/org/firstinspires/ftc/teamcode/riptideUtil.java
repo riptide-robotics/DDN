@@ -49,7 +49,7 @@ public class riptideUtil {
 
     public static double ARTIFACT_SIZE_INCHES = 5;
     public static double LENS_FOCAL_LEN_INCHES = 0.15748;
-    public static double LENS_HEIGHT_OFF_GROUND_INCHES = 2;
+    public static double SENSOR_HEIGHT = 0.086;
 
     public static AprilTagLibrary getLibrary() {
         return new AprilTagLibrary.Builder()
@@ -57,25 +57,25 @@ public class riptideUtil {
                         20,
                         "Blue Goal",
                         6.5,
-                        //new VectorF(),
-                        DistanceUnit.INCH
+                        //new VectorF(−1.482, −1.413, 0.749),
+                        DistanceUnit.INCH//,
                         //Quaternion.identityQuaternion()
                 )
                 .addTag(
                         21,
-                        "Green Purple Purple (GPP)",
+                        "Obelisk Green Purple Purple (GPP)",
                         6.5,
                         DistanceUnit.INCH
                 )
                 .addTag(
                         22,
-                        "Purple Green Purple (PGP)",
+                        "Obelisk Purple Green Purple (PGP)",
                         6.5,
                         DistanceUnit.INCH
                 )
                 .addTag(
                         23,
-                        "Purple Purple Green (PPG)",
+                        "Obelisk Purple Purple Green (PPG)",
                         6.5,
                         DistanceUnit.INCH
                 )

@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Modules.Camera;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
@@ -69,6 +70,20 @@ public class TestVision extends LinearOpMode {
         for (AprilTagDetection detection : detections) {
             if (detection.metadata != null) {
                 telemetry.addLine(String.format("%s (ID %d)", detection.metadata.name, detection.id));
+                if (!detection.metadata.name.contains("Obelisk")) {
+                    telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)",
+                            detection.robotPose.getPosition().x,
+                            detection.robotPose.getPosition().y,
+                            detection.robotPose.getPosition().z));
+                    telemetry.addLine(String.format("Distance %f (inch)",
+                            Math.sqrt(detection.robotPose.getPosition().x*detection.robotPose.getPosition().x
+                            +detection.robotPose.getPosition().y*detection.robotPose.getPosition().y
+                            +detection.robotPose.getPosition().z*detection.robotPose.getPosition().z)));
+                    telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)",
+                            detection.robotPose.getOrientation().getPitch(AngleUnit.DEGREES),
+                            detection.robotPose.getOrientation().getRoll(AngleUnit.DEGREES),
+                            detection.robotPose.getOrientation().getYaw(AngleUnit.DEGREES)));
+                }
             } else {
                 telemetry.addLine(String.format("Unknown Name (ID %d)", detection.id));
             }
@@ -82,7 +97,7 @@ public class TestVision extends LinearOpMode {
             telemetry.addLine(String.format("Position: (%f, %f)", blob.get(0), blob.get(1)));
             telemetry.addLine(String.format("Circularity: %f", blob.get(2)));
             telemetry.addLine(String.format("Contour Area: %f", blob.get(3)));
-            //telemetry.addLine(String.format("Distance"));
+            telemetry.addLine(String.format("Distance: %f Inches Away", blob.get(4)));
         }
 
         telemetry.update();
