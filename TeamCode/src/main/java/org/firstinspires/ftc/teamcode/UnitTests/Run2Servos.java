@@ -11,8 +11,8 @@ public class Run2Servos extends LinearOpMode {
 
     Servo s1;
     Servo s2;
-    public static double s1Pos = 0;
-    public static double s2Pos = 0;
+    public static double s1Pos = 0.43;
+    public static double s2Pos = 0.43;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -44,9 +44,15 @@ public class Run2Servos extends LinearOpMode {
          */
 
         while(opModeIsActive()) {
-            s1.setPosition(s1Pos);
-            s2.setPosition(s2Pos);
+            if (gamepad1.x) {
+                s1.setPosition(s1Pos);
+                s2.setPosition(s2Pos);
+            }
 
+            if (gamepad1.b){
+                s1.setPosition(0);
+                s2.setPosition(0);
+            }
 
             telemetry.update();
         }

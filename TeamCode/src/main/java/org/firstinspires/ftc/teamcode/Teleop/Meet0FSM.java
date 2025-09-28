@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Autonomous.AutonomousRobot;
 import org.firstinspires.ftc.teamcode.DummyClasses.Outtake;
+import org.firstinspires.ftc.teamcode.DummyClasses.TwoServos;
 import org.firstinspires.ftc.teamcode.Robot;
 
 
@@ -17,6 +18,7 @@ public class Meet0FSM extends LinearOpMode {
     //HardwareMap hardwareMap;
 
     Outtake outtake;
+    TwoServos twoServos;
 
     Robot robot;
     AutonomousRobot autoRobot;
@@ -28,7 +30,8 @@ public class Meet0FSM extends LinearOpMode {
     public enum states{
         IDLE,
         INTAKE,
-        OUTTAKE
+        OUTTAKE,
+        ENDGAME
     }
 
     public states currentState = states.IDLE;
@@ -37,7 +40,11 @@ public class Meet0FSM extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         hasrun = false;
+
+
         outtake = new Outtake(hardwareMap);
+        twoServos = new TwoServos(hardwareMap);
+
 
         autoRobot.setPinPoint(true);
 
@@ -68,13 +75,18 @@ public class Meet0FSM extends LinearOpMode {
                     hasrun = true;
                 }
 
-                if (gamepad2.left_trigger > 0.1){
+                if (gamepad2.y){
                     currentState = states.INTAKE;
                     hasrun = false;
                 }
 
-                if (gamepad2.left_trigger > 0.1){
+                if (gamepad2.x){
                     currentState = states.OUTTAKE;
+                    hasrun = false;
+                }
+
+                if (gamepad2.dpad_up){
+                    currentState = states.ENDGAME;
                     hasrun = false;
                 }
 
@@ -92,6 +104,11 @@ public class Meet0FSM extends LinearOpMode {
 
                 if (gamepad2.b){
                     currentState = states.IDLE;
+                    hasrun = false;
+                }
+
+                if (gamepad2.dpad_up){
+                    currentState = states.ENDGAME;
                     hasrun = false;
                 }
 
@@ -118,8 +135,32 @@ public class Meet0FSM extends LinearOpMode {
                     hasrun = false;
                 }
 
+                if (gamepad2.dpad_up){
+                    currentState = states.ENDGAME;
+                    hasrun = false;
+                }
+
 
                 break;
+            case ENDGAME:
+                if (!hasrun){
+                    twoServos.lift();
+                    hasrun = true;
+                }
+
+                if (gamepad2.dpad_down){
+                    twoServos.lower();
+                }
+
+                if (gamepad2.dpad_up){
+                    twoServos.lift();
+                }
+
+                if (gamepad2.b){
+                    currentState = states.IDLE;
+                    twoServos.lower();
+                    hasrun = false;
+                }
         }
     }
 
@@ -147,4 +188,6 @@ public class Meet0FSM extends LinearOpMode {
             robot.getDrivetrain().resetImu();
         }
     }
+
+
 }

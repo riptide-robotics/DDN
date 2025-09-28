@@ -39,4 +39,12 @@ public class riptideUtil {
     // Speed relationships
     public static double MAX_A = 72;                 // UNDETERMINED
     public static double MAX_V = 96;                 // UNDETERMINED
+
+
+
+
+
+    // Robot Lift
+    public static double s1 = 0.43;
+    public static double s2 = 0.43;
 }

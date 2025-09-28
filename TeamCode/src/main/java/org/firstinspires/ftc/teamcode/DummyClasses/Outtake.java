@@ -9,8 +9,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.Robot;
 
 public class Outtake {
-    private DcMotor motorL;
-    private DcMotor motorR;
+    private final DcMotor motorL;
+    private final DcMotor motorR;
 
     public Outtake(HardwareMap hardwareMap){
 
@@ -19,12 +19,9 @@ public class Outtake {
 
         motorL.setDirection(DcMotorSimple.Direction.FORWARD);
         motorR.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        motorL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
-    public void start(int speed){
+    public void start(double speed){
         motorR.setPower(speed);
         motorL.setPower(speed);
     }
@@ -34,4 +31,8 @@ public class Outtake {
         motorL.setPower(0);
     }
 
+    public double currPos(){
+        double currPos = (double) (motorR.getCurrentPosition() + motorL.getCurrentPosition()) / 2;
+        return currPos;
+    }
 }
