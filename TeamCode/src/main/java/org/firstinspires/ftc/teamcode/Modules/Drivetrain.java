@@ -31,10 +31,13 @@ public class Drivetrain {
     private final DcMotor frWheel, flWheel, brWheel, blWheel;
     private final IMU imu;
     private ElapsedTime timer;
-    AutonomousRobot autoRobot;
 
-    private final OdometryLocalizer robotPos;
-    Robot robot;
+    private volatile OdometryLocalizer robotPos3Wheel;
+    private volatile GoBildaPinpointDriver robotPosPinpont;
+    private int time =
+
+    private boolean usingPinpoint = true;
+
 
     ///////////////////////////////////////////////
     ////                                     /////
@@ -70,7 +73,19 @@ public class Drivetrain {
         flWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         blWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        robotPos = new OdometryLocalizer(blWheel, brWheel, flWheel, 10);
+        if (usingPinpoint){
+            robotPosPinpont = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
+            robotPosPinpont.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+            // UNCOMMENT THIS IF USING DIFFERENT PODS AND INPUT TICKS PER UNIT: odo.setEncoderResolution(13.26291192, DistanceUnit.MM);
+
+
+            robotPosPinpont.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+
+            // Resets position to 0,0,0 and recalibrates IMU
+            robotPosPinpont.resetPosAndIMU();
+        }else {
+            robotPos3Wheel = new OdometryLocalizer(blWheel, brWheel, flWheel, 10);
+        }
 
         imu = hardwareMap.get(IMU.class, "imu");
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
@@ -79,6 +94,7 @@ public class Drivetrain {
 
         imu.resetYaw();
         imu.initialize(parameters);
+
     }
 
     // ----------- START/STOP ----------- //
@@ -111,19 +127,12 @@ public class Drivetrain {
             Thread localizer = new Thread(robotPos);
             localizer.start();
         }
-        if (isPinPoint){
-            autoRobot = new AutonomousRobot(hardwareMap);
-            autoRobot.getOdoComputer().setOffsets(127, 299.72, DistanceUnit.MM);
 
-            autoRobot.getOdoComputer().setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
-
-            autoRobot.getOdoComputer().setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
-
-            autoRobot.getOdoComputer().resetPosAndIMU();
-        }
     }
 
     public OdometryLocalizer getRobotPos() {
-        return robotPos;
+        if(usingPinpoint) { throw new RuntimeException("Using Pinpoint, don't use this.");}
+
+        return robotPos3Wheel;
     }
 }

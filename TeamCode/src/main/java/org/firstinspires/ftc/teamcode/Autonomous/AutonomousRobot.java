@@ -29,13 +29,6 @@ import org.firstinspires.ftc.teamcode.Modules.Drivetrain;
 // maybe GOING TO BE REFACTORED, THIS IS GOING TO BE SO DEPRECATED
 
 public class AutonomousRobot extends Robot {
-    Drivetrain drivetrain;
-    Robot robot;
-
-    double currentX = 0;
-    double currentY = 0;
-    double currentH = 0;
-    boolean isPinPoint = true;
 
     public AutonomousRobot(HardwareMap hardwareMap) {
         super(hardwareMap);
@@ -139,18 +132,11 @@ public class AutonomousRobot extends Robot {
                 break;
             case GOTOPOINT:
 
+
                 //Find the current field positions
-                if (isPinPoint){
-                    currentX = this.getOdoComputer().getCurrPos().getX(DistanceUnit.INCH);
-                    currentY = this.getOdoComputer().getCurrPos().getY(DistanceUnit.INCH);
-                    currentH = this.getOdoComputer().getCurrPos().getH();
-                } else if (!isPinPoint){
-                    currentX = this.robot.getDrivetrain().getCurrPos().getX(DistanceUnit.INCH);
-                    currentY = this.robot.getDrivetrain().getCurrPos().getY(DistanceUnit.INCH);
-                    currentH = this.robot.getDrivetrain().getCurrPos().getH();
-                }
-
-
+                double currentX = this.getOdoComputer().getCurrPos().getX(DistanceUnit.INCH);
+                double currentY = this.getOdoComputer().getCurrPos().getY(DistanceUnit.INCH);
+                double currentH = this.getOdoComputer().getCurrPos().getH();
 
                 //Find the expected position along the path, as a magnitude of a vector with angle lineSlope
                 // then use some trig to find x and y components
@@ -200,23 +186,12 @@ public class AutonomousRobot extends Robot {
                 }
 
                 //set current position point as start point
-                if (isPinPoint){
-                    start = new EditablePose2D(
-                            this.getOdoComputer().getPosX(DistanceUnit.INCH),
-                            this.getOdoComputer().getPosY(DistanceUnit.INCH),
-                            this.getOdoComputer().getHeading(AngleUnit.DEGREES),
-                            DistanceUnit.INCH
-                    );
-                }
-                if (!isPinPoint){
-                    start = new EditablePose2D(
-                            this.robot.getDrivetrain().getCurrPos().getX(DistanceUnit.INCH),
-                            this.robot.getDrivetrain().getCurrPos().getY(DistanceUnit.INCH),
-                            this.robot.getDrivetrain().getCurrPos().getH(),
-                            DistanceUnit.INCH
-                    );
-                }
-
+                start = new EditablePose2D(
+                        this.getOdoComputer().getPosX(DistanceUnit.INCH),
+                        this.getOdoComputer().getPosY(DistanceUnit.INCH),
+                        this.getOdoComputer().getHeading(AngleUnit.DEGREES),
+                        DistanceUnit.INCH
+                );
 
                 //Find distance between two points for motion profile
                 double dx = goalPoint.getWaypoint().getX(DistanceUnit.INCH) - start.getX(DistanceUnit.INCH);
@@ -349,18 +324,9 @@ public class AutonomousRobot extends Robot {
         Path.PathPoint firstPoint = path.get(0);
         Waypoint firstPose = firstPoint.getWaypoint();
 
-        if (isPinPoint){
-            if (atPoint(firstPose, this.getOdoComputer().getCurrPos())) {
-                pathIndex = 1;
-            }
+        if (atPoint(firstPose, this.getOdoComputer().getCurrPos())) {
+            pathIndex = 1;
         }
-
-        if (!isPinPoint){
-            if (atPoint(firstPose, robot.getDrivetrain().getCurrPos())) {
-                pathIndex = 1;
-            }
-        }
-
     }
 
     public Path getPath() {
@@ -378,12 +344,6 @@ public class AutonomousRobot extends Robot {
 
     public void calculateDistance(double distance) {
         trapezoidalMotionProfile.calculateProfile(distance);
-    }
-
-
-
-    public void setPinPoint(boolean IsPinPoint){
-        isPinPoint = IsPinPoint;
     }
 
 
