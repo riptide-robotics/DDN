@@ -228,14 +228,8 @@ public class AutonomousRobot extends Robot {
                 elapsedTime = (System.nanoTime() / (Math.pow(10, 9)) - time);
 
                 boolean y = false;
-                if (isPinPoint){
-                    cP = super.getOdoComputer().getCurrPos();
-                    y = atPoint(super.getOdoComputer().getCurrPos(), goalPoint.getWaypoint());
-                }
-                if (!isPinPoint){
-                    cP = super.getDrivetrain().getCurrPos();
-                    y = atPoint(super.getDrivetrain().getCurrPos(), goalPoint.getWaypoint());
-                }
+                cP = super.getDrivetrain().getCurrPos();
+                y = atPoint(super.getDrivetrain().getCurrPos(), goalPoint.getWaypoint());
 
 
                 atPoint = y;
@@ -345,6 +339,7 @@ public class AutonomousRobot extends Robot {
     public void calculateDistance(double distance) {
         trapezoidalMotionProfile.calculateProfile(distance);
     }
+
 
 
 }

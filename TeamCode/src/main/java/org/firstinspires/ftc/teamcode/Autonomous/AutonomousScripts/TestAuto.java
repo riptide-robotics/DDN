@@ -55,6 +55,7 @@ public class TestAuto extends LinearOpMode {
         autoRobot.setPath(p);
         autoRobot.startPath();
         drivetrain.startOdometry(true);
+        autoRobot.isPinpoint(true);
 
 
         waitForStart();

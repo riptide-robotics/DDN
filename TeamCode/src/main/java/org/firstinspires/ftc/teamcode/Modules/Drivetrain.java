@@ -34,7 +34,6 @@ public class Drivetrain {
 
     private volatile OdometryLocalizer robotPos3Wheel;
     private volatile GoBildaPinpointDriver robotPosPinpont;
-    private int time =
 
     private boolean usingPinpoint = true;
 
@@ -81,8 +80,7 @@ public class Drivetrain {
 
             robotPosPinpont.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
 
-            // Resets position to 0,0,0 and recalibrates IMU
-            robotPosPinpont.resetPosAndIMU();
+
         }else {
             robotPos3Wheel = new OdometryLocalizer(blWheel, brWheel, flWheel, 10);
         }
@@ -119,13 +117,22 @@ public class Drivetrain {
 
     // ------------ GETTERS ------------ //
     public EditablePose2D getCurrPos() {
-        return robotPos.getCurrPos();
+        if (usingPinpoint){
+            return robotPosPinpont.getCurrPos();
+        } else {
+            return robotPos3Wheel.getCurrPos();
+        }
     }
 
     public void startOdometry(boolean isPinPoint) {
         if (!isPinPoint) {
-            Thread localizer = new Thread(robotPos);
+            Thread localizer = new Thread(robotPos3Wheel);
             localizer.start();
+        }
+
+        if (isPinPoint){
+            // Resets position to 0,0,0 and recalibrates IMU
+            robotPosPinpont.resetPosAndIMU();
         }
 
     }
