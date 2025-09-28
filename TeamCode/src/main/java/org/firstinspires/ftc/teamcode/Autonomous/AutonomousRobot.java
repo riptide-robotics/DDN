@@ -29,7 +29,6 @@ import org.firstinspires.ftc.teamcode.Modules.Drivetrain;
 // maybe GOING TO BE REFACTORED, THIS IS GOING TO BE SO DEPRECATED
 
 public class AutonomousRobot extends Robot {
-    Drivetrain drivetrain;
 
     public AutonomousRobot(HardwareMap hardwareMap) {
         super(hardwareMap);
