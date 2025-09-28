@@ -121,6 +121,11 @@ public class Intake extends LinearOpMode {
         } else { // FULL INTAKE
             toSet = -1;
         }
+        if (toSet == -1) {
+            t.addData("Uptake Result", "Full Intake");
+            t.update();
+            return;
+        }
 
         String color = scanColor();
         if (color.equals("Purple")) {
@@ -128,6 +133,8 @@ public class Intake extends LinearOpMode {
         } else if (color.equals("Green")) {
             pgratio[1]++;
         }
+        order[toSet] = color;
+        t.addData("Uptake Result", color + " artifact uptaked into position " + toSet);
 
         // UPTAKE FUNCTION
     }
