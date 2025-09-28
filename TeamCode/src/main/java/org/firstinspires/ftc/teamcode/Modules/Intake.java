@@ -5,18 +5,21 @@ import java.lang.Override;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Robot;
 
-public class Intake extends LinearOpMode {
+public class Intake{
     Robot robot;
-    Telemetry t = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
     String[] order = new String[3];
+    TelemetryPacket t = new TelemetryPacket();
     int[] pgratio = new int[2];
 
     NormalizedColorSensor colorSensor;
@@ -35,8 +38,9 @@ public class Intake extends LinearOpMode {
     private final NormalizedRGBA purple = new NormalizedRGBA();
     private final NormalizedRGBA green = new NormalizedRGBA();
 
-    @Override
-    public void runOpMode() throws InterruptedException {
+    HardwareMap hardwaremap;
+
+    public Intake(HardwareMap hardwareMap){
         purple.red = 0.68f;
         purple.green = 0.29f;
         purple.blue = 0.72f;
@@ -45,36 +49,8 @@ public class Intake extends LinearOpMode {
         green.green = 0.73f;
         green.blue = 0.49f;
         green.alpha = 0.95f;
-        // THIS PART NEEDS TO BE RETUNED :')
 
-
-        robot = new Robot(hardwareMap);
-        colorSensor = robot.getColorSensor();
-
-        /**
-         * The method GetColor() returns a normalized color value from the sensor and can be
-         * useful if outputting the color to an RGB LED or similar. To
-         * read the raw color, use GetRawColor().
-         *
-         * The color sensor works best when within a few inches from an object in
-         * well lit conditions (the built in LED is a big help here!). The farther
-         * an object is the more light from the surroundings will bleed into the
-         * measurements and make it difficult to accurately determine its color.
-         */
-
-        /**
-         * Run the color match algorithm on our detected color
-         */
-        String color = scanColor();
-        if (color.equals("Purple")) {
-            t.addData("Color", "Purple");
-        } else if (color.equals("Green")) {
-            t.addData("Color", "Green");
-        } else {
-            t.addData("Color", "Not Purple or Green");
-        }
-
-        t.update();
+        this.hardwaremap = hardwaremap;
     }
 
     public String scanColor() {
@@ -121,8 +97,7 @@ public class Intake extends LinearOpMode {
             toSet = -1;
         }
         if (toSet == -1) {
-            t.addData("Uptake Result", "Full Intake");
-            t.update();
+            t.addLine("Uptake result: Full Intake");
             return;
         }
 
@@ -133,8 +108,7 @@ public class Intake extends LinearOpMode {
             pgratio[1]++;
         }
         order[toSet] = color;
-        t.addData("Uptake Result", color + " artifact uptaked into position " + toSet);
-        t.update();
+        t.addLine("Uptake Result: " + color + " artifact uptaked into position " + toSet);
 
         // UPTAKE FUNCTION
     }
@@ -144,8 +118,8 @@ public class Intake extends LinearOpMode {
         if (order[0] == null || order[0].toLowerCase().charAt(0) != colorReq) {
             if (order[1] == null || order[1].toLowerCase().charAt(0) != colorReq) {
                 if (order[2] == null || order[2].toLowerCase().charAt(0) != colorReq) {
-                    t.addData("Result", "Failed search");
-                    t.addData("Action", "Ejecting artifact");
+                    t.addLine("Eject result: Failed search");
+                    t.addLine("Action: Ejecting artifact");
                     tmp = order[0];
                     order[0] = null;
                     if (tmp == null) {
@@ -157,14 +131,14 @@ public class Intake extends LinearOpMode {
                         pgratio[1]--;
                     }
                 } else {
-                    t.addData("Result", "Target found at pos 2");
+                    t.addLine("Eject result: Target found at pos 2");
                     tmp = order[2];
                     order[2] = order[1];
                     order[1] = order[0];
                     order[0] = tmp;
                     // ROTATOR FUNCTION
-                    t.addData("Status", "Rotated -1 units");
-                    t.addData("Action", "Ejecting artifact");
+                    t.addLine("Eject status: Rotated -1 units");
+                    t.addLine("Action: Ejecting artifact");
                     // EJECT FUNCTION
                     tmp = order[0];
                     order[0] = null;
@@ -175,14 +149,14 @@ public class Intake extends LinearOpMode {
                     }
                 }
             } else {
-                t.addData("Result", "Target found at pos 1");
+                t.addLine("Eject result: arget found at pos 1");
                 tmp = order[1];
                 order[1] = order[2];
                 order[2] = order[0];
                 order[0] = tmp;
                 // ROTATOR FUNCTION
-                t.addData("Status", "Rotated 1 units");
-                t.addData("Action", "Ejecting artifact");
+                t.addLine("Eject status: Rotated 1 units");
+                t.addLine("Action: Ejecting artifact");
                 // EJECT FUNCTION
                 tmp = order[0];
                 order[0] = null;
@@ -193,9 +167,9 @@ public class Intake extends LinearOpMode {
                 }
             }
         } else {
-            t.addData("Result", "Target found at pos 0");
-            t.addData("Status", "At desired position");
-            t.addData("Action", "Ejecting artifact");
+            t.addLine("Eject result: Target found at pos 0");
+            t.addLine("Eject status: At desired position");
+            t.addLine("Action: Ejecting artifact");
             // EJECT FUNCTION
             tmp = order[0];
             order[0] = null;
@@ -209,7 +183,10 @@ public class Intake extends LinearOpMode {
         order[1] = order[2];
         order[2] = null;
         // Depending on how the intake storage is built, may need to ROTATE 1 unit
-        t.addData("", "P:G - " + pgratio[0] + ":" + pgratio[1]);
-        t.update();
+        t.addLine("P:G - " + pgratio[0] + ":" + pgratio[1]);
+    }
+
+    public TelemetryPacket sendTelemetry(){
+        return t;
     }
 }
