@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 import static org.firstinspires.ftc.teamcode.riptideUtil.LAT_KD;
 import static org.firstinspires.ftc.teamcode.riptideUtil.LAT_KI;
 import static org.firstinspires.ftc.teamcode.riptideUtil.LAT_KP;
+import static org.firstinspires.ftc.teamcode.riptideUtil.POINT_TOLERANCE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.TURN_KD;
 import static org.firstinspires.ftc.teamcode.riptideUtil.TURN_KI;
 import static org.firstinspires.ftc.teamcode.riptideUtil.TURN_KP;
@@ -43,13 +44,12 @@ public class AutonomousRobot1 extends Robot {
      * @return True if the robot is within the determined boundaries of a point
      */
     public boolean atPoint(EditablePose2D robotPos, EditablePose2D point) {
-        double pointTolerance = riptideUtil.POINT_TOLERANCE;
 
         double dx = point.getX(DistanceUnit.INCH) - robotPos.getX(DistanceUnit.INCH);
         double dy = point.getY(DistanceUnit.INCH) - robotPos.getY(DistanceUnit.INCH);
 
         double distance = Math.sqrt(dx * dx + dy * dy);
-        return distance <= pointTolerance;
+        return distance <= POINT_TOLERANCE;
     }
 
     public enum moveStates {
@@ -67,5 +67,5 @@ public class AutonomousRobot1 extends Robot {
     PIDController turnPid = new PIDController(TURN_KP, TURN_KI, TURN_KD);
 
     private ElapsedTime timer;
-    private
+
 }
