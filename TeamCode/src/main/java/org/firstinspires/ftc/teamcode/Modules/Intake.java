@@ -61,7 +61,6 @@ public class Intake extends LinearOpMode {
          * an object is the more light from the surroundings will bleed into the
          * measurements and make it difficult to accurately determine its color.
          */
-        NormalizedRGBA detectedColor = colorSensor.getNormalizedColors();
 
         /**
          * Run the color match algorithm on our detected color
