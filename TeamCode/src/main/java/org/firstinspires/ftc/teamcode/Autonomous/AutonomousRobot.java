@@ -153,6 +153,8 @@ public class AutonomousRobot extends Robot {
                 turnPid.setPID(TURN_KP, TURN_KI, TURN_KD);
 
                 //shift the errors to robot centric errors
+
+
                 double xError = xComponent - currentX;
                 double yError = yComponent - currentY;
 
@@ -225,8 +227,16 @@ public class AutonomousRobot extends Robot {
                 goalPoint = path.get(pathIndex);
                 elapsedTime = (System.nanoTime() / (Math.pow(10, 9)) - time);
 
-                cP = super.getOdoComputer().getCurrPos();
-                boolean y = atPoint(super.getOdoComputer().getCurrPos(), goalPoint.getWaypoint());
+                boolean y = false;
+                if (isPinPoint){
+                    cP = super.getOdoComputer().getCurrPos();
+                    y = atPoint(super.getOdoComputer().getCurrPos(), goalPoint.getWaypoint());
+                }
+                if (!isPinPoint){
+                    cP = super.getDrivetrain().getCurrPos();
+                    y = atPoint(super.getDrivetrain().getCurrPos(), goalPoint.getWaypoint());
+                }
+
 
                 atPoint = y;
                 delayUntilNextPointClear =  elapsedTime > goalPoint.getDelayUntilNextPoint();

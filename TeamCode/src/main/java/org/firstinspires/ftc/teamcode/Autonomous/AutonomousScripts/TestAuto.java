@@ -54,7 +54,7 @@ public class TestAuto extends LinearOpMode {
 
         autoRobot.setPath(p);
         autoRobot.startPath();
-        InitializePinPoint();
+        drivetrain.startOdometry(true);
 
 
         waitForStart();
@@ -97,17 +97,6 @@ public class TestAuto extends LinearOpMode {
         //telemetry.addData("Past delay to next point", autoRobot.pastDelayUntilNextPoint());
         telemetry.addData("Path size", autoRobot.pathsize());
         telemetry.update();
-    }
-
-    public void InitializePinPoint(){
-        autoRobot = new AutonomousRobot(hardwareMap);
-        autoRobot.getOdoComputer().setOffsets(127, 299.72, DistanceUnit.MM);
-
-        autoRobot.getOdoComputer().setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
-
-        autoRobot.getOdoComputer().setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
-
-        autoRobot.getOdoComputer().resetPosAndIMU();
     }
 
 }
