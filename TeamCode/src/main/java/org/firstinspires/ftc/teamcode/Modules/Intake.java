@@ -135,6 +135,7 @@ public class Intake extends LinearOpMode {
         }
         order[toSet] = color;
         t.addData("Uptake Result", color + " artifact uptaked into position " + toSet);
+        t.update();
 
         // UPTAKE FUNCTION
     }
