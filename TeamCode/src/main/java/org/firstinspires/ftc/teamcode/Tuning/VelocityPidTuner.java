@@ -20,10 +20,10 @@ public class VelocityPidTuner extends LinearOpMode {
     public static double kI = 0;
     public static double kD = 0;
 
-    public static double targetvelocity = 10;
+    public static double targetvelocity = 500;
     double prevTarget;
 
-    public static double ticksPerRev = 0; // IDK what motors we have
+    public static double ticksPerRev = 28; // IDK what motors we have
 
     Telemetry t = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -38,13 +38,10 @@ public class VelocityPidTuner extends LinearOpMode {
     @Override
     public void runOpMode() throws  InterruptedException{
 
-        if (prevTarget != targetvelocity){
-            prevTarget = targetvelocity;
-            timer.reset();
-        }
-
         outtake = new Outtake(hardwareMap);
 
+
+        PIDController  = new VelocityPidController();
         PIDController.setPID(kP, kI, kD);
 
         waitForStart();
@@ -54,19 +51,33 @@ public class VelocityPidTuner extends LinearOpMode {
 
         while(opModeIsActive()){
 
+            if (prevTarget != targetvelocity){
+                prevTarget = targetvelocity;
+                PIDController.reset();
+                timer.reset();
+            }
+
+
             double currentTime = timer.seconds();
+            double currentPos = outtake.currPos();
             double currentVelocity = getMotorVelocity(lastPos, lastTime, ticksPerRev, currentTime);
 
             double dt = currentTime - lastTime;
             double output = PIDController.calculate(targetvelocity, currentVelocity, dt);
 
+            output = Math.max(-1.0, Math.min(1.0, output));
+
             outtake.start(output);
 
-            lastTime = currentTime;
 
-            t.addData("Current Velocity ", getMotorVelocity(lastPos, lastTime, ticksPerRev, currentTime));
+
+            t.addData("Current Velocity ", currentVelocity);
             t.addData("Goal Velocity ", targetvelocity);
+            t.addData("Output ", output);
             t.update();
+
+            lastPos = currentPos;
+            lastTime = currentTime;
         }
     }
 

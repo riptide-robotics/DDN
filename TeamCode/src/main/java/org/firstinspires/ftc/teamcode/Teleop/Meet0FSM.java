@@ -47,9 +47,6 @@ public class Meet0FSM extends LinearOpMode {
         outtake = new Outtake(hardwareMap);
         twoServos = new TwoServos(hardwareMap);
 
-
-        autoRobot.setPinPoint(true);
-
         telemetry.addData("Robot status:", "succesfully initiated");
         telemetry.update();
 
