@@ -16,9 +16,9 @@ import org.firstinspires.ftc.teamcode.Modules.VelocityPidController;
 @TeleOp(name = "Velocity Pid Tuner", group = "Tuning")
 public class VelocityPidTuner extends LinearOpMode {
 
-    public static double kP;
-    public static double kI;
-    public static double kD;
+    public static double kP = 0;
+    public static double kI = 0;
+    public static double kD = 0;
 
     public static double targetvelocity = 10;
     double prevTarget;
@@ -61,6 +61,8 @@ public class VelocityPidTuner extends LinearOpMode {
             double output = PIDController.calculate(targetvelocity, currentVelocity, dt);
 
             outtake.start(output);
+
+            lastTime = currentTime;
 
             t.addData("Current Velocity ", getMotorVelocity(lastPos, lastTime, ticksPerRev, currentTime));
             t.addData("Goal Velocity ", targetvelocity);

@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Autonomous.AutonomousRobot;
@@ -25,6 +26,7 @@ public class Meet0FSM extends LinearOpMode {
 
     boolean hasrun = false;
 
+    ElapsedTime endTimer = new ElapsedTime();
 
 
     public enum states{
@@ -59,9 +61,15 @@ public class Meet0FSM extends LinearOpMode {
         telemetry.update();
 
         while(opModeIsActive()){
+            outtake.controlPitch(gamepad2.left_stick_y);
+            fieldCentricDrive();
+
+            double currTime = endTimer.seconds();
+
+            if (currTime >= 80){gamepad1.rumble(1, 1, 500); gamepad2.rumble(1, 1, 500);}
+
             telemetry.addData("Current State:", currentState);
             telemetry.update();
-            fieldCentricDrive();
         }
     }
 
@@ -69,7 +77,6 @@ public class Meet0FSM extends LinearOpMode {
     private void FSM(){
         switch(currentState){
             case IDLE:
-
                 if (!hasrun){
                     //Do idle things
                     hasrun = true;
@@ -122,8 +129,6 @@ public class Meet0FSM extends LinearOpMode {
                 if (gamepad2.x){
                     outtake.start(1);
                 }
-
-
 
                 if (gamepad2.b){
                     currentState = states.IDLE;
@@ -188,6 +193,4 @@ public class Meet0FSM extends LinearOpMode {
             robot.getDrivetrain().resetImu();
         }
     }
-
-
 }

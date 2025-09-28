@@ -5,12 +5,14 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Robot;
 
 public class Outtake {
     private final DcMotor motorL;
     private final DcMotor motorR;
+    private final Servo outtakeServo;
 
     public Outtake(HardwareMap hardwareMap){
 
@@ -19,6 +21,9 @@ public class Outtake {
 
         motorL.setDirection(DcMotorSimple.Direction.FORWARD);
         motorR.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        outtakeServo = hardwareMap.servo.get("outtakePitch");
+
     }
 
     public void start(double speed){
@@ -34,5 +39,9 @@ public class Outtake {
     public double currPos(){
         double currPos = (double) (motorR.getCurrentPosition() + motorL.getCurrentPosition()) / 2;
         return currPos;
+    }
+
+    public void controlPitch(double angle){
+        outtakeServo.setPosition(angle);
     }
 }

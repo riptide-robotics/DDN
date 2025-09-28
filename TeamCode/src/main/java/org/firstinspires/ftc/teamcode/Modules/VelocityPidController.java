@@ -11,9 +11,6 @@ public class VelocityPidController {
     private double integral = 0;
     private double lastError = 0;
 
-    ElapsedTime timer = new ElapsedTime();
-    double lastTime = 0;
-
     public void setPID(double kP, double kI, double kD){
         this.kP = kP;
         this.kI = kI;
