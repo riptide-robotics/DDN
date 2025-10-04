@@ -13,6 +13,9 @@ public class riptideUtil {
 
     /** General constants */
 
+    public static double FLYWHEEL_KP = 0;
+    public static int MOTOR_TICKS_PER_REV_6K = 28;
+
 
     /** Autonomous Constants */
     public static final double POINT_TOLERANCE = 2; // UNDETERMINED
