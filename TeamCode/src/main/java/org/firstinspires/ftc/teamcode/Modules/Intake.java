@@ -17,7 +17,6 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Robot;
 
 public class Intake{
-    Robot robot;
     String[] order = new String[3];
     TelemetryPacket t = new TelemetryPacket();
     int[] pgratio = new int[2];
@@ -38,7 +37,6 @@ public class Intake{
     private final NormalizedRGBA purple = new NormalizedRGBA();
     private final NormalizedRGBA green = new NormalizedRGBA();
 
-    HardwareMap hardwaremap;
 
     public Intake(HardwareMap hardwareMap){
         purple.red = 0.68f;
@@ -50,39 +48,42 @@ public class Intake{
         green.blue = 0.49f;
         green.alpha = 0.95f;
 
-        this.hardwaremap = hardwaremap;
+        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "REVcolorSensor");
     }
 
     public String scanColor() {
         NormalizedRGBA detectedColor = colorSensor.getNormalizedColors();
 
-        if ((detectedColor.red < purple.red + 0.08
-                    &&
-             detectedColor.red > purple.red - 0.08)
-                &&
-            (detectedColor.green < purple.green + 0.08
-                    &&
-             detectedColor.green > purple.green - 0.08)
-                &&
-            (detectedColor.blue < purple.blue + 0.08
-                    &&
-             detectedColor.blue > purple.blue - 0.08)) {
-            return "Purple";
-        } else if ((detectedColor.red < green.red + 0.08
-                            &&
-                    detectedColor.red > green.red - 0.08)
-                        &&
-                   (detectedColor.green < green.green + 0.08
-                            &&
-                    detectedColor.green > green.green - 0.08)
-                        &&
-                   (detectedColor.blue < green.blue + 0.08
-                            &&
-                    detectedColor.blue > green.blue - 0.08)) {
-            return "Green";
-        } else {
-            return "None";
-        }
+        return "Red: " + detectedColor.red * 10 + " - Green: " + detectedColor.green * 10 + " - Blue: " + detectedColor.blue * 10 + " - Alpha: " + detectedColor.alpha;
+
+        // VARIANCE Red - 0.05, Green - 0.125, Blue - 0.15
+//        if ((detectedColor.red < purple.red + 0.08
+//                    &&
+//             detectedColor.red > purple.red - 0.08)
+//                &&
+//            (detectedColor.green < purple.green + 0.08
+//                    &&
+//             detectedColor.green > purple.green - 0.08)
+//                &&
+//            (detectedColor.blue < purple.blue + 0.08
+//                    &&
+//             detectedColor.blue > purple.blue - 0.08)) {
+//            return "Purple";
+//        } else if ((detectedColor.red < green.red + 0.08
+//                            &&
+//                    detectedColor.red > green.red - 0.08)
+//                        &&
+//                   (detectedColor.green < green.green + 0.08
+//                            &&
+//                    detectedColor.green > green.green - 0.08)
+//                        &&
+//                   (detectedColor.blue < green.blue + 0.08
+//                            &&
+//                    detectedColor.blue > green.blue - 0.08)) {
+//            return "Green";
+//        } else {
+//            return "None";
+//        }
     }
 
     public void uptakeTarget() {

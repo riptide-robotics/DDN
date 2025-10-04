@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 
 import org.firstinspires.ftc.teamcode.Modules.Drivetrain;
+import org.firstinspires.ftc.teamcode.Modules.Intake;
 import org.firstinspires.ftc.teamcode.Modules.Slides;
 
 public class Robot {
@@ -12,20 +13,20 @@ public class Robot {
 
     Drivetrain drivetrain;
 
-    NormalizedColorSensor colorSensor;
+    Intake intake;
 
     public Robot (HardwareMap hardwareMap){
         this.hardwareMap = hardwareMap;
 
-        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSensor");
         drivetrain = new Drivetrain(hardwareMap);
+
+        intake = new Intake(hardwareMap);
     }
 
     public Drivetrain getDrivetrain(){
         return drivetrain;
     }
 
-    public NormalizedColorSensor getColorSensor() {
-        return colorSensor;
-    }
+    public Intake getIntake() {return intake;}
+
 }
