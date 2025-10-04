@@ -18,7 +18,8 @@ public class Outtake {
     private final DcMotor motorR;
     private final Servo outtakeServo;
 
-    private final PIDController flywheelVelocityController = new PIDController(FLYWHEEL_KP, 0, 0);
+    private final PIDController flywheelVelocityControllerR = new PIDController(FLYWHEEL_KP, 0, 0);
+    private final PIDController flywheelVelocityControllerL = new PIDController(FLYWHEEL_KP, 0, 0);
 
     public Outtake(HardwareMap hardwareMap){
 
@@ -43,23 +44,34 @@ public class Outtake {
     }
 
     private double startTime = System.nanoTime() / 1e9;
-    private int previousTickCount = 0;
+    private int previousTickCountL = 0;
+    private int previousTickCountR = 0;
 
 
     public void setFlywheelSpeed(double goalRPM){
 
-        int currentTickCount = motorL.getCurrentPosition();
+        int currentTickCountL = motorL.getCurrentPosition();
+        int currentTickCountR = motorR.getCurrentPosition();
 
-        int dtheta = currentTickCount - previousTickCount;
-        previousTickCount = currentTickCount;
+        int dthetaL = currentTickCountL - previousTickCountL;
+        previousTickCountL = currentTickCountL;
+
+        int dthetaR = currentTickCountR - previousTickCountR;
+        previousTickCountR = currentTickCountR;
+
         double dt = System.nanoTime() / 1e9 - startTime;
         startTime = System.nanoTime() / 1e9;
 
-        double currRPM = dtheta / (dt / 60);
 
-        double wantedWheelPower = flywheelVelocityController.calculate(currRPM, goalRPM);
 
-        motorL.setPower(wantedWheelPower);
+        double currRPML = dthetaL / (dt / 60);
+        double currRPMR = dthetaR / (dt / 60);
+
+        double wantedWheelPowerR = flywheelVelocityControllerR.calculate(currRPMR, goalRPM);
+        double wantedWheelPowerL = flywheelVelocityControllerL.calculate(currRPML, goalRPM);
+
+        motorL.setPower(wantedWheelPowerL);
+        motorR.setPower(wantedWheelPowerR);
 
     }
 
