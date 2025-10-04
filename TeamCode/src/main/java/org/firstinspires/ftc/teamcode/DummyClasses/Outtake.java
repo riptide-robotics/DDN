@@ -51,7 +51,9 @@ public class Outtake {
         int currentTickCount = motorL.getCurrentPosition();
 
         int dtheta = currentTickCount - previousTickCount;
+        previousTickCount = currentTickCount;
         double dt = System.nanoTime() / 1e9 - startTime;
+        startTime = System.nanoTime() / 1e9;
 
         double currRPM = dtheta / (dt / 60);
 
