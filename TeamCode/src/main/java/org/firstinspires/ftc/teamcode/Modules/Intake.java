@@ -97,7 +97,7 @@ public class Intake{
             toSet = -1;
         }
         if (toSet == -1) {
-            t.addLine("Uptake result: Full Intake");
+            t.addLine("Uptake result: Failure - Full Intake");
             return;
         }
 
@@ -108,7 +108,7 @@ public class Intake{
             pgratio[1]++;
         }
         order[toSet] = color;
-        t.addLine("Uptake Result: " + color + " artifact uptaked into position " + toSet);
+        t.addLine("Uptake Result: Success - " + color + " artifact uptaked into position " + toSet);
 
         // UPTAKE FUNCTION
     }
@@ -149,7 +149,7 @@ public class Intake{
                     }
                 }
             } else {
-                t.addLine("Eject result: arget found at pos 1");
+                t.addLine("Eject result: Target found at pos 1");
                 tmp = order[1];
                 order[1] = order[2];
                 order[2] = order[0];
