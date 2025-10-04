@@ -19,9 +19,13 @@ public class MotorEncoderTest extends LinearOpMode {
         boolean a_pressed = false;
         boolean a_debounce = false;
 
+        boolean b_pressed = false;
+        boolean b_debounce = false;
+
         waitForStart();
         while (opModeIsActive()) {
             if(gamepad1.a) {
+                b_pressed = false;
                 if(!a_debounce) {
                     a_debounce = true;
                     a_pressed = !a_pressed;
@@ -30,12 +34,30 @@ public class MotorEncoderTest extends LinearOpMode {
                 a_debounce = false;
             }
 
-            if (!a_pressed) {
-                motor.setPower(gamepad1.left_stick_x);
+            if(gamepad1.b) {
+                if(!b_debounce) {
+                    b_debounce = true;
+                    b_pressed = true;
+                }
             } else {
-                motor.setPower(0.2);
+                b_debounce = false;
             }
 
+            if(!a_pressed && gamepad1.left_stick_x!=0) {
+                b_pressed = false;
+            }
+
+            if (!b_pressed) {
+                if (!a_pressed) {
+                    motor.setPower(gamepad1.left_stick_x);
+                } else {
+                    motor.setPower(0.2);
+                }
+            } else {
+                motor.setPower(0);
+            }
+
+            telemetry.addData("The motors current power: ", motor.getPower());
             telemetry.addData("The motors current position: ", motor.getCurrentPosition());
             telemetry.update();
         }
