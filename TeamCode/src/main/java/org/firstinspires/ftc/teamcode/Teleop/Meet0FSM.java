@@ -16,10 +16,6 @@ public class Meet0FSM extends LinearOpMode {
 
     boolean hasrun = false;
 
-
-
-
-
     public enum states{
         IDLE,
         INTAKE,

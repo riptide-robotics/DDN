@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.Robot;
 // this will probably be usefull
 
 @TeleOp(name = "Odometry Test")
-public class Odemtry extends LinearOpMode {
+public class Odometry extends LinearOpMode {
 
     Robot robot;
     Drivetrain drivetrain;
