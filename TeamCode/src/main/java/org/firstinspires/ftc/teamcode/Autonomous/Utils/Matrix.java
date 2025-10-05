@@ -53,6 +53,10 @@ public class Matrix {
         return matrix;
     }
 
+    public int getRows() {return rows;}
+
+    public int getCols() { return this.cols;}
+
     public void setElement(double element, int rowNum, int colNum) {
         matrix[rowNum][colNum] = element;
     }
@@ -88,6 +92,29 @@ public class Matrix {
             out[i] = temp1[i] - temp2[i];
         }
         matrix[outRow] = out;
+    }
+
+    public static Matrix multiply(Matrix a, Matrix b){
+
+        if (a.getCols() != b.getRows()) { throw new IllegalArgumentException("Columns of first don't match rows of second matrix.");}
+
+        Matrix out = new Matrix(a.getRows(), b.getCols());
+
+        for(int aRows = 0; aRows < a.getRows(); aRows++){
+            for (int bCols = 0; bCols < b.getCols(); bCols++){
+
+                double sum = 0;
+
+                for(int i = 0; i < a.getCols(); i++){
+                    sum += a.getElement(aRows, i) * b.getElement(i, bCols);
+                }
+
+                out.setElement(sum, aRows, bCols);
+            }
+        }
+
+        return out;
+
     }
 
     /**
