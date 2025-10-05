@@ -6,15 +6,20 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import java.util.Timer;
+
 @TeleOp(name="Motor Encoder Test", group="Unit Test")
 public class MotorEncoderTest extends LinearOpMode {
     DcMotor motor;
+    double prevpos = 0;
+    Timer elapsed_time = new Timer();
 
     @Override
     public void runOpMode() throws InterruptedException {
         motor = hardwareMap.dcMotor.get("flWheel");
         motor.setDirection(DcMotorSimple.Direction.FORWARD);
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         boolean a_pressed = false;
         boolean a_debounce = false;
@@ -57,9 +62,12 @@ public class MotorEncoderTest extends LinearOpMode {
                 motor.setPower(0);
             }
 
-            telemetry.addData("The motors current power: ", motor.getPower());
-            telemetry.addData("The motors current position: ", motor.getCurrentPosition());
+            telemetry.addData("Current Power: ", motor.getPower());
+            telemetry.addData("Current Position: ", motor.getCurrentPosition());
+            telemetry.addData("Motor Revolutions: ", (double) motor.getCurrentPosition() / 28);
             telemetry.update();
+
+            prevpos = motor.getCurrentPosition();
         }
     }
 }
