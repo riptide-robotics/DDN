@@ -1,5 +1,18 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
+import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_B;
+import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_B_STDEV;
+import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_G;
+import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_G_STDEV;
+import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_R;
+import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_R_STDEV;
+import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_B;
+import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_B_STDEV;
+import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_G;
+import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_G_STDEV;
+import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R;
+import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R_STDEV;
+
 import java.lang.Override;
 // Imports to sync
 
@@ -34,19 +47,9 @@ public class Intake{
     /**
      * These colors must be recalibrated to represent purple & green
      */
-    private final NormalizedRGBA purple = new NormalizedRGBA();
-    private final NormalizedRGBA green = new NormalizedRGBA();
 
 
     public Intake(HardwareMap hardwareMap){
-        purple.red = 0.68f;
-        purple.green = 0.29f;
-        purple.blue = 0.72f;
-        purple.alpha = 0.95f;
-        green.red = 0.17f;
-        green.green = 0.73f;
-        green.blue = 0.49f;
-        green.alpha = 0.95f;
 
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "REVcolorSensor");
     }
@@ -54,36 +57,35 @@ public class Intake{
     public String scanColor() {
         NormalizedRGBA detectedColor = colorSensor.getNormalizedColors();
 
-        return "Red: " + detectedColor.red * 10 + " - Green: " + detectedColor.green * 10 + " - Blue: " + detectedColor.blue * 10 + " - Alpha: " + detectedColor.alpha;
+        //return "Red: " + detectedColor.red * 10 + " - Green: " + detectedColor.green * 10 + " - Blue: " + detectedColor.blue * 10 + " - Alpha: " + detectedColor.alpha;
 
-        // VARIANCE Red - 0.05, Green - 0.125, Blue - 0.15
-//        if ((detectedColor.red < purple.red + 0.08
-//                    &&
-//             detectedColor.red > purple.red - 0.08)
-//                &&
-//            (detectedColor.green < purple.green + 0.08
-//                    &&
-//             detectedColor.green > purple.green - 0.08)
-//                &&
-//            (detectedColor.blue < purple.blue + 0.08
-//                    &&
-//             detectedColor.blue > purple.blue - 0.08)) {
-//            return "Purple";
-//        } else if ((detectedColor.red < green.red + 0.08
-//                            &&
-//                    detectedColor.red > green.red - 0.08)
-//                        &&
-//                   (detectedColor.green < green.green + 0.08
-//                            &&
-//                    detectedColor.green > green.green - 0.08)
-//                        &&
-//                   (detectedColor.blue < green.blue + 0.08
-//                            &&
-//                    detectedColor.blue > green.blue - 0.08)) {
-//            return "Green";
-//        } else {
-//            return "None";
-//        }
+        if ((detectedColor.red < PURPLE_R + PURPLE_R_STDEV
+                    &&
+             detectedColor.red > PURPLE_R - PURPLE_R_STDEV)
+                &&
+            (detectedColor.green < PURPLE_G + PURPLE_G_STDEV
+                    &&
+             detectedColor.green > PURPLE_G - PURPLE_G_STDEV)
+                &&
+            (detectedColor.blue < PURPLE_B + PURPLE_B_STDEV
+                    &&
+             detectedColor.blue > PURPLE_B - PURPLE_B_STDEV)) {
+            return "Purple";
+        } else if ((detectedColor.red < GREEN_R + GREEN_R_STDEV
+                            &&
+                    detectedColor.red > GREEN_R - GREEN_R_STDEV)
+                        &&
+                   (detectedColor.green < GREEN_G + GREEN_G_STDEV
+                            &&
+                    detectedColor.green > GREEN_G - GREEN_G_STDEV)
+                        &&
+                   (detectedColor.blue < GREEN_B + GREEN_B_STDEV
+                            &&
+                    detectedColor.blue > GREEN_B - GREEN_B_STDEV)) {
+            return "Green";
+        } else {
+            return "None";
+        }
     }
 
     public void uptakeTarget() {
