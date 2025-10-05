@@ -11,13 +11,17 @@ public class CubicSplinePath {
         private double x;
         private double y;
         private double heading;
+        private double velocity;
+        private double angle; // in radians
     }
 
     public static class CubicSplineBuilder{
+
+
         private ArrayList<CubicSplinePath.CubicPathPoint> path = new ArrayList<>();
 
 
-        public Path.PathBuilder addNewFullPoint(Waypoint w, Path.RobotAction a, double delay){
+        public Path.PathBuilder addNewFullPoint(, Path.RobotAction a, double delay){
             Path.PathPoint p = new Path.PathPoint(w, a, delay);
             path.add(p);
             return this;

@@ -22,6 +22,8 @@ import org.firstinspires.ftc.teamcode.riptideUtil;
 
 public class AutonomousRobot1 extends Robot {
 
+    private EditablePose2D startPose = new EditablePose2D(0, 0, Math.toRadians(90), DistanceUnit.INCH);
+
     public AutonomousRobot1(HardwareMap hardwareMap) {
         super(hardwareMap);
     }
