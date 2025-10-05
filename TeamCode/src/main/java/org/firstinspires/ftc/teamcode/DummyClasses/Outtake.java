@@ -38,6 +38,13 @@ public class Outtake {
         motorL.setPower(speed);
     }
 
+    //This one method is only to set motors individually
+    public void setFlyWheelPower(double speedL, double speedR) {
+            motorR.setPower(speedR);
+            motorL.setPower(speedL);
+
+    }
+
     public void stop(){
         motorR.setPower(0);
         motorL.setPower(0);
@@ -53,10 +60,10 @@ public class Outtake {
         int currentTickCountL = motorL.getCurrentPosition();
         int currentTickCountR = motorR.getCurrentPosition();
 
-        int dthetaL = currentTickCountL - previousTickCountL;
+        double dthetaL = (currentTickCountL - previousTickCountL)/28D;
         previousTickCountL = currentTickCountL;
 
-        int dthetaR = currentTickCountR - previousTickCountR;
+        double dthetaR = (currentTickCountR - previousTickCountR)/28D;
         previousTickCountR = currentTickCountR;
 
         double dt = System.nanoTime() / 1e9 - startTime;
@@ -83,6 +90,16 @@ public class Outtake {
         double currPos = (double) (motorR.getCurrentPosition() + motorL.getCurrentPosition()) / 2;
         return currPos;
     }
+
+    //Created to allow OuttakePIDTuner to access individual positions
+    public double currPosL(){
+        return motorL.getCurrentPosition();
+    }
+    public double currPosR(){
+        return motorR.getCurrentPosition();
+    }
+    //Stops here
+
 
     public void controlPitch(double angle){
         outtakeServo.setPosition(angle);
