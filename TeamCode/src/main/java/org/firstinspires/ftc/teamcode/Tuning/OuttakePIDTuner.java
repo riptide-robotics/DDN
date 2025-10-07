@@ -42,6 +42,10 @@ public class OuttakePIDTuner extends LinearOpMode {
         telemetry.clear();
 
         while (opModeIsActive()) {
+            tele.addData("goalRPMTop", rpmTop);
+            tele.addData("goalRPMTop", rpmBottom);
+
+
             pidtunedmotor(tele);
             tele.update();
         }
@@ -70,9 +74,6 @@ public class OuttakePIDTuner extends LinearOpMode {
 
         double wantedWheelPowerTop = RPMControllerTop.calculate(currRPMTop, rpmTop);
         double wantedWheelPowerBottom = RPMControllerBottom.calculate(currRPMBottom, rpmBottom);
-
-        telemetry.addData("wantedWheelPowerTop", wantedWheelPowerTop);
-        telemetry.addData("wantedWheelPowerTop", wantedWheelPowerBottom);
 
         outtake.setFlyWheelPower(wantedWheelPowerTop,wantedWheelPowerBottom);
     }
