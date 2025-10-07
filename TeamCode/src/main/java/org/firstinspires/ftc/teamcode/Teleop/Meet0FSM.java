@@ -61,17 +61,6 @@ public class Meet0FSM extends LinearOpMode {
         while(opModeIsActive()){
 
             FSM();
-            if (gamepad2.x){runFlywheel = true;}
-            else{runFlywheel = false;}
-
-            if (runFlywheel){
-                outtake.startFlywheel();
-                outtake.setFlywheelSpeed(0 /* idk but we want this value to auto change based on distance from goal */);
-            } else {
-                outtake.stop();
-            }
-
-            outtake.controlPitch(gamepad2.left_stick_y);
             fieldCentricDrive();
 
             double currTime = endTimer.seconds();
@@ -97,10 +86,10 @@ public class Meet0FSM extends LinearOpMode {
                     hasrun = false;
                 }
 
-//                if (gamepad2.x){
-//                    currentState = states.OUTTAKE;
-//                    hasrun = false;
-//                }
+                if (gamepad2.x){
+                    currentState = states.OUTTAKE;
+                    hasrun = false;
+                }
 
                 if (gamepad2.dpad_up){
                     currentState = states.ENDGAME;
@@ -114,10 +103,10 @@ public class Meet0FSM extends LinearOpMode {
                     hasrun = true;
                 }
 
-//                if (gamepad2.x){
-//                    currentState = states.OUTTAKE;
-//                    hasrun = false;
-//                }
+                if (gamepad2.x){
+                    currentState = states.OUTTAKE;
+                    hasrun = false;
+                }
 
                 if (gamepad2.b){
                     currentState = states.IDLE;
@@ -129,30 +118,34 @@ public class Meet0FSM extends LinearOpMode {
                     hasrun = false;
                 }
 
+                if (gamepad2.right_trigger > 0.5){
+
+                }
+
                 break;
-//            case OUTTAKE:
-//                if (!hasrun){
-//                    //Do outtake setup
-//                    hasrun = true;
-//                }
-//
-//                if (gamepad2.b){
-//                    currentState = states.IDLE;
-//                    hasrun = false;
-//                }
-//
-//                if (gamepad2.left_trigger > 0.1){
-//                    currentState = states.INTAKE;
-//                    hasrun = false;
-//                }
-//
-//                if (gamepad2.dpad_up){
-//                    currentState = states.ENDGAME;
-//                    hasrun = false;
-//                }
-//
-//
-//                break;
+            case OUTTAKE:
+                if (!hasrun){
+                    //Do outtake setup
+                    hasrun = true;
+                }
+
+                if (gamepad2.b){
+                    currentState = states.IDLE;
+                    hasrun = false;
+                }
+
+                if (gamepad2.left_trigger > 0.1){
+                    currentState = states.INTAKE;
+                    hasrun = false;
+                }
+
+                if (gamepad2.dpad_up){
+                    currentState = states.ENDGAME;
+                    hasrun = false;
+                }
+
+
+                break;
             case ENDGAME:
                 if (!hasrun){
                     twoServos.lift();
