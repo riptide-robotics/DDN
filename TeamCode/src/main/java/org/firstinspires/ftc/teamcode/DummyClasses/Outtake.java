@@ -22,11 +22,12 @@ public class Outtake {
 
     public Outtake(HardwareMap hardwareMap){
 
-        motorL = hardwareMap.dcMotor.get("motorL");
-        motorR = hardwareMap.dcMotor.get("motorR");
+        motorL = hardwareMap.dcMotor.get("topFlywheel");
+        motorR = hardwareMap.dcMotor.get("bottomFlywheel");
 
         motorL.setDirection(DcMotorSimple.Direction.FORWARD);
         motorR.setDirection(DcMotorSimple.Direction.REVERSE);
+
 
     }
 
@@ -84,7 +85,8 @@ public class Outtake {
     }
 
     public double currPos(){
-        return (double) (motorR.getCurrentPosition() + motorL.getCurrentPosition()) / 2;
+        double currPos = (double) (motorR.getCurrentPosition() + motorL.getCurrentPosition()) / 2;
+        return currPos;
     }
 
     //Created to allow OuttakePIDTuner to access individual positions
@@ -94,4 +96,8 @@ public class Outtake {
     public double currPosR(){
         return motorR.getCurrentPosition();
     }
+    //Stops here
+
+
+
 }
