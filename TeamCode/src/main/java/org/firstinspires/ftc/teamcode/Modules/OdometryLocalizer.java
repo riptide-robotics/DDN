@@ -2,14 +2,18 @@ package org.firstinspires.ftc.teamcode.Modules;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
+import org.firstinspires.ftc.teamcode.Modules.Utils.GoBildaPinpointDriver;
 
-// ----- READY TO TRANSFER ----- //
 
 public class OdometryLocalizer implements Runnable {
 
+    public static enum OdometryMethod { THREE_WHEEL, PINPOINT }
+
     private final DcMotor leftParallel, rightParallel, perpendicular;
+    private final GoBildaPinpointDriver pinpoint;
 
     private final int pollRate;
 
@@ -34,6 +38,7 @@ public class OdometryLocalizer implements Runnable {
     private int previousPerpendicularTicks = 0;
 
     private boolean running = true;
+    private final OdometryMethod mode;
 
     public void stop(){
         running = false;
@@ -45,10 +50,29 @@ public class OdometryLocalizer implements Runnable {
         this.rightParallel = rightParallel;
         this.perpendicular = perpendicular;
         this.pollRate = pollRate;
+        this.pinpoint = null;
+        this.mode = OdometryMethod.THREE_WHEEL;
+    }
+
+    // for the Pinpoint. I know that this runs on its own thread, but I think it is better to sequence a call like this every
+    // so often. I don't know the practical uses for this though. Need professional opinion.
+    public OdometryLocalizer(GoBildaPinpointDriver driver,int pollRate){
+
+        this.leftParallel = null;
+        this.rightParallel = null;
+        this.perpendicular = null;
+        this.pinpoint = driver;
+        this.mode = OdometryMethod.PINPOINT;
+        this.pollRate = pollRate;
+
+
     }
 
     public void threeWheelLocalize() {
-        leftParallelTicks = -leftParallel.getCurrentPosition();
+
+        if(this.mode == OdometryMethod.PINPOINT) throw new IllegalStateException("Need to use three wheel mode!");
+
+        leftParallelTicks = -leftParallel.getCurrentPosition(); // if this return nullPointer exception it's not because of the pinpoint.
         rightParallelTicks = -rightParallel.getCurrentPosition();
         perpendicularTicks = -perpendicular.getCurrentPosition();
 
@@ -75,9 +99,21 @@ public class OdometryLocalizer implements Runnable {
         currPos.setH(thetaNormalized);
     }
 
+    public void pinpointLocalize() {
+        if (mode == OdometryMethod.THREE_WHEEL) throw new IllegalStateException("Need to use Pinpoint mode!");
+
+        pinpoint.update();
+
+        currPos.setX(pinpoint.getPosX(DistanceUnit.INCH), DistanceUnit.INCH );
+        currPos.setY(pinpoint.getPosY(DistanceUnit.INCH), DistanceUnit.INCH);
+        currPos.setH(pinpoint.getHeading(AngleUnit.RADIANS));
+
+    }
+
     public EditablePose2D getCurrPos(){
         return currPos;
     }
+
     public int getLeftEncoder() {return leftParallelTicks;}
     public int getRightEncoder() {return rightParallelTicks;}
     public int getPerpendicularEncoder() {return perpendicularTicks;}
@@ -85,7 +121,11 @@ public class OdometryLocalizer implements Runnable {
     @Override
     public void run(){
         while(running){
-            threeWheelLocalize();
+            if(mode == OdometryMethod.THREE_WHEEL) {
+                threeWheelLocalize();
+            } else if (mode == OdometryMethod.PINPOINT) {
+               pinpointLocalize();
+            }
             try {
                 Thread.sleep(pollRate);
             } catch (InterruptedException e) {

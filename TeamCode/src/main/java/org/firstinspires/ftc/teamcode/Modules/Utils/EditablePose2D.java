@@ -55,8 +55,8 @@ public class EditablePose2D {
     @Override
     public String toString() {
         return "POSE2D{" +
-                "x=" + getX(DistanceUnit.INCH) + " cm, " +
-                "y=" + getY(DistanceUnit.INCH) + " cm, " +
+                "x=" + getX(DistanceUnit.INCH) + " in, " +
+                "y=" + getY(DistanceUnit.INCH) + " in, " +
                 "heading=" + Math.toDegrees(getH()) + "°, " +
                 '}';
     }

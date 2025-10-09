@@ -10,7 +10,12 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
+import org.firstinspires.ftc.teamcode.Modules.Utils.GoBildaPinpointDriver;
+import org.firstinspires.ftc.teamcode.Tuning.Odometry;
+
+import java.nio.file.attribute.FileOwnerAttributeView;
 
 // ----- READY TO TRANSFER ----- //
 
@@ -24,10 +29,12 @@ public class Drivetrain {
 
     // -------- DRIVETRAIN MOTORS -------- //
     private final DcMotor frWheel, flWheel, brWheel, blWheel;
+    private final GoBildaPinpointDriver pinpoint;
     private final IMU imu;
     private ElapsedTime timer;
 
     private final OdometryLocalizer robotPos;
+    private final OdometryLocalizer.OdometryMethod localizationMode = OdometryLocalizer.OdometryMethod.PINPOINT;
 
     ///////////////////////////////////////////////
     ////                                     /////
@@ -63,7 +70,19 @@ public class Drivetrain {
         flWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         blWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        robotPos = new OdometryLocalizer(blWheel, brWheel, flWheel, 10);
+        if(localizationMode == OdometryLocalizer.OdometryMethod.PINPOINT){
+            this.pinpoint = hardwareMap.get(GoBildaPinpointDriver.class,"odo");
+            pinpoint.setOffsets(67, 69, DistanceUnit.INCH);
+            pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+            pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+            robotPos = new OdometryLocalizer(this.pinpoint, 10);
+            pinpoint.resetPosAndIMU();
+        }
+        else {
+            this.pinpoint = null;
+            robotPos = new OdometryLocalizer(blWheel, brWheel, flWheel, 10);
+        }
+
 
         imu = hardwareMap.get(IMU.class, "imu");
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
