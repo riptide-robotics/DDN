@@ -23,8 +23,8 @@ public class Outtake {
 
     public Outtake(HardwareMap hardwareMap){
 
-        motorL = hardwareMap.dcMotor.get("motorL");
-        motorR = hardwareMap.dcMotor.get("motorR");
+        motorL = hardwareMap.dcMotor.get("topFlywheel");
+        motorR = hardwareMap.dcMotor.get("bottomFlywheel");
 
         motorL.setDirection(DcMotorSimple.Direction.FORWARD);
         motorR.setDirection(DcMotorSimple.Direction.REVERSE);
