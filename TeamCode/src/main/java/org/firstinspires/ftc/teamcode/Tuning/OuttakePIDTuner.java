@@ -11,14 +11,20 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Modules.PIDController;
 import org.firstinspires.ftc.teamcode.DummyClasses.Outtake;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 @Config
 @TeleOp(name = "OuttakeTuner",group = "Tuning")
 public class OuttakePIDTuner extends LinearOpMode {
     public static double KPTop = 0;
     public static double KPBottom = 0;
+    LinkedList<Double> topRecords = new LinkedList<>();
+    LinkedList<Double> bottomRecords = new LinkedList<>();
 
     Outtake outtake;
     public static double rpmTop = 360;
+    public static int queueSize = 5;
     private static double rpmTopPrev = 360;
 
     public static double rpmBottom = 360;
@@ -47,7 +53,9 @@ public class OuttakePIDTuner extends LinearOpMode {
 
         startTime = System.nanoTime() / 1e9;
 
+
         while (opModeIsActive()) {
+
             tele.addData("goalRPMTop", rpmTop);
             tele.addData("goalRPMBottom", rpmBottom);
 
@@ -101,13 +109,29 @@ public class OuttakePIDTuner extends LinearOpMode {
         double currRPMTop = dThetaTop / (dt / 60);
         double currRPMBottom = dThetaBottom / (dt / 60);
 
-        telemetry.addData("currPRMTop", currRPMTop);
-        telemetry.addData("currRPMBottom", currRPMBottom);
+       // telemetry.addData("currPRMTop", currRPMTop);
+       // telemetry.addData("currRPMBottom", currRPMBottom);
 
-        double wantedWheelPowerTop = RPMControllerTop.calculate(currRPMTop, rpmTop);
-        double wantedWheelPowerBottom = RPMControllerBottom.calculate(currRPMBottom, rpmBottom);
+        //double wantedWheelPowerTop = RPMControllerTop.calculate(currRPMTop, rpmTop);
+        //double wantedWheelPowerBottom = RPMControllerBottom.calculate(currRPMBottom, rpmBottom);
 
-        outtake.setFlyWheelPower(wantedWheelPowerTop,wantedWheelPowerBottom);
+        topRecords.add(currRPMTop);
+        if (topRecords.size() > queueSize)
+            topRecords.remove(0);
+
+        bottomRecords.add(currRPMTop);
+        if (bottomRecords.size() > queueSize)
+            bottomRecords.remove(0);
+
+        double averageTop = topRecords.size() >= queueSize ? topRecords.get(0)+topRecords.get(1)+topRecords.get(2)+topRecords.get(3)+topRecords.get(4)/5 : currRPMTop;
+        double averageBottom = bottomRecords.size() >= queueSize ? bottomRecords.get(0)+bottomRecords.get(1)+bottomRecords.get(2)+bottomRecords.get(3)+bottomRecords.get(4)/5 : currRPMBottom;
+        telemetry.addData("ready", bottomRecords.size() >= queueSize);
+        telemetry.addData("top", averageTop);
+        telemetry.addData("bottom", averageBottom);
+
+        double wantedWheelPowerTopAverage = RPMControllerTop.calculate(averageTop, rpmTop);
+        double wantedWheelPowerBottomAverage = RPMControllerBottom.calculate(averageBottom, rpmBottom);
+
+        outtake.setFlyWheelPower(wantedWheelPowerTopAverage,wantedWheelPowerBottomAverage);
     }
-
 }
