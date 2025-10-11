@@ -1,31 +1,37 @@
 package org.firstinspires.ftc.teamcode.UnitTests;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Modules.PIDController;
 
 @Config
+@TeleOp(name = "Turn an angle")
 public class TurnAnAngle extends LinearOpMode {
+    Telemetry t = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
     DcMotor motor;
 
-    public static double kp = 0;
-    public static double ki = 0;
-    public static double kd = 0;
+    public static double kp = 0.08;
+    public static double ki = 0.12;
+    public static double kd = 0.4;
     public static double kf = 0;
+    public static double deadZone = 5;
 
     double currPosDeg = 0;
     double currPosTicks = 0;
 
-    double goalDeg = 0;
+    public static double goalDeg = 0;
     double prevGoalDeg;
     double goalTicks = 0;
-    double prevGoalTicks;
-    static final double ticksToDegrees = 360/751.8;
-    static final double degreesToTicks = 751.8/360;
+    static final double ticksToDegrees = 360/1993.6;
+    static final double degreesToTicks = 1993.6/360;
 
     public ElapsedTime startTime= new ElapsedTime();
 
@@ -38,7 +44,7 @@ public class TurnAnAngle extends LinearOpMode {
          */
         PIDController motorController = new PIDController(kp, ki, kd);
 
-        motor = hardwareMap.dcMotor.get("motor");
+        motor = hardwareMap.dcMotor.get("flWheel");
 
         motor.setDirection(DcMotor.Direction.FORWARD);
 
@@ -47,6 +53,7 @@ public class TurnAnAngle extends LinearOpMode {
         motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        motorController.setDeadZone(deadZone);
 
         telemetry.addData("Robot status", "succesfully initiated");
         telemetry.update();
@@ -74,17 +81,13 @@ public class TurnAnAngle extends LinearOpMode {
 
             goalTicks = goalDeg * degreesToTicks;
 
+            currPosTicks = motor.getCurrentPosition();
             motor.setPower(motorController.calculate(currPosTicks, goalTicks) + kf);
+            currPosDeg = currPosTicks * ticksToDegrees;
 
-//            if(gamepad1.y){
-//                motor.setPower(1);
-//            }else{
-//                motor.setPower(0);
-//            }
-
-            telemetry.addData("Current Position", currPosDeg);
-            telemetry.addData("Goal Position", goalDeg);
-            telemetry.update();
+            t.addData("Current Position", currPosDeg);
+            t.addData("Goal Position", goalDeg);
+            t.update();
         }
     }
 }
