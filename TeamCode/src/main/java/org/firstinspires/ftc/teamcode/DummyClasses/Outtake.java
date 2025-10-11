@@ -2,50 +2,45 @@ package org.firstinspires.ftc.teamcode.DummyClasses;
 
 import static org.firstinspires.ftc.teamcode.riptideUtil.FLYWHEEL_KP;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.PIDCoefficients;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Modules.PIDController;
-import org.firstinspires.ftc.teamcode.Robot;
 
 public class Outtake {
-    private final DcMotor motorL;
-    private final DcMotor motorR;
+    private final DcMotor topFlywheel;
+    private final DcMotor bottomFlywheel;
 
     private final PIDController flywheelVelocityControllerR = new PIDController(FLYWHEEL_KP, 0, 0);
     private final PIDController flywheelVelocityControllerL = new PIDController(FLYWHEEL_KP, 0, 0);
 
     public Outtake(HardwareMap hardwareMap){
 
-        motorL = hardwareMap.dcMotor.get("topFlywheel");
-        motorR = hardwareMap.dcMotor.get("bottomFlywheel");
+        topFlywheel = hardwareMap.dcMotor.get("topFlywheel");
+        bottomFlywheel = hardwareMap.dcMotor.get("bottomFlywheel");
 
-        motorL.setDirection(DcMotorSimple.Direction.FORWARD);
-        motorR.setDirection(DcMotorSimple.Direction.REVERSE);
+        topFlywheel.setDirection(DcMotorSimple.Direction.REVERSE);
+        bottomFlywheel.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
     }
 
     public void start(double speed){
-        motorR.setPower(speed);
-        motorL.setPower(speed);
+        bottomFlywheel.setPower(speed);
+        topFlywheel.setPower(speed);
     }
 
     //This one method is only to set motors individually
     public void setFlyWheelPower(double speedL, double speedR) {
-            motorR.setPower(speedR);
-            motorL.setPower(speedL);
+            bottomFlywheel.setPower(speedR);
+            topFlywheel.setPower(speedL);
 
     }
 
     public void stop(){
-        motorR.setPower(0);
-        motorL.setPower(0);
+        bottomFlywheel.setPower(0);
+        topFlywheel.setPower(0);
     }
 
     private double startTime = System.nanoTime() / 1e9;
@@ -55,8 +50,8 @@ public class Outtake {
 
     public void setFlywheelSpeed(double goalRPM){
 
-        int currentTickCountL = motorL.getCurrentPosition();
-        int currentTickCountR = motorR.getCurrentPosition();
+        int currentTickCountL = topFlywheel.getCurrentPosition();
+        int currentTickCountR = bottomFlywheel.getCurrentPosition();
 
         double dthetaL = (currentTickCountL - previousTickCountL)/28D;
         previousTickCountL = currentTickCountL;
@@ -75,8 +70,8 @@ public class Outtake {
         double wantedWheelPowerR = flywheelVelocityControllerR.calculate(currRPMR, goalRPM);
         double wantedWheelPowerL = flywheelVelocityControllerL.calculate(currRPML, goalRPM);
 
-        motorL.setPower(wantedWheelPowerL);
-        motorR.setPower(wantedWheelPowerR);
+        topFlywheel.setPower(wantedWheelPowerL);
+        bottomFlywheel.setPower(wantedWheelPowerR);
 
     }
 
@@ -85,16 +80,16 @@ public class Outtake {
     }
 
     public double currPos(){
-        double currPos = (double) (motorR.getCurrentPosition() + motorL.getCurrentPosition()) / 2;
+        double currPos = (double) (bottomFlywheel.getCurrentPosition() + topFlywheel.getCurrentPosition()) / 2;
         return currPos;
     }
 
     //Created to allow OuttakePIDTuner to access individual positions
     public double currPosL(){
-        return motorL.getCurrentPosition();
+        return topFlywheel.getCurrentPosition();
     }
     public double currPosR(){
-        return motorR.getCurrentPosition();
+        return bottomFlywheel.getCurrentPosition();
     }
     //Stops here
 

@@ -45,6 +45,8 @@ public class OuttakePIDTuner extends LinearOpMode {
 
         telemetry.clear();
 
+        startTime = System.nanoTime() / 1e9;
+
         while (opModeIsActive()) {
             tele.addData("goalRPMTop", rpmTop);
             tele.addData("goalRPMBottom", rpmBottom);
@@ -54,6 +56,25 @@ public class OuttakePIDTuner extends LinearOpMode {
             tele.update();
             if (rpmTopPrev != rpmTop) {
                 rpmTopPrev = rpmTop;
+                /*
+                set:
+                    KPTop=0.2
+                    KPBottom=0.2
+                    rpmTop=300
+                    rpmBottom=300
+                1:
+                    currPRMTop: 0.0
+                    currRPMBottom: 2691.987410571929
+
+                2:
+
+
+
+                 */
+
+
+
+
                 RPMControllerTop = new PIDController(KPTop, 0, 0);
             }
             if (rpmBottomPrev != rpmBottom) {
@@ -64,8 +85,7 @@ public class OuttakePIDTuner extends LinearOpMode {
     }
     public void pidtunedmotor(Telemetry telemetry) {
 
-        startTime = System.nanoTime() / 1e9;
-        
+
         prevPosTop = currPosTop;
         prevPosBottom = currPosBottom;
         
