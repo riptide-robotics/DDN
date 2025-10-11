@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.UnitTests;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-public class RunAMotor extends LinearOpMode {
+public class TestIntake extends LinearOpMode {
 
     DcMotor motor;
 
