@@ -71,7 +71,6 @@ public class Meet0FSM extends LinearOpMode {
                 outtake.stop();
             }
 
-            outtake.controlPitch(gamepad2.left_stick_y);
             fieldCentricDrive();
 
             double currTime = endTimer.seconds();

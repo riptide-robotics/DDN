@@ -16,7 +16,6 @@ import org.firstinspires.ftc.teamcode.Robot;
 public class Outtake {
     private final DcMotor motorL;
     private final DcMotor motorR;
-    private final Servo outtakeServo;
 
     private final PIDController flywheelVelocityControllerR = new PIDController(FLYWHEEL_KP, 0, 0);
     private final PIDController flywheelVelocityControllerL = new PIDController(FLYWHEEL_KP, 0, 0);
@@ -29,7 +28,6 @@ public class Outtake {
         motorL.setDirection(DcMotorSimple.Direction.FORWARD);
         motorR.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        outtakeServo = hardwareMap.servo.get("outtakePitch");
 
     }
 
@@ -101,7 +99,5 @@ public class Outtake {
     //Stops here
 
 
-    public void controlPitch(double angle){
-        outtakeServo.setPosition(angle);
-    }
+
 }
