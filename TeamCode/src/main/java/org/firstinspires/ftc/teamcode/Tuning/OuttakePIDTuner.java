@@ -14,7 +14,9 @@ import org.firstinspires.ftc.teamcode.DummyClasses.Outtake;
 @Config
 @TeleOp(name = "OuttakeTuner",group = "Tuning")
 public class OuttakePIDTuner extends LinearOpMode {
-    public static double KP = 0;
+    public static double KPTop = 0;
+    public static double KPBottom = 0;
+
     Outtake outtake;
     public static double rpmTop = 360;
     public static double rpmBottom = 360;
@@ -24,8 +26,8 @@ public class OuttakePIDTuner extends LinearOpMode {
 
     private double prevPosTop, prevPosBottom, currPosTop, currPosBottom;
     private double startTime = System.nanoTime() / 1e9;
-    private final PIDController RPMControllerTop = new PIDController(KP, 0, 0);
-    private final PIDController RPMControllerBottom = new PIDController(KP, 0, 0);
+    private final PIDController RPMControllerTop = new PIDController(KPTop, 0, 0);
+    private final PIDController RPMControllerBottom = new PIDController(KPBottom, 0, 0);
 
 
     @Override
