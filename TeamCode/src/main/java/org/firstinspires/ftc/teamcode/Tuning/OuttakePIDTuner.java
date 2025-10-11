@@ -19,15 +19,19 @@ public class OuttakePIDTuner extends LinearOpMode {
 
     Outtake outtake;
     public static double rpmTop = 360;
+    private static double rpmTopPrev = 360;
+
     public static double rpmBottom = 360;
+    private static double rpmBottomPrev = 360;
+
     Telemetry tele = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
 
 
     private double prevPosTop, prevPosBottom, currPosTop, currPosBottom;
     private double startTime = System.nanoTime() / 1e9;
-    private final PIDController RPMControllerTop = new PIDController(KPTop, 0, 0);
-    private final PIDController RPMControllerBottom = new PIDController(KPBottom, 0, 0);
+    private PIDController RPMControllerTop = new PIDController(KPTop, 0, 0);
+    private PIDController RPMControllerBottom = new PIDController(KPBottom, 0, 0);
 
 
     @Override
@@ -43,11 +47,19 @@ public class OuttakePIDTuner extends LinearOpMode {
 
         while (opModeIsActive()) {
             tele.addData("goalRPMTop", rpmTop);
-            tele.addData("goalRPMTop", rpmBottom);
+            tele.addData("goalRPMBottom", rpmBottom);
 
 
             pidtunedmotor(tele);
             tele.update();
+            if (rpmTopPrev != rpmTop) {
+                rpmTopPrev = rpmTop;
+                RPMControllerTop = new PIDController(KPTop, 0, 0);
+            }
+            if (rpmBottomPrev != rpmBottom) {
+                rpmBottomPrev = rpmBottom;
+                RPMControllerBottom = new PIDController(KPBottom, 0, 0);
+            }
         }
     }
     public void pidtunedmotor(Telemetry telemetry) {
