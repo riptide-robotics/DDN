@@ -10,6 +10,12 @@ import java.util.ArrayList;
 // maybe usable, idk  usable, needs some edits.
 
 public class Path {
+    public enum FollowMethod {
+        HEAD_FORWARD,
+        HEAD_TANGENT, // runs tangent to path,
+        HEAD_FLOAT
+    }
+
     public interface RobotAction {
         void Action();
     }
@@ -36,20 +42,23 @@ public class Path {
 
         private RobotAction a = null;
         private EditablePose2D pos;
+        private double heading;
         private double goalVelocity;
         private double goalAcceleration;
         private double delayUntilNextPoint = 0;
+        private FollowMethod followMethod = FollowMethod.HEAD_TANGENT;
 
-        public PathPoint(EditablePose2D position, double goalVelocity, double goalAcceleration, RobotAction a, double delayUntilNextPoint){
+        public PathPoint(EditablePose2D position, double goalVelocity, double goalAcceleration, RobotAction a, double delayUntilNextPoint, FollowMethod followMethod){
             this.a = a;
             this.pos = position;
+            this.followMethod = followMethod;
             this.delayUntilNextPoint = delayUntilNextPoint;
-            this.goalVelocity = goalVelocity;
+            this.goalVelocity = goalVelocity; // velocity magnitude, magnitude will be the heading.
             this.goalAcceleration = goalAcceleration;
         }
 
         public PathPoint(EditablePose2D position, RobotAction a, double delayUntilNextPoint){
-            this(position, MAX_V_VERT, MAX_A_VERT, a, delayUntilNextPoint);
+            this(position, MAX_V_VERT, MAX_A_VERT, a, delayUntilNextPoint, FollowMethod.HEAD_TANGENT);
         }
 
         public RobotAction getAction(){
