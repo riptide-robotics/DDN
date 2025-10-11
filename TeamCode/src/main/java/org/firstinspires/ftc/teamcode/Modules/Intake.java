@@ -189,6 +189,19 @@ public class Intake{
         t.addLine("P:G - " + pgratio[0] + ":" + pgratio[1]);
     }
 
+    public void rotate(boolean forwards) {
+        String tmp = order[0];
+        if (forwards) {
+            order[0] = order[1];
+            order[1] = order[2];
+            order[2] = tmp;
+        } else {
+            order[0] = order[2];
+            order[2] = order[1];
+            order[1] = tmp;
+        }
+    }
+
     public TelemetryPacket sendTelemetry(){
         return t;
     }
