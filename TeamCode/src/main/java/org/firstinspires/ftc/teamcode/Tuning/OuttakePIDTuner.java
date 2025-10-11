@@ -65,8 +65,8 @@ public class OuttakePIDTuner extends LinearOpMode {
         double currRPMTop = dThetaTop / (dt / 60);
         double currRPMBottom = dThetaBottom / (dt / 60);
 
-        telemetry.addData("Current RPM of top outtake motor", currRPMTop);
-        telemetry.addData("Current RPM of bottom outtake motor", currRPMBottom);
+        telemetry.addData("currPRMTop", currRPMTop);
+        telemetry.addData("currRPMBottom", currRPMBottom);
 
         double wantedWheelPowerTop = RPMControllerTop.calculate(currRPMTop, rpmTop);
         double wantedWheelPowerBottom = RPMControllerBottom.calculate(currRPMBottom, rpmBottom);
