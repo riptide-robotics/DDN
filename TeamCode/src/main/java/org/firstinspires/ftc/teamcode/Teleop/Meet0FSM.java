@@ -82,6 +82,15 @@ public class Meet0FSM extends LinearOpMode {
                     hasrun = false;
                 }
 
+//                if (gamepad2.dpad_up){
+//                    currentState = states.ENDGAME;
+//                    hasrun = false;
+//                }
+
+                if (gamepad2.right_trigger > 0.5){
+                    // motor.run
+                }
+
                 break;
             case OUTTAKE:
                 if (!hasrun){
