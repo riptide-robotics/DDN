@@ -135,10 +135,7 @@ public class Intake{
                     }
                 } else {
                     t.addLine("Eject result: Target found at pos 2");
-                    tmp = order[2];
-                    order[2] = order[1];
-                    order[1] = order[0];
-                    order[0] = tmp;
+                    rotate(false);
                     // ROTATOR FUNCTION
                     t.addLine("Eject status: Rotated -1 units");
                     t.addLine("Action: Ejecting artifact");
@@ -153,11 +150,8 @@ public class Intake{
                 }
             } else {
                 t.addLine("Eject result: Target found at pos 1");
-                tmp = order[1];
-                order[1] = order[2];
-                order[2] = order[0];
-                order[0] = tmp;
-                // ROTATOR FUNCTION
+                rotate(true);
+                // ROTATOR FUNCTION W/IN ROTATE
                 t.addLine("Eject status: Rotated 1 units");
                 t.addLine("Action: Ejecting artifact");
                 // EJECT FUNCTION
@@ -182,14 +176,12 @@ public class Intake{
                 pgratio[1]--;
             }
         }
-        order[0] = order[1];
-        order[1] = order[2];
-        order[2] = null;
+        rotate(true);
         // Depending on how the intake storage is built, may need to ROTATE 1 unit
         t.addLine("P:G - " + pgratio[0] + ":" + pgratio[1]);
     }
 
-    public void rotate(boolean forwards) {
+    public void rotate(boolean forwards) { // HAVE ROTATOR FUNCTIONALITY W/IN THIS FUNCTION
         String tmp = order[0];
         if (forwards) {
             order[0] = order[1];
