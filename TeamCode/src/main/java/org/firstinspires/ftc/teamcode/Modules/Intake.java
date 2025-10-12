@@ -22,6 +22,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
@@ -35,6 +36,9 @@ public class Intake{
     int[] pgratio = new int[2];
 
     NormalizedColorSensor colorSensor;
+    DcMotor intakeMotor;
+    DcMotor leftTransferMotor;
+    DcMotor rightTransferMotor;
     float gain = 2; // ...... ANYWAY
     /**
      * A Rev Color Match object is used to register and detect known colors. This can
@@ -50,8 +54,11 @@ public class Intake{
 
 
     public Intake(HardwareMap hardwareMap){
-
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "REVcolorSensor");
+        intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
+        leftTransferMotor = hardwareMap.get(DcMotor.class, "leftTransferMotor");
+        rightTransferMotor = hardwareMap.get(DcMotor.class, "rightTransferMotor");
+        rightTransferMotor.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
     public String scanColor() {
@@ -135,7 +142,7 @@ public class Intake{
                     }
                 } else {
                     t.addLine("Eject result: Target found at pos 2");
-                    rotate(false);
+                    rotateOne(false);
                     // ROTATOR FUNCTION
                     t.addLine("Eject status: Rotated -1 units");
                     t.addLine("Action: Ejecting artifact");
@@ -150,7 +157,7 @@ public class Intake{
                 }
             } else {
                 t.addLine("Eject result: Target found at pos 1");
-                rotate(true);
+                rotateOne(true);
                 // ROTATOR FUNCTION W/IN ROTATE
                 t.addLine("Eject status: Rotated 1 units");
                 t.addLine("Action: Ejecting artifact");
@@ -176,12 +183,12 @@ public class Intake{
                 pgratio[1]--;
             }
         }
-        rotate(true);
+        rotateOne(true);
         // Depending on how the intake storage is built, may need to ROTATE 1 unit
         t.addLine("P:G - " + pgratio[0] + ":" + pgratio[1]);
     }
 
-    public void rotate(boolean forwards) { // HAVE ROTATOR FUNCTIONALITY W/IN THIS FUNCTION
+    public void rotateOne(boolean forwards) { // HAVE ROTATOR FUNCTIONALITY W/IN THIS FUNCTION
         String tmp = order[0];
         if (forwards) {
             order[0] = order[1];
@@ -192,6 +199,14 @@ public class Intake{
             order[2] = order[1];
             order[1] = tmp;
         }
+    }
+
+    public void spin(double p) {
+        intakeMotor.setPower(p);
+    }
+    public void transfer(double p) {
+        leftTransferMotor.setPower(p);
+        rightTransferMotor.setPower(p);
     }
 
     public TelemetryPacket sendTelemetry(){

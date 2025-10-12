@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Teleop;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Robot;
@@ -19,7 +20,8 @@ public class Meet0FSM extends LinearOpMode {
     public enum states{
         IDLE,
         INTAKE,
-        OUTTAKE
+        OUTTAKE,
+        ENDGAME
     }
 
     public states currentState = states.IDLE;
@@ -46,61 +48,83 @@ public class Meet0FSM extends LinearOpMode {
     }
 
 
-    private void FSM(){
-        switch(currentState){
+    private void FSM() {
+        switch(currentState) {
             case IDLE:
 
-                if (!hasrun){
+                if (!hasrun) {
                     //Do idle things
                     hasrun = true;
                 }
 
-                if (gamepad2.left_trigger > 0.1){
+                if (gamepad2.y) {
                     currentState = states.INTAKE;
                     hasrun = false;
                 }
 
-                if (gamepad2.left_trigger > 0.1){
+                if (gamepad2.a) {
                     currentState = states.OUTTAKE;
+                    hasrun = false;
+                }
+
+                if (gamepad2.dpad_up) {
+                    currentState = states.ENDGAME;
                     hasrun = false;
                 }
 
                 break;
             case INTAKE:
-                if (!hasrun){
+                if (!hasrun) {
                     //Do intake setup
                     hasrun = true;
                 }
 
-                if (gamepad2.x){
+                if (gamepad2.a) {
+                    robot.getIntake().transfer(0.8);
                     currentState = states.OUTTAKE;
                     hasrun = false;
                 }
 
-                if (gamepad2.b){
+                if (gamepad2.b) {
                     currentState = states.IDLE;
                     hasrun = false;
+                }
+
+                if (gamepad2.dpad_up) {
+                    currentState = states.ENDGAME;
+                    hasrun = false;
+                }
+
+                if (gamepad2.right_trigger > 0.3) {
+                    robot.getIntake().spin(gamepad2.right_trigger * 0.12 > 1 ? 1 : gamepad2.right_trigger * 0.12);
                 }
 
                 break;
             case OUTTAKE:
-                if (!hasrun){
+                if (!hasrun) {
                     //Do outtake setup
+                    robot.getIntake().transfer(0);
                     hasrun = true;
                 }
 
-                if (gamepad2.b){
+                if (gamepad2.b) {
                     currentState = states.IDLE;
                     hasrun = false;
                 }
 
-                if (gamepad2.left_trigger > 0.1){
+                if (gamepad2.y) {
                     currentState = states.INTAKE;
                     hasrun = false;
                 }
 
+                if (gamepad2.dpad_up) {
+                    currentState = states.ENDGAME;
+                    hasrun = false;
+                }
 
                 break;
+            case ENDGAME:
+                //
         }
     }
 
