@@ -3,19 +3,17 @@ package org.firstinspires.ftc.teamcode.Teleop;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Robot;
 
-
 @Config
-@TeleOp(name = "Meet 0 FSM")
-public class Meet0FSM extends LinearOpMode {
-
+@TeleOp(name = "Post Meet 0 FSM")
+public class PostMeet0FSM extends LinearOpMode {
     Robot robot;
 
     boolean hasrun = false;
+    boolean a2WasPressed = false;
 
     public enum states{
         IDLE,
@@ -24,7 +22,7 @@ public class Meet0FSM extends LinearOpMode {
         ENDGAME
     }
 
-    public states currentState = states.IDLE;
+    public PostMeet0FSM.states currentState = PostMeet0FSM.states.IDLE;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -53,22 +51,25 @@ public class Meet0FSM extends LinearOpMode {
             case IDLE:
 
                 if (!hasrun) {
+                    robot.getIntake().spin(0);
+                    robot.getIntake().transfer(0);
+                    //robot.getOuttake().stop();
                     //Do idle things
                     hasrun = true;
                 }
 
                 if (gamepad2.y) {
-                    currentState = states.INTAKE;
+                    currentState = PostMeet0FSM.states.INTAKE;
                     hasrun = false;
                 }
 
                 if (gamepad2.a) {
-                    currentState = states.OUTTAKE;
+                    currentState = PostMeet0FSM.states.OUTTAKE;
                     hasrun = false;
                 }
 
                 if (gamepad2.dpad_up) {
-                    currentState = states.ENDGAME;
+                    currentState = PostMeet0FSM.states.ENDGAME;
                     hasrun = false;
                 }
 
@@ -80,47 +81,50 @@ public class Meet0FSM extends LinearOpMode {
                 }
 
                 if (gamepad2.a) {
-                    robot.getIntake().transfer(0.8);
-                    currentState = states.OUTTAKE;
+                    currentState = PostMeet0FSM.states.OUTTAKE;
                     hasrun = false;
                 }
 
                 if (gamepad2.b) {
-                    currentState = states.IDLE;
+                    currentState = PostMeet0FSM.states.IDLE;
                     hasrun = false;
                 }
 
                 if (gamepad2.dpad_up) {
-                    currentState = states.ENDGAME;
+                    currentState = PostMeet0FSM.states.ENDGAME;
                     hasrun = false;
                 }
 
                 if (gamepad2.y) {
                     robot.getIntake().spin(1);
-                } else {
-                    robot.getIntake().spin(0);
                 }
 
                 break;
             case OUTTAKE:
                 if (!hasrun) {
                     //Do outtake setup
-                    robot.getIntake().transfer(0);
                     hasrun = true;
                 }
 
+                if (gamepad2.a && !a2WasPressed) {
+                    robot.getIntake().transferToggle();
+                    a2WasPressed = true;
+                } else {
+                    a2WasPressed = false;
+                }
+
                 if (gamepad2.b) {
-                    currentState = states.IDLE;
+                    currentState = PostMeet0FSM.states.IDLE;
                     hasrun = false;
                 }
 
                 if (gamepad2.y) {
-                    currentState = states.INTAKE;
+                    currentState = PostMeet0FSM.states.INTAKE;
                     hasrun = false;
                 }
 
                 if (gamepad2.dpad_up) {
-                    currentState = states.ENDGAME;
+                    currentState = PostMeet0FSM.states.ENDGAME;
                     hasrun = false;
                 }
 
