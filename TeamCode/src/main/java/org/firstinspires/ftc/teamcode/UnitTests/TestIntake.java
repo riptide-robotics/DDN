@@ -1,11 +1,18 @@
 package org.firstinspires.ftc.teamcode.UnitTests;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+@Config
+@TeleOp(name = "Test Intake")
 public class TestIntake extends LinearOpMode {
 
     DcMotor motor;
+
+    public static double speed;
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -15,9 +22,9 @@ public class TestIntake extends LinearOpMode {
          * * * * * * * * * * * * * * *
          */
 
-        motor = hardwareMap.dcMotor.get("motor");
+        motor = hardwareMap.dcMotor.get("intakeMotor");
 
-        motor.setDirection(DcMotor.Direction.FORWARD);
+        motor.setDirection(DcMotor.Direction.REVERSE);
 
         motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -46,7 +53,7 @@ public class TestIntake extends LinearOpMode {
 
 
             if(gamepad1.y){
-                motor.setPower(1);
+                motor.setPower(speed);
             }else{
                 motor.setPower(0);
             }
