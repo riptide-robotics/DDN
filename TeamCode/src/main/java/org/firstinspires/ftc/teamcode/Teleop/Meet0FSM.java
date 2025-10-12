@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Teleop;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Robot;
@@ -19,7 +20,8 @@ public class Meet0FSM extends LinearOpMode {
     public enum states{
         IDLE,
         INTAKE,
-        OUTTAKE
+        OUTTAKE,
+        ENDGAME
     }
 
     public states currentState = states.IDLE;
@@ -65,6 +67,11 @@ public class Meet0FSM extends LinearOpMode {
                     hasrun = false;
                 }
 
+                if (gamepad2.dpad_up){
+                    currentState = states.ENDGAME;
+                    hasrun = false;
+                }
+
                 break;
             case INTAKE:
                 if (!hasrun){
@@ -82,13 +89,13 @@ public class Meet0FSM extends LinearOpMode {
                     hasrun = false;
                 }
 
-//                if (gamepad2.dpad_up){
-//                    currentState = states.ENDGAME;
-//                    hasrun = false;
-//                }
+                if (gamepad2.dpad_up){
+                    currentState = states.ENDGAME;
+                    hasrun = false;
+                }
 
                 if (gamepad2.right_trigger > 0.5){
-                    // motor.run
+                    //motor.setPower(1);
                 }
 
                 break;
@@ -108,8 +115,14 @@ public class Meet0FSM extends LinearOpMode {
                     hasrun = false;
                 }
 
+                if (gamepad2.dpad_up){
+                    currentState = states.ENDGAME;
+                    hasrun = false;
+                }
 
                 break;
+            case ENDGAME:
+                //
         }
     }
 
