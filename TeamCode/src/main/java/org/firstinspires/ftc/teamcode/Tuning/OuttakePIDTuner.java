@@ -104,8 +104,8 @@ public class OuttakePIDTuner extends LinearOpMode {
         if (bottomRecords.size() > queueSize)
             bottomRecords.remove(0);
 
-        double averageTop = topRecords.size() >= queueSize ? topRecords.get(0)+topRecords.get(1)+topRecords.get(2)+topRecords.get(3)+topRecords.get(4)/5 : currRPMTop;
-        double averageBottom = bottomRecords.size() >= queueSize ? bottomRecords.get(0)+bottomRecords.get(1)+bottomRecords.get(2)+bottomRecords.get(3)+bottomRecords.get(4)/5 : currRPMBottom;
+        double averageTop = topRecords.size() >= queueSize ? (topRecords.get(0)+topRecords.get(1)+topRecords.get(2)+topRecords.get(3)+topRecords.get(4))/5 : currRPMTop;
+        double averageBottom = bottomRecords.size() >= queueSize ? (bottomRecords.get(0)+bottomRecords.get(1)+bottomRecords.get(2)+bottomRecords.get(3)+bottomRecords.get(4))/5 : currRPMBottom;
         telemetry.addData("ready", bottomRecords.size() >= queueSize);
         telemetry.addData("top", averageTop);
         telemetry.addData("bottom", averageBottom);
