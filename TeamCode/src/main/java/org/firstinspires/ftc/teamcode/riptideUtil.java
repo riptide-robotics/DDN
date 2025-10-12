@@ -58,4 +58,12 @@ public class riptideUtil {
     // Speed relationships
     public static double MAX_A = 72;                 // UNDETERMINED
     public static double MAX_V = 96;                 // UNDETERMINED
+
+
+
+// -----------------------------------------------------------------------------
+//                          MEET 0 STUFF
+// -----------------------------------------------------------------------------
+    public static double
+
 }

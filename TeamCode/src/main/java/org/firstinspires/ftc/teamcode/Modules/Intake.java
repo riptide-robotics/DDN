@@ -208,6 +208,13 @@ public class Intake{
         leftTransferMotor.setPower(p);
         rightTransferMotor.setPower(p);
     }
+    public void transferToggle() {
+        if (leftTransferMotor.getPower() > 0) {
+            transfer(0);
+        } else {
+            transfer(0.8);
+        }
+    }
 
     public TelemetryPacket sendTelemetry(){
         return t;

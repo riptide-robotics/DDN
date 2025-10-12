@@ -83,10 +83,10 @@ public class Meet0FSM extends LinearOpMode {
                 }
 
                 if (gamepad2.left_trigger > 0.1){
-                    robot.getOuttake().setFlywheelSpeed(4500 /* Long Distance */);
+                    robot.getOuttake().setFlywheelSpeed(4500, 4500 /* Long Distance needs to be tuned*/);
                     updateTime = true;
                 } else if (gamepad2.left_bumper) {
-                    robot.getOuttake().setFlywheelSpeed(3500 /* Short Distance */);
+                    robot.getOuttake().setFlywheelSpeed(3500, 3500 /* Short Distance needs to be tuned*/);
                     updateTime = true;
                 }else{
                     robot.getOuttake().stop();
