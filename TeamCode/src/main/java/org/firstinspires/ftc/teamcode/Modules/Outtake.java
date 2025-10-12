@@ -9,12 +9,14 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.Modules.PIDController;
 
+import java.util.LinkedList;
+
 public class Outtake {
     private final DcMotor topFlywheel;
     private final DcMotor bottomFlywheel;
 
-    private final PIDController flywheelVelocityControllerR = new PIDController(TOP_FLYWHEEL_KP, 0, 0);
-    private final PIDController flywheelVelocityControllerL = new PIDController(BOTTOM_FLYWHEEL_KP, 0, 0);
+    private final PIDController flywheelVelocityControllerBottom = new PIDController(TOP_FLYWHEEL_KP, 0, 0);
+    private final PIDController flywheelVelocityControllerTop = new PIDController(BOTTOM_FLYWHEEL_KP, 0, 0);
 
     public Outtake(HardwareMap hardwareMap){
 
@@ -48,32 +50,65 @@ public class Outtake {
     private int previousTickCountL = 0;
     private int previousTickCountR = 0;
 
+    LinkedList<Double> topRecords = new LinkedList<>();
+    LinkedList<Double> bottomRecords = new LinkedList<>();
 
-    public void setFlywheelSpeed(double goalRPM){
+    private double prevPosTop, prevPosBottom, currPosTop, currPosBottom;
 
-        int currentTickCountL = topFlywheel.getCurrentPosition();
-        int currentTickCountR = bottomFlywheel.getCurrentPosition();
+    public static int queueSize = 5;
 
-        double dthetaL = (currentTickCountL - previousTickCountL)/28D;
-        previousTickCountL = currentTickCountL;
+    public void setFlywheelSpeed(double goalRPMTop, double goalRPMBottom){
 
-        double dthetaR = (currentTickCountR - previousTickCountR)/28D;
-        previousTickCountR = currentTickCountR;
+        prevPosTop = currPosTop;
+        prevPosBottom = currPosBottom;
+
+        currPosTop = currPosL();
+        currPosBottom = currPosR();
+
+        double dThetaTop = (currPosTop - prevPosTop)/28;
+        double dThetaBottom = (currPosBottom - prevPosBottom)/28;
 
         double dt = System.nanoTime() / 1e9 - startTime;
         startTime = System.nanoTime() / 1e9;
 
+        double currRPMTop = dThetaTop / (dt / 60);
+        double currRPMBottom = dThetaBottom / (dt / 60);
 
+        // telemetry.addData("currPRMTop", currRPMTop);
+        // telemetry.addData("currRPMBottom", currRPMBottom);
 
-        double currRPML = dthetaL / (dt / 60);
-        double currRPMR = dthetaR / (dt / 60);
+        //double wantedWheelPowerTop = RPMControllerTop.calculate(currRPMTop, rpmTop);
+        //double wantedWheelPowerBottom = RPMControllerBottom.calculate(currRPMBottom, rpmBottom);
 
-        double wantedWheelPowerR = flywheelVelocityControllerR.calculate(currRPMR, goalRPM);
-        double wantedWheelPowerL = flywheelVelocityControllerL.calculate(currRPML, goalRPM);
+        topRecords.add(currRPMTop);
+        if (topRecords.size() > queueSize)
+            topRecords.remove(0);
 
-        topFlywheel.setPower(wantedWheelPowerL);
-        bottomFlywheel.setPower(wantedWheelPowerR);
+        bottomRecords.add(currRPMBottom);
+        if (bottomRecords.size() > queueSize)
+            bottomRecords.remove(0);
 
+        double undividedAverageBottom = 0;
+        double undividedAverageTop = 0;
+
+        for (int i = 0; i < topRecords.size(); i++) {
+            undividedAverageTop += topRecords.get(i);
+            undividedAverageBottom += topRecords.get(i);
+        }
+        double averageTop;
+        double averageBottom;
+        if (undividedAverageTop > 0) {
+            averageTop = undividedAverageTop / queueSize;
+            averageBottom = undividedAverageBottom / queueSize;
+        } else {
+            averageTop = currRPMTop;
+            averageBottom = currRPMBottom;
+        }
+
+        double wantedWheelPowerTopAverage = flywheelVelocityControllerTop.calculate(averageTop, goalRPMTop);
+        double wantedWheelPowerBottomAverage = flywheelVelocityControllerBottom.calculate(averageBottom, goalRPMBottom);
+
+        setFlyWheelPower(wantedWheelPowerTopAverage,wantedWheelPowerBottomAverage);
     }
 
     public void startFlywheel(){

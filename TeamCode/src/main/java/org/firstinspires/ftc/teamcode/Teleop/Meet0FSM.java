@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.Teleop;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -19,6 +18,7 @@ public class Meet0FSM extends LinearOpMode {
     AutonomousRobot autoRobot;
 
     boolean hasrun = false;
+    boolean updateTime = false;
 
     ElapsedTime endTimer = new ElapsedTime();
 
@@ -53,6 +53,10 @@ public class Meet0FSM extends LinearOpMode {
             FSM();
             fieldCentricDrive();
 
+            if (updateTime){
+                robot.getOuttake().startFlywheel();
+            }
+
             double currTime = endTimer.seconds();
 
             if (currTime >= 80){gamepad1.rumble(1, 1, 500); gamepad2.rumble(1, 1, 500);}
@@ -66,16 +70,36 @@ public class Meet0FSM extends LinearOpMode {
     private void FSM(){
         switch(currentState){
             case TELEOP:
+                if (!hasrun){
+                    // do teleop setup
+
+                }
+
+
                 if (gamepad2.right_trigger > 0.1){
-                    robot.getIntake().start();
+                    robot.getIntake().spin(1);
                 } else {
-                    robot.getIntake().stop();
+                    robot.getIntake().spin(0);
                 }
 
                 if (gamepad2.left_trigger > 0.1){
-                    robot.outtake().start(1 /* idk */);
-                } else {
-                    robot.outtake().stop();
+                    robot.getOuttake().setFlywheelSpeed(4500 /* Long Distance */);
+                    updateTime = true;
+                } else if (gamepad2.left_bumper) {
+                    robot.getOuttake().setFlywheelSpeed(3500 /* Short Distance */);
+                    updateTime = true;
+                }else{
+                    robot.getOuttake().stop();
+                    updateTime = false;
+                }
+
+                if (gamepad2.right_bumper) {
+                    robot.getIntake().transfer(1);
+                }
+
+                if (gamepad2.dpad_up){
+                    currentState = states.ENDGAME;
+                    hasrun = false;
                 }
 
                 break;

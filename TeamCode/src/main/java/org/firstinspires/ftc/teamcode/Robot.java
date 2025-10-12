@@ -1,14 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 
 import org.firstinspires.ftc.teamcode.DummyClasses.EndgameServos;
-import org.firstinspires.ftc.teamcode.DummyClasses.IntakeMeet0;
 import org.firstinspires.ftc.teamcode.Modules.Drivetrain;
 import org.firstinspires.ftc.teamcode.Modules.Intake;
 import org.firstinspires.ftc.teamcode.Modules.Outtake;
-import org.firstinspires.ftc.teamcode.Modules.Slides;
 
 public class Robot {
 
@@ -16,7 +13,7 @@ public class Robot {
 
     Drivetrain drivetrain;
 
-    IntakeMeet0 intake;
+    Intake intake;
 
     EndgameServos endgameServos;
 
@@ -27,7 +24,7 @@ public class Robot {
 
         drivetrain = new Drivetrain(hardwareMap);
 
-        intake = new IntakeMeet0(hardwareMap);
+        intake = new Intake(hardwareMap);
 
         endgameServos = new EndgameServos(hardwareMap);
 
@@ -38,9 +35,9 @@ public class Robot {
         return drivetrain;
     }
 
-    public IntakeMeet0 getIntake() {return intake;}
+    public Intake getIntake() {return intake;}
 
     public EndgameServos getEndgameServos() {return endgameServos;}
 
-    public Outtake outtake() {return outtake;}
+    public Outtake getOuttake() {return outtake;}
 }
