@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.Tuning;
 
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -64,24 +63,6 @@ public class OuttakePIDTuner extends LinearOpMode {
             tele.update();
             if (rpmTopPrev != rpmTop) {
                 rpmTopPrev = rpmTop;
-                /*
-                set:
-                    KPTop=0.2
-                    KPBottom=0.2
-                    rpmTop=300
-                    rpmBottom=300
-                1:
-                    currPRMTop: 0.0
-                    currRPMBottom: 2691.987410571929
-
-                2:
-
-
-
-                 */
-
-
-
 
                 RPMControllerTop = new PIDController(KPTop, 0, 0);
             }
