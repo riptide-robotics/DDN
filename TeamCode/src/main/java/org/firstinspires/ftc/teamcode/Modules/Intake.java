@@ -37,7 +37,6 @@ public class Intake{
 
     NormalizedColorSensor colorSensor;
     DcMotor intakeMotor;
-    DcMotor leftTransferMotor;
     DcMotor rightTransferMotor;
     float gain = 2; // ...... ANYWAY
     /**
@@ -56,7 +55,6 @@ public class Intake{
     public Intake(HardwareMap hardwareMap){
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "REVcolorSensor");
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
-        leftTransferMotor = hardwareMap.get(DcMotor.class, "leftTransferMotor");
         rightTransferMotor = hardwareMap.get(DcMotor.class, "rightTransferMotor");
         rightTransferMotor.setDirection(DcMotorSimple.Direction.REVERSE);
     }
@@ -205,11 +203,10 @@ public class Intake{
         intakeMotor.setPower(p);
     }
     public void transfer(double p) {
-        leftTransferMotor.setPower(p);
         rightTransferMotor.setPower(p);
     }
     public void transferToggle() {
-        if (leftTransferMotor.getPower() > 0) {
+        if (rightTransferMotor.getPower() > 0) {
             transfer(0);
         } else {
             transfer(0.8);
