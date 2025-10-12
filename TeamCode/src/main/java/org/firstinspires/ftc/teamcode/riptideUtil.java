@@ -12,7 +12,21 @@ public class riptideUtil {
      */
 
     /** General constants */
-
+    // COLOR SENSING
+    // Green
+    public static final float GREEN_R = 0.136f;
+    public static final float GREEN_R_STDEV = 0.05f;
+    public static final float GREEN_G = 0.578f;
+    public static final float GREEN_G_STDEV = 0.15f;
+    public static final float GREEN_B = 0.404f;
+    public static final float GREEN_B_STDEV = 0.13f;
+    // Purple
+    public static final float PURPLE_R = 0.346f;
+    public static final float PURPLE_R_STDEV = 0.02f;
+    public static final float PURPLE_G = 0.376f;
+    public static final float PURPLE_G_STDEV = 0.03f;
+    public static final float PURPLE_B = 0.686f;
+    public static final float PURPLE_B_STDEV = 0.04f;
 
     /** Autonomous Constants */
     public static final double POINT_TOLERANCE = 2; // UNDETERMINED
