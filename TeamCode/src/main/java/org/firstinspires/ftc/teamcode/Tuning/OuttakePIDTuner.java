@@ -100,12 +100,32 @@ public class OuttakePIDTuner extends LinearOpMode {
         if (topRecords.size() > queueSize)
             topRecords.remove(0);
 
-        bottomRecords.add(currRPMTop);
+        bottomRecords.add(currRPMBottom);
         if (bottomRecords.size() > queueSize)
             bottomRecords.remove(0);
 
-        double averageTop = topRecords.size() >= queueSize ? (topRecords.get(0)+topRecords.get(1)+topRecords.get(2)+topRecords.get(3)+topRecords.get(4))/5 : currRPMTop;
-        double averageBottom = bottomRecords.size() >= queueSize ? (bottomRecords.get(0)+bottomRecords.get(1)+bottomRecords.get(2)+bottomRecords.get(3)+bottomRecords.get(4))/5 : currRPMBottom;
+        //these lines arent happy when you change queueSize
+//        double averageTop = topRecords.size() >= queueSize ? (topRecords.get(0)+topRecords.get(1)+topRecords.get(2)+topRecords.get(3)+topRecords.get(4))/queueSize : currRPMTop;
+//
+//        double averageBottom = bottomRecords.size() >= queueSize ? (bottomRecords.get(0)+bottomRecords.get(1)+bottomRecords.get(2)+bottomRecords.get(3)+bottomRecords.get(4))/queueSize : currRPMBottom;
+//        //fix? (untested)
+        double undividedAverageTop = 0;
+        double undividedAverageBottom = 0;
+        for (int i = 0; i < topRecords.size(); i++) {
+        undividedAverageTop += topRecords.get(i);
+        undividedAverageBottom += topRecords.get(i);
+        }
+        double averageTop;
+        double averageBottom;
+        if (undividedAverageTop > 0) {
+             averageTop = undividedAverageTop / queueSize;
+             averageBottom = undividedAverageBottom / queueSize;
+        } else {
+            averageTop = currRPMTop;
+            averageBottom = currRPMBottom;
+        }
+
+
         telemetry.addData("ready", bottomRecords.size() >= queueSize);
         telemetry.addData("top", averageTop);
         telemetry.addData("bottom", averageBottom);
