@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.Teleop;
 import static org.firstinspires.ftc.teamcode.riptideUtil.LONG_DIST_BOT;
 import static org.firstinspires.ftc.teamcode.riptideUtil.LONG_DIST_TOP;
 import static org.firstinspires.ftc.teamcode.riptideUtil.MID_DIST_BOT;
-import static org.firstinspires.ftc.teamcode.riptideUtil.MID_DiST_TOP;
+import static org.firstinspires.ftc.teamcode.riptideUtil.MID_DIST_TOP;
 import static org.firstinspires.ftc.teamcode.riptideUtil.SHORT_DIST_BOT;
 import static org.firstinspires.ftc.teamcode.riptideUtil.SHORT_DIST_TOP;
 
@@ -93,7 +93,7 @@ public class Meet0FSM extends LinearOpMode {
                     robot.getOuttake().setFlywheelSpeed(LONG_DIST_TOP, LONG_DIST_BOT /* Long Distance needs to be tuned*/);
                     updateTime = true;
                 } else if (gamepad2.left_bumper) {
-                    robot.getOuttake().setFlywheelSpeed(MID_DiST_TOP, MID_DIST_BOT /* Short Distance needs to be tuned*/);
+                    robot.getOuttake().setFlywheelSpeed(MID_DIST_TOP, MID_DIST_BOT /* Short Distance needs to be tuned*/);
                     updateTime = true;
                 } else if (gamepad2.x) {
                     robot.getOuttake().setFlywheelSpeed(SHORT_DIST_TOP, SHORT_DIST_BOT /* Short Distance needs to be tuned*/);

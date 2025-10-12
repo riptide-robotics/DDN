@@ -12,6 +12,7 @@ import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_G;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_G_STDEV;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R_STDEV;
+import static org.firstinspires.ftc.teamcode.riptideUtil.TRANSFER_POWER;
 
 import java.lang.Override;
 // Imports to sync
@@ -212,7 +213,7 @@ public class Intake{
         if (leftTransferMotor.getPower() > 0) {
             transfer(0);
         } else {
-            transfer(0.8);
+            transfer(TRANSFER_POWER);
         }
     }
 
