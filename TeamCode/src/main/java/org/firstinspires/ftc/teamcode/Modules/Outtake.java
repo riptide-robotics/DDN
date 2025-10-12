@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
-import static org.firstinspires.ftc.teamcode.riptideUtil.FLYWHEEL_KP;
+import static org.firstinspires.ftc.teamcode.riptideUtil.TOP_FLYWHEEL_KP;
+import static org.firstinspires.ftc.teamcode.riptideUtil.BOTTOM_FLYWHEEL_KP;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -12,8 +13,8 @@ public class Outtake {
     private final DcMotor topFlywheel;
     private final DcMotor bottomFlywheel;
 
-    private final PIDController flywheelVelocityControllerR = new PIDController(FLYWHEEL_KP, 0, 0);
-    private final PIDController flywheelVelocityControllerL = new PIDController(FLYWHEEL_KP, 0, 0);
+    private final PIDController flywheelVelocityControllerR = new PIDController(TOP_FLYWHEEL_KP, 0, 0);
+    private final PIDController flywheelVelocityControllerL = new PIDController(BOTTOM_FLYWHEEL_KP, 0, 0);
 
     public Outtake(HardwareMap hardwareMap){
 

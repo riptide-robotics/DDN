@@ -28,6 +28,11 @@ public class riptideUtil {
     public static final float PURPLE_B = 0.686f;
     public static final float PURPLE_B_STDEV = 0.04f;
 
+    //flywheel
+
+    public static double TOP_FLYWHEEL_KP = 0.001;
+    public static double BOTTOM_FLYWHEEL_KP = 0.001;
+
     /** Autonomous Constants */
     public static final double POINT_TOLERANCE = 2; // UNDETERMINED
     // Maximums

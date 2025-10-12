@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Modules.PIDController;
-import org.firstinspires.ftc.teamcode.DummyClasses.Outtake;
+import org.firstinspires.ftc.teamcode.Modules.Outtake;
 
 import java.util.LinkedList;
 import java.util.Queue;
