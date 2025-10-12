@@ -1,5 +1,12 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 
+import static org.firstinspires.ftc.teamcode.riptideUtil.LONG_DIST_BOT;
+import static org.firstinspires.ftc.teamcode.riptideUtil.LONG_DIST_TOP;
+import static org.firstinspires.ftc.teamcode.riptideUtil.MID_DIST_BOT;
+import static org.firstinspires.ftc.teamcode.riptideUtil.MID_DiST_TOP;
+import static org.firstinspires.ftc.teamcode.riptideUtil.SHORT_DIST_BOT;
+import static org.firstinspires.ftc.teamcode.riptideUtil.SHORT_DIST_TOP;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -83,10 +90,13 @@ public class Meet0FSM extends LinearOpMode {
                 }
 
                 if (gamepad2.left_trigger > 0.1){
-                    robot.getOuttake().setFlywheelSpeed(4500, 4500 /* Long Distance needs to be tuned*/);
+                    robot.getOuttake().setFlywheelSpeed(LONG_DIST_TOP, LONG_DIST_BOT /* Long Distance needs to be tuned*/);
                     updateTime = true;
                 } else if (gamepad2.left_bumper) {
-                    robot.getOuttake().setFlywheelSpeed(3500, 3500 /* Short Distance needs to be tuned*/);
+                    robot.getOuttake().setFlywheelSpeed(MID_DiST_TOP, MID_DIST_BOT /* Short Distance needs to be tuned*/);
+                    updateTime = true;
+                } else if (gamepad2.x) {
+                    robot.getOuttake().setFlywheelSpeed(SHORT_DIST_TOP, SHORT_DIST_BOT /* Short Distance needs to be tuned*/);
                     updateTime = true;
                 }else{
                     robot.getOuttake().stop();
@@ -94,7 +104,7 @@ public class Meet0FSM extends LinearOpMode {
                 }
 
                 if (gamepad2.right_bumper) {
-                    robot.getIntake().transfer(1);
+                    robot.getIntake().transferToggle();
                 }
 
                 if (gamepad2.dpad_up){
