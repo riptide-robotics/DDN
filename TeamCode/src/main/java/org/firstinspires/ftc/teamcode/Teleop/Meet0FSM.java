@@ -80,7 +80,6 @@ public class Meet0FSM extends LinearOpMode {
                 }
 
                 if (gamepad2.a) {
-                    robot.getIntake().transfer(0.8);
                     currentState = states.OUTTAKE;
                     hasrun = false;
                 }
@@ -105,7 +104,6 @@ public class Meet0FSM extends LinearOpMode {
             case OUTTAKE:
                 if (!hasrun) {
                     //Do outtake setup
-                    robot.getIntake().transfer(0);
                     hasrun = true;
                 }
 

@@ -13,7 +13,7 @@ public class PostMeet0FSM extends LinearOpMode {
     Robot robot;
 
     boolean hasrun = false;
-    boolean a2WasPressed = false;
+    boolean x2WasPressed = false;
 
     public enum states{
         IDLE,
@@ -106,11 +106,15 @@ public class PostMeet0FSM extends LinearOpMode {
                     hasrun = true;
                 }
 
-                if (gamepad2.a && !a2WasPressed) {
+                if (gamepad2.x && !x2WasPressed) {
                     robot.getIntake().transferToggle();
-                    a2WasPressed = true;
+                    x2WasPressed = true;
                 } else {
-                    a2WasPressed = false;
+                    x2WasPressed = false;
+                }
+
+                if (gamepad2.a) {
+                    //robot.getOuttake().start(speed);
                 }
 
                 if (gamepad2.b) {
