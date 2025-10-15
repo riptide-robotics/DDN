@@ -55,7 +55,7 @@ public class Intake{
     public Intake(HardwareMap hardwareMap){
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "REVcolorSensor");
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
-        rightTransferMotor = hardwareMap.get(DcMotor.class, "rightTransferMotor");
+        rightTransferMotor = hardwareMap.get(DcMotor.class, "transferBelt");
         rightTransferMotor.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
