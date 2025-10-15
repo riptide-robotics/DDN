@@ -12,6 +12,8 @@ import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_G;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_G_STDEV;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R_STDEV;
+import static org.firstinspires.ftc.teamcode.riptideUtil.transferClosed;
+import static org.firstinspires.ftc.teamcode.riptideUtil.transferOpen;
 
 import java.lang.Override;
 // Imports to sync
@@ -26,6 +28,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Robot;
@@ -38,6 +41,7 @@ public class Intake{
     NormalizedColorSensor colorSensor;
     DcMotor intakeMotor;
     DcMotor rightTransferMotor;
+    Servo transferToggleServo;
     float gain = 2; // ...... ANYWAY
     /**
      * A Rev Color Match object is used to register and detect known colors. This can
@@ -56,6 +60,7 @@ public class Intake{
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "REVcolorSensor");
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
         rightTransferMotor = hardwareMap.get(DcMotor.class, "transferBelt");
+        transferToggleServo = hardwareMap.get(Servo.class, "toggleServo");
         rightTransferMotor.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 
@@ -211,6 +216,23 @@ public class Intake{
         } else {
             transfer(0.8);
         }
+    }
+
+    private boolean isTransferOpen = false;
+    private boolean isTransferClosed = false;
+    public void toggleTransferServo(){
+        if (isTransferOpen){closeTransfer();}
+        if (isTransferClosed){openTransfer();}
+    }
+    public void openTransfer(){
+        transferToggleServo.setPosition(transferOpen /* idk but should be open position*/);
+        isTransferOpen = true;
+        isTransferClosed = false;
+    }
+    public void closeTransfer(){
+        transferToggleServo.setPosition(transferClosed /* idk but should be closed position*/);
+        isTransferOpen = false;
+        isTransferClosed = true;
     }
 
     public TelemetryPacket sendTelemetry(){

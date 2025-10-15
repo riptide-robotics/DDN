@@ -57,6 +57,8 @@ public class Outtake {
 
     public static int queueSize = 5;
 
+    private boolean atGoalSpeed = false;
+
     public void setFlywheelSpeed(double goalRPMTop, double goalRPMBottom){
 
         prevPosTop = currPosTop;
@@ -109,7 +111,17 @@ public class Outtake {
         double wantedWheelPowerBottomAverage = flywheelVelocityControllerBottom.calculate(averageBottom, goalRPMBottom);
 
         setFlyWheelPower(wantedWheelPowerTopAverage,wantedWheelPowerBottomAverage);
+
+        double tolerance = 50;
+        boolean atTopRPM = Math.abs(averageTop - goalRPMTop) <= tolerance;
+        boolean atBotRPM = Math.abs(averageBottom - goalRPMTop) <= tolerance;
+        atGoalSpeed = atTopRPM && atBotRPM;
     }
+
+    public boolean isAtGoalSpeed(){
+        return atGoalSpeed;
+    }
+
 
     public void startFlywheel(){
         this.startTime = System.nanoTime() / 1e9;  // Current Time in Seconds
