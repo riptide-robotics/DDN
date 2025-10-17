@@ -115,12 +115,12 @@ public class Outtake {
 //        double wantedWheelPowerTopAverage = flywheelVelocityControllerTop.calculate(averageTop, goalRPMTop);
 //        double wantedWheelPowerBottomAverage = flywheelVelocityControllerBottom.calculate(averageBottom, goalRPMBottom);
 
-        setFlyWheelPower(wantedWheelPowerTopAverage,wantedWheelPowerBottomAverage);
+        setFlyWheelPower(wantedWheelPowerTop,wantedWheelPowerBottom);
 
-        double tolerance = 50;
-        boolean atTopRPM = Math.abs(averageTop - goalRPMTop) <= tolerance;
-        boolean atBotRPM = Math.abs(averageBottom - goalRPMTop) <= tolerance;
-        atGoalSpeed = atTopRPM && atBotRPM;
+//        double tolerance = 50;
+//        boolean atTopRPM = Math.abs(averageTop - goalRPMTop) <= tolerance;
+//        boolean atBotRPM = Math.abs(averageBottom - goalRPMTop) <= tolerance;
+//        atGoalSpeed = atTopRPM && atBotRPM;
     }
 
     public boolean isAtGoalSpeed(){
