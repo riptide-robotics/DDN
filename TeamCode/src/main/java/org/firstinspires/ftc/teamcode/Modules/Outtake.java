@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.Modules.PIDController;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class Outtake {
@@ -50,6 +51,9 @@ public class Outtake {
     private int previousTickCountL = 0;
     private int previousTickCountR = 0;
 
+    ArrayList<Double> topQueue = new ArrayList<>();
+    ArrayList<Double> bottomQueue = new ArrayList<>();
+
     LinkedList<Double> topRecords = new LinkedList<>();
     LinkedList<Double> bottomRecords = new LinkedList<>();
 
@@ -80,26 +84,32 @@ public class Outtake {
         //double wantedWheelPowerTop = RPMControllerTop.calculate(currRPMTop, rpmTop);
         //double wantedWheelPowerBottom = RPMControllerBottom.calculate(currRPMBottom, rpmBottom);
 
-        topRecords.add(currRPMTop);
-        if (topRecords.size() > queueSize)
-            topRecords.remove(0);
+        topQueue.add(currRPMTop);
+        bottomQueue.add(currRPMBottom);
 
-        bottomRecords.add(currRPMBottom);
-        if (bottomRecords.size() > queueSize)
-            bottomRecords.remove(0);
+        if (topQueue.size() > queueSize){
+            topQueue.remove(0);
+            topQueue.trimToSize();
+        }
+
+        if (bottomQueue.size() > queueSize){
+            bottomQueue.remove(0);
+            bottomQueue.trimToSize();
+        }
 
         double undividedAverageBottom = 0;
         double undividedAverageTop = 0;
 
-        for (int i = 0; i < topRecords.size(); i++) {
-            undividedAverageTop += topRecords.get(i);
-            undividedAverageBottom += topRecords.get(i);
+        for (int i = 0; i < topQueue.size(); i++) {
+            undividedAverageTop += topQueue.get(i);
+            undividedAverageBottom += bottomQueue.get(i);
         }
+
         double averageTop;
         double averageBottom;
         if (undividedAverageTop > 0) {
-            averageTop = undividedAverageTop / queueSize;
-            averageBottom = undividedAverageBottom / queueSize;
+            averageTop = undividedAverageTop / topQueue.size();
+            averageBottom = undividedAverageBottom / bottomQueue.size();
         } else {
             averageTop = currRPMTop;
             averageBottom = currRPMBottom;
