@@ -48,18 +48,13 @@ public class Outtake {
     }
 
     private double startTime = System.nanoTime() / 1e9;
-    private int previousTickCountL = 0;
-    private int previousTickCountR = 0;
 
     ArrayList<Double> topQueue = new ArrayList<>();
     ArrayList<Double> bottomQueue = new ArrayList<>();
 
-    LinkedList<Double> topRecords = new LinkedList<>();
-    LinkedList<Double> bottomRecords = new LinkedList<>();
-
     private double prevPosTop, prevPosBottom, currPosTop, currPosBottom;
 
-    public static int queueSize = 5;
+    private final int queueSize = 10;
 
     private boolean atGoalSpeed = false;
 
@@ -83,42 +78,42 @@ public class Outtake {
         // telemetry.addData("currPRMTop", currRPMTop);
         // telemetry.addData("currRPMBottom", currRPMBottom);
 
-        //double wantedWheelPowerTop = RPMControllerTop.calculate(currRPMTop, rpmTop);
-        //double wantedWheelPowerBottom = RPMControllerBottom.calculate(currRPMBottom, rpmBottom);
+        double wantedWheelPowerTop = flywheelVelocityControllerTop.calculate(currRPMTop, goalRPMTop);
+        double wantedWheelPowerBottom = flywheelVelocityControllerBottom.calculate(currRPMBottom, goalRPMBottom);
 
         topQueue.add(currRPMTop);
-        bottomQueue.add(currRPMBottom);
-
-        if (topQueue.size() > queueSize){
-            topQueue.remove(0);
-            topQueue.trimToSize();
-        }
-
-        if (bottomQueue.size() > queueSize){
-            bottomQueue.remove(0);
-            bottomQueue.trimToSize();
-        }
-
-        double undividedAverageBottom = 0;
-        double undividedAverageTop = 0;
-
-        for (int i = 0; i < topQueue.size(); i++) {
-            undividedAverageTop += topQueue.get(i);
-            undividedAverageBottom += bottomQueue.get(i);
-        }
-
-        double averageTop;
-        double averageBottom;
-        if (undividedAverageTop > 0) {
-            averageTop = undividedAverageTop / topQueue.size();
-            averageBottom = undividedAverageBottom / bottomQueue.size();
-        } else {
-            averageTop = currRPMTop;
-            averageBottom = currRPMBottom;
-        }
-
-        double wantedWheelPowerTopAverage = flywheelVelocityControllerTop.calculate(averageTop, goalRPMTop);
-        double wantedWheelPowerBottomAverage = flywheelVelocityControllerBottom.calculate(averageBottom, goalRPMBottom);
+//        bottomQueue.add(currRPMBottom);
+//
+//        if (topQueue.size() > queueSize){
+//            topQueue.remove(0);
+//            topQueue.trimToSize();
+//        }
+//
+//        if (bottomQueue.size() > queueSize){
+//            bottomQueue.remove(0);
+//            bottomQueue.trimToSize();
+//        }
+//
+//        double undividedAverageBottom = 0;
+//        double undividedAverageTop = 0;
+//
+//        for (int i = 0; i < topQueue.size(); i++) {
+//            undividedAverageTop += topQueue.get(i);
+//            undividedAverageBottom += bottomQueue.get(i);
+//        }
+//
+//        double averageTop;
+//        double averageBottom;
+//        if (undividedAverageTop > 0) {
+//            averageTop = undividedAverageTop / topQueue.size();
+//            averageBottom = undividedAverageBottom / bottomQueue.size();
+//        } else {
+//            averageTop = currRPMTop;
+//            averageBottom = currRPMBottom;
+//        }
+//
+//        double wantedWheelPowerTopAverage = flywheelVelocityControllerTop.calculate(averageTop, goalRPMTop);
+//        double wantedWheelPowerBottomAverage = flywheelVelocityControllerBottom.calculate(averageBottom, goalRPMBottom);
 
         setFlyWheelPower(wantedWheelPowerTopAverage,wantedWheelPowerBottomAverage);
 
