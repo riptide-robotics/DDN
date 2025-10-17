@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.Teleop;
 import static org.firstinspires.ftc.teamcode.riptideUtil.LONG_DIST_BOT;
 import static org.firstinspires.ftc.teamcode.riptideUtil.LONG_DIST_TOP;
 import static org.firstinspires.ftc.teamcode.riptideUtil.MID_DIST_BOT;
-import static org.firstinspires.ftc.teamcode.riptideUtil.MID_DiST_TOP;
+import static org.firstinspires.ftc.teamcode.riptideUtil.MID_DIST_TOP;
 import static org.firstinspires.ftc.teamcode.riptideUtil.SHORT_DIST_BOT;
 import static org.firstinspires.ftc.teamcode.riptideUtil.SHORT_DIST_TOP;
 
@@ -26,10 +26,11 @@ public class Meet0FSM extends LinearOpMode {
 
     boolean hasrun = false;
     boolean updateTime = false;
+    boolean overrideTransfer = false;
 
     ElapsedTime endTimer = new ElapsedTime();
 
-    boolean runFlywheel = false;
+    boolean runIntake = false;
 
     public enum states{
         TELEOP,
@@ -82,18 +83,39 @@ public class Meet0FSM extends LinearOpMode {
 
                 }
 
-
+                // INTAKE
                 if (gamepad2.right_trigger > 0.1){
                     robot.getIntake().spin(1);
+                } else {robot.getIntake().spin(0);}
+
+                if (gamepad2.back){
+                    robot.getIntake().spin(-1);
+                } else {robot.getIntake().spin(0);}
+
+
+                // TRANSFER
+                if (robot.getOuttake().isAtGoalSpeed()) {
+                    robot.getIntake().toggleTransferServo();
+                    robot.getIntake().transferToggle();
                 } else {
-                    robot.getIntake().spin(0);
+                    robot.getIntake().toggleTransferServo();
+                    robot.getIntake().transferToggle();
                 }
 
+
+//                if (gamepad2.right_bumper) {
+//                    robot.getIntake().toggleTransferServo();
+//                    overrideTransfer = true;
+//                }
+
+
+
+                // OUTTAKE
                 if (gamepad2.left_trigger > 0.1){
                     robot.getOuttake().setFlywheelSpeed(LONG_DIST_TOP, LONG_DIST_BOT /* Long Distance needs to be tuned*/);
                     updateTime = true;
                 } else if (gamepad2.left_bumper) {
-                    robot.getOuttake().setFlywheelSpeed(MID_DiST_TOP, MID_DIST_BOT /* Short Distance needs to be tuned*/);
+                    robot.getOuttake().setFlywheelSpeed(MID_DIST_TOP, MID_DIST_BOT /* Short Distance needs to be tuned*/);
                     updateTime = true;
                 } else if (gamepad2.x) {
                     robot.getOuttake().setFlywheelSpeed(SHORT_DIST_TOP, SHORT_DIST_BOT /* Short Distance needs to be tuned*/);
@@ -103,9 +125,7 @@ public class Meet0FSM extends LinearOpMode {
                     updateTime = false;
                 }
 
-                if (gamepad2.right_bumper) {
-                    robot.getIntake().transferToggle();
-                }
+
 
                 if (gamepad2.dpad_up){
                     currentState = states.ENDGAME;
@@ -159,4 +179,20 @@ public class Meet0FSM extends LinearOpMode {
             robot.getDrivetrain().resetImu();
         }
     }
+
+
+
+    /*
+
+    -------------------------------------------------------
+                               TODO
+    --------------------------------------------------------
+
+        1. 3 seperate hard code outputs for outtake // DONE
+        2. Reverse intake // DONE
+        3. Make servo toggle based on outtake // DONE
+
+     */
+    
+    
 }
