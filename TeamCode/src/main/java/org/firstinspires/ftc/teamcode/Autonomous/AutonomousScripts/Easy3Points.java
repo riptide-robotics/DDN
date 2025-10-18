@@ -19,7 +19,7 @@ public class Easy3Points extends LinearOpMode {
 
         while (opModeIsActive()) {
             drivetrain.setWheelPowers(0.5,0.5,0.5,0.5);
-            Thread.sleep(1000);
+            sleep(1000);
             drivetrain.setWheelPowers(0,0,0,0);
             break;
         }
