@@ -62,6 +62,10 @@ public class Path {
             this(position, MAX_V_VERT, MAX_A_VERT, a, delayUntilNextPoint, FollowMethod.HEAD_TANGENT);
         }
 
+        public PathPoint(EditablePose2D position, double goalVelocity, RobotAction a, double delayUntilNextPoint){
+            this(position, goalVelocity, 1, a, delayUntilNextPoint, FollowMethod.HEAD_TANGENT );
+        }
+
         public RobotAction getAction(){
             return this.a;
         }
@@ -94,6 +98,12 @@ public class Path {
 
         public PathBuilder addNewPoint(EditablePose2D position, double goalVelocity, double goalAcceleration, RobotAction a, double delay, FollowMethod followMethod){
             PathPoint p = new PathPoint(position, goalVelocity, goalAcceleration, a, delay, followMethod);
+            path.add(p);
+            return this;
+        }
+
+        public PathBuilder addNewSplinePoint(EditablePose2D position, double goalVelocity, RobotAction a, double delayUntilNextPoint){
+            PathPoint p = new PathPoint(position, goalVelocity, a, delayUntilNextPoint);
             path.add(p);
             return this;
         }

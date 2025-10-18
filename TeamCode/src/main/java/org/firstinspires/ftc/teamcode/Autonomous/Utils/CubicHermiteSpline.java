@@ -1,15 +1,23 @@
 package org.firstinspires.ftc.teamcode.Autonomous.Utils;
 
-import static java.lang.Thread.sleep;
-
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import java.util.ArrayList;
 
 public class CubicHermiteSpline {
 
-    private ArrayList<Path> points;
+    private Path points;
     private ArrayList<SplineSegment> spline;
+
+    public CubicHermiteSpline(Path path) {
+        this.points = path;
+        if (path.getPathSize() < 2){ throw new IllegalArgumentException("path length needs to be greater than 1");}
+        ArrayList<SplineSegment> spline  = new ArrayList<>();
+        for (int i = 0; i<path.getPathSize() - 1; i++){
+            spline.add(new SplineSegment(path.get(i), path.get(i+1), path.get(i).getDelayUntilNextPoint()));
+        }
+        this.spline = spline;
+    }
 
     public static class SplineSegment{
         double xCubedCoefficient;
