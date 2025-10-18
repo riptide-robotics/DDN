@@ -53,7 +53,7 @@ public class Path {
             this.pos = position;
             this.followMethod = followMethod;
             this.delayUntilNextPoint = delayUntilNextPoint;
-            this.goalVelocity = goalVelocity; // velocity magnitude, magnitude will be the heading.
+            this.goalVelocity = goalVelocity; // velocity magnitude, direction will be the heading.
             this.goalAcceleration = goalAcceleration;
         }
 
@@ -81,10 +81,14 @@ public class Path {
     public static class PathBuilder{
         private ArrayList<PathPoint> path = new ArrayList<PathPoint>();
 
-        // This is the grave of a few PathBuilders that nobody knows why they existed
-
-        public PathBuilder addNewFullPoint(EditablePose2D position, RobotAction a, double delay){
+        public PathBuilder addNewPoint(EditablePose2D position, RobotAction a, double delay){
             PathPoint p = new PathPoint(position, a, delay);
+            path.add(p);
+            return this;
+        }
+
+        public PathBuilder addNewPoint(EditablePose2D position, double goalVelocity, double goalAcceleration, RobotAction a, double delay, FollowMethod followMethod){
+            PathPoint p = new PathPoint(position, goalVelocity, goalAcceleration, a, delay, followMethod);
             path.add(p);
             return this;
         }
