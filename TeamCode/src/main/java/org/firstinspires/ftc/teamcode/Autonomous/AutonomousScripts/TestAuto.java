@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.Autonomous.AutonomousRobot;
 import org.firstinspires.ftc.teamcode.Autonomous.Utils.Path;
 import org.firstinspires.ftc.teamcode.Autonomous.Utils.Waypoint;
 import org.firstinspires.ftc.teamcode.Modules.Drivetrain;
+import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
 
 @Config
 @Autonomous(name = "TEST AUTO")
@@ -22,10 +23,18 @@ public class TestAuto extends LinearOpMode {
     Drivetrain drivetrain;
 
     Path p = new Path.PathBuilder()
-                .addNewFullPoint(
+                .addNewPoint(
                         new Waypoint(1, 1, 90, 75, 1, DistanceUnit.INCH),
                         () -> {},
                         1)
+            .addNewPoint(
+                    new EditablePose2D(1, 2, 4, DistanceUnit.INCH),
+                    () -> {
+
+                    },
+                    1
+
+            )
                         .build();
 
 

@@ -55,6 +55,7 @@ public class Path {
             this.delayUntilNextPoint = delayUntilNextPoint;
             this.goalVelocity = goalVelocity; // velocity magnitude, direction will be the heading.
             this.goalAcceleration = goalAcceleration;
+            this.heading = position.getH();
         }
 
         public PathPoint(EditablePose2D position, RobotAction a, double delayUntilNextPoint){
@@ -69,12 +70,16 @@ public class Path {
             return delayUntilNextPoint;
         }
 
-        public double getGoalVelocity() {return goalVelocity;}
+        public double getGoalVelocityInInPerSec() {return goalVelocity;}
 
         public double getGoalAcceleration() {return goalAcceleration;}
 
-        public EditablePose2D getLocation(){
+        public EditablePose2D getPos(){
             return pos;
+        }
+
+        public double getHeading(){
+            return heading;
         }
     }
 
