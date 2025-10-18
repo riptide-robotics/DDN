@@ -4,6 +4,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import java.util.ArrayList;
 
+/**
+ * Given a set of points, interpolates a trajectory to follow.
+ */
 public class CubicHermiteSpline {
 
     private Path points;
@@ -56,17 +59,47 @@ public class CubicHermiteSpline {
             this.segmentTime = segmentTime;
         }
 
+        public double s(double dt){
+           double checkeddt = Math.min(dt, segmentTime);
+           return checkeddt/segmentTime;
+        }
+
         public double getX(double dt){
-            double checkeddt = Math.min(dt, segmentTime);
-            double frac = dt/segmentTime;
+            double frac = s(dt);
             return xCubedCoefficient * Math.pow(frac, 3) + xSquaredCoefficient * Math.pow(frac, 2) + xLinearCoefficient * frac + xConstantCoefficient;
         }
 
         public double getY(double dt){
-            double checkeddt = Math.min(dt, segmentTime);
-            double frac = dt/segmentTime;
+            double frac =s(dt);
             return yCubedCoefficient * Math.pow(frac, 3) + ySquaredCoefficient * Math.pow(frac, 2) + yLinearCoefficient * frac + yConstantCoefficient;
         }
+
+        public double getXPrime(double dt){
+           double frac = s(dt);
+           double dXdS = 3*xCubedCoefficient*Math.pow(frac, 2) + 2*xSquaredCoefficient * frac + xLinearCoefficient;
+           return dXdS/segmentTime;
+        }
+
+        public double getYPrime(double dt){
+            double frac = s(dt);
+            double dYdS =  3*yCubedCoefficient*Math.pow(frac, 2) + 2*ySquaredCoefficient * frac + yLinearCoefficient;
+            return dYdS/segmentTime;
+        }
+
+        //Defaulting to call this speed now, because we are dealing with vectors and velocity is now a vector
+        public double getSpeed(double dt){
+            double dx = getXPrime(dt);
+            double dy = getYPrime(dt);
+            return Math.hypot(dx, dy);
+        }
+
+        // radians
+        public double getTangentHeading(double dt){
+            double dx = getXPrime(dt);
+            double dy = getYPrime(dt);
+            return Math.atan2(dy, dx);
+        }
+
 
 
     }
