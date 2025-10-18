@@ -214,7 +214,7 @@ public class Intake{
         if (rightTransferMotor.getPower() > 0) {
             transfer(0);
         } else {
-            transfer(0.8);
+            transfer(1);
         }
     }
 
