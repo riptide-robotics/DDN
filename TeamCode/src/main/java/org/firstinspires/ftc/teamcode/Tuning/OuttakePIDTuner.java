@@ -10,6 +10,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Modules.PIDController;
 import org.firstinspires.ftc.teamcode.Modules.Outtake;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -17,6 +19,7 @@ import java.util.Queue;
 @Config
 @TeleOp(name = "OuttakeTuner",group = "Tuning")
 public class OuttakePIDTuner extends LinearOpMode {
+    private static final Logger log = LoggerFactory.getLogger(OuttakePIDTuner.class);
     public static double KPTop = 0;
     public static double KPBottom = 0;
     LinkedList<Double> topRecords = new LinkedList<>();
@@ -58,30 +61,13 @@ public class OuttakePIDTuner extends LinearOpMode {
             tele.addData("goalRPMBottom", rpmBottom);
 
 
+
             pidtunedmotor(tele);
             tele.update();
             if (rpmTopPrev != rpmTop) {
                 rpmTopPrev = rpmTop;
-                /*
-                set:
-                    KPTop=0.2
-                    KPBottom=0.2
-                    rpmTop=300
-                    rpmBottom=300
-                1:
-                    currPRMTop: 0.0
-                    currRPMBottom: 2691.987410571929
-
-                2:
-
-
-
-                 */
-
-
-
-
                 RPMControllerTop = new PIDController(KPTop, 0, 0);
+
             }
             if (rpmBottomPrev != rpmBottom) {
                 rpmBottomPrev = rpmBottom;
@@ -113,11 +99,11 @@ public class OuttakePIDTuner extends LinearOpMode {
         //double wantedWheelPowerBottom = RPMControllerBottom.calculate(currRPMBottom, rpmBottom);
 
         topRecords.add(currRPMTop);
-        if (topRecords.size() > queueSize)
+        while (topRecords.size() > queueSize)
             topRecords.remove(0);
 
         bottomRecords.add(currRPMBottom);
-        if (bottomRecords.size() > queueSize)
+        while (bottomRecords.size() > queueSize)
             bottomRecords.remove(0);
 
         double undividedAverageBottom = 0;
@@ -125,11 +111,11 @@ public class OuttakePIDTuner extends LinearOpMode {
 
         for (int i = 0; i < topRecords.size(); i++) {
             undividedAverageTop += topRecords.get(i);
-            undividedAverageBottom += topRecords.get(i);
+            undividedAverageBottom += bottomRecords.get(i);
         }
         double averageTop;
         double averageBottom;
-        if (undividedAverageTop > 0) {
+        if (topRecords.size() == queueSize) {
             averageTop = undividedAverageTop / queueSize;
             averageBottom = undividedAverageBottom / queueSize;
         } else {
@@ -147,6 +133,9 @@ public class OuttakePIDTuner extends LinearOpMode {
         double wantedWheelPowerTopAverage = RPMControllerTop.calculate(averageTop, rpmTop);
         double wantedWheelPowerBottomAverage = RPMControllerBottom.calculate(averageBottom, rpmBottom);
 
-        outtake.setFlyWheelPower(wantedWheelPowerTopAverage,wantedWheelPowerBottomAverage);
+
+        if (gamepad1.y){outtake.setFlyWheelPower(0.25, 0.25);}
+else
+        outtake.setFlyWheelPower(rpmTop != 0 ? wantedWheelPowerTopAverage:0,rpmBottom != 0 ? wantedWheelPowerBottomAverage:0);
     }
 }
