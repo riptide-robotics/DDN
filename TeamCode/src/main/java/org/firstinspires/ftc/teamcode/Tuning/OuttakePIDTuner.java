@@ -60,8 +60,6 @@ public class OuttakePIDTuner extends LinearOpMode {
             tele.addData("goalRPMTop", rpmTop);
             tele.addData("goalRPMBottom", rpmBottom);
 
-
-
             pidtunedmotor(tele);
             tele.update();
             if (rpmTopPrev != rpmTop) {
@@ -135,7 +133,7 @@ public class OuttakePIDTuner extends LinearOpMode {
 
 
         if (gamepad1.y){outtake.setFlyWheelPower(0.25, 0.25);}
-else
-        outtake.setFlyWheelPower(rpmTop != 0 ? wantedWheelPowerTopAverage:0,rpmBottom != 0 ? wantedWheelPowerBottomAverage:0);
+        else
+            outtake.setFlyWheelPower(rpmTop != 0 ? wantedWheelPowerTopAverage:0,rpmBottom != 0 ? wantedWheelPowerBottomAverage:0);
     }
 }
