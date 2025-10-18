@@ -82,6 +82,8 @@ public class Meet0FSM extends LinearOpMode {
             FSM();
             fieldCentricDrive();
 
+            telemetry.addData("Angle: ", robot.getDrivetrain().getRobotHeading(AngleUnit.DEGREES));;
+
             if (updateTime){
                 robot.getOuttake().startFlywheel();
             }
@@ -106,7 +108,7 @@ public class Meet0FSM extends LinearOpMode {
                 }
 
                 // INTAKE
-                if (gamepad2.right_trigger > 0.1){
+                if (gamepad2.right_trigger >= 0.1){
                     robot.getIntake().spin(-1);
                     robot.getIntake().transfer(1);
                 } else {robot.getIntake().spin(0); robot.getIntake().transfer(0);}
