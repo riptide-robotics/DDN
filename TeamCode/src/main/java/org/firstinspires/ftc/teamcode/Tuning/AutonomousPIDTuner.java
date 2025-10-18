@@ -28,8 +28,8 @@ import org.firstinspires.ftc.teamcode.riptideUtil;
 // ----- READY TO TRANSFER ----- //
 
 @Config
-@TeleOp(name = "ToTuneLateralStrafingThisWasCreated", group = "Tuning")
-public class LateralTuning extends LinearOpMode {
+@TeleOp(name = "TuneAutonomous", group = "Tuning")
+public class AutonomousPIDTuner extends LinearOpMode {
 
     Robot robot;
     Telemetry t = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
