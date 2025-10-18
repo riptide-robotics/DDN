@@ -22,7 +22,9 @@ public class CubicHermiteSpline {
         double yLinearCoefficient;
         double yConstantCoefficient;
 
-        public SplineSegment(Path.PathPoint p0, Path.PathPoint p1, double segmentTime){
+        double segmentTime;
+
+        public SplineSegment(Path.PathPoint p0, Path.PathPoint p1, double segmentTime) {
             double x0 = p0.getPos().getX(DistanceUnit.INCH);
             double y0 = p0.getPos().getY(DistanceUnit.INCH);
             double dx0 = p0.getGoalVelocityInInPerSec() * Math.cos(p0.getHeading()) * segmentTime;
@@ -43,7 +45,19 @@ public class CubicHermiteSpline {
             this.yLinearCoefficient = dy0;
             this.yConstantCoefficient = y0;
 
+            this.segmentTime = segmentTime;
+        }
 
+        public double getX(double dt){
+            double checkeddt = Math.min(dt, segmentTime);
+            double frac = dt/segmentTime;
+            return xCubedCoefficient * Math.pow(frac, 3) + xSquaredCoefficient * Math.pow(frac, 2) + xLinearCoefficient * frac + xConstantCoefficient;
+        }
+
+        public double getY(double dt){
+            double checkeddt = Math.min(dt, segmentTime);
+            double frac = dt/segmentTime;
+            return yCubedCoefficient * Math.pow(frac, 3) + ySquaredCoefficient * Math.pow(frac, 2) + yLinearCoefficient * frac + yConstantCoefficient;
         }
 
 
