@@ -1,13 +1,22 @@
 package org.firstinspires.ftc.teamcode.Autonomous.Utils;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
 
 import java.util.ArrayList;
 
 /**
  * Given a set of points, interpolates a trajectory to follow.
+ * Does not have continuous Acceleration across knot points
+ * The profile is a really bad one, it's simply a
+ * Use this graph to visualize connections:
+ * https://www.desmos.com/calculator/blzsusrpwd
+ *
+ * Technical Details:
+ * I made this without knowing how to derive C2 Continuous splines, so this spline does not have continous acceleration at knot points
+ * I don't know if we can implement some velocity based on curvature at all in these points. This would basically mean a total refactor, because once we add in curvature control, we can't specifically denote what time we want the robot to make (I think idk some math is required). But if it's possible without a total refactor, then go for it.
  */
-public class CubicHermiteSpline {
+public class CubicHermiteSpline extends MotionProfile {
 
     private Path points;
     private ArrayList<SplineSegment> spline;
@@ -22,18 +31,44 @@ public class CubicHermiteSpline {
         this.spline = spline;
     }
 
+    /**
+     *  Given the current time, traverses the Array list of SplineSegments to retrieve the correct location
+     * @param dt current time in seconds
+     * @return the expected location at time dt
+     */
+    public EditablePose2D getPosition(double dt){
+        double elapsedTime = 0;
+        for(int i = 0; i < spline.size(); i++){
+            if (elapsedTime + spline.get(i).segmentTime > 0){
+                return new EditablePose2D(
+                        spline.get(i).getX(dt-elapsedTime),
+                        spline.get(i).getY(dt-elapsedTime),
+                        spline.get(i).getTangentHeading(dt-elapsedTime),
+                        DistanceUnit.INCH
+                );
+            }
+            elapsedTime += spline.get(i).segmentTime;
+        }
+
+        return new EditablePose2D(
+                spline.get(spline.size()-1).getX(dt),
+                spline.get(spline.size()-1).getY(dt),
+                spline.get(spline.size()-1).getTangentHeading(dt),
+                DistanceUnit.INCH);
+    }
+
     public static class SplineSegment{
-        double xCubedCoefficient;
-        double xSquaredCoefficient;
-        double xLinearCoefficient;
-        double xConstantCoefficient;
+        private final double xCubedCoefficient;
+        private final double xSquaredCoefficient;
+        private final double xLinearCoefficient;
+        private final double xConstantCoefficient;
 
-        double yCubedCoefficient;
-        double ySquaredCoefficient;
-        double yLinearCoefficient;
-        double yConstantCoefficient;
+        private final double yCubedCoefficient;
+        private final double ySquaredCoefficient;
+        private final double yLinearCoefficient;
+        private final double yConstantCoefficient;
 
-        double segmentTime;
+        public final double segmentTime;
 
         public SplineSegment(Path.PathPoint p0, Path.PathPoint p1, double segmentTime) {
             double x0 = p0.getPos().getX(DistanceUnit.INCH);
@@ -60,8 +95,9 @@ public class CubicHermiteSpline {
         }
 
         public double s(double dt){
-           double checkeddt = Math.min(dt, segmentTime);
-           return checkeddt/segmentTime;
+            if(dt < 0) { throw new IllegalArgumentException("Uhh, time is negative idk how you did it"); }
+            double checkeddt = Math.min(dt, segmentTime);
+            return checkeddt/segmentTime;
         }
 
         public double getX(double dt){
@@ -87,6 +123,12 @@ public class CubicHermiteSpline {
         }
 
         //Defaulting to call this speed now, because we are dealing with vectors and velocity is now a vector
+
+        /**
+         * magnitude of the tangent vector at a point
+         * @param dt elapsed time, should be between 0 and segmentTime
+         * @return a double that represents the magnitude of the tangent vector of the curve
+         */
         public double getSpeed(double dt){
             double dx = getXPrime(dt);
             double dy = getYPrime(dt);

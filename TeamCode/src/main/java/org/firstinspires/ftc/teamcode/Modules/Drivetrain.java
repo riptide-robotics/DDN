@@ -72,7 +72,7 @@ public class Drivetrain {
 
         if(localizationMode == OdometryLocalizer.OdometryMethod.PINPOINT){
             this.pinpoint = hardwareMap.get(GoBildaPinpointDriver.class,"odo");
-            pinpoint.setOffsets(67, 69, DistanceUnit.INCH);
+            pinpoint.setOffsets(0.5, 0, DistanceUnit.INCH);
             pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
             pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
             robotPos = new OdometryLocalizer(this.pinpoint, 10);

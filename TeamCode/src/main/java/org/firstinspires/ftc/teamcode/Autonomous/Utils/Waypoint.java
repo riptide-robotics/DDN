@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.Autonomous.Utils;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
 
-
+// Deprecated
 public class Waypoint extends EditablePose2D {
     private boolean isAnchor;
     private double goalVelocity; // IN per second

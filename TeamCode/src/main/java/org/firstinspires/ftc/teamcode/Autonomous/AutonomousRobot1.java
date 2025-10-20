@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.Autonomous.Utils.MotionProfile;
 import org.firstinspires.ftc.teamcode.Modules.PIDController;
 import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
 import org.firstinspires.ftc.teamcode.Robot;
@@ -23,12 +24,11 @@ import org.firstinspires.ftc.teamcode.riptideUtil;
 public class AutonomousRobot1 extends Robot {
 
     private EditablePose2D startPose = new EditablePose2D(0, 0, Math.toRadians(90), DistanceUnit.INCH);
+    private MotionProfile profile;
 
     public AutonomousRobot1(HardwareMap hardwareMap) {
         super(hardwareMap);
     }
-
-
     /**
      * @param curr, robot current heading in degrees
      * @param goal, robot goal heading, global, in degrees
@@ -68,6 +68,24 @@ public class AutonomousRobot1 extends Robot {
     PIDController vertPid = new PIDController(VERT_KP, VERT_KI, VERT_KD);
     PIDController turnPid = new PIDController(TURN_KP, TURN_KI, TURN_KD);
 
-    private ElapsedTime timer;
+    private ElapsedTime timer = new ElapsedTime();
 
+
+    public void step() {
+        if(profile == null){
+        // get current position
+        EditablePose2D currPos = this.getDrivetrain().getCurrPos();
+        // get current time
+        double currentTime = timer.seconds();
+        // get where we want to go
+
+        // set wheel powers
+    }
+
+    public void reset() {
+        timer.reset();
+        latPid.reset();
+        vertPid.reset();
+        turnPid.reset();
+    }
 }
