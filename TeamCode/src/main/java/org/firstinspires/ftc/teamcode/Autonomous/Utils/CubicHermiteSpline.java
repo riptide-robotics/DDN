@@ -8,7 +8,7 @@ import java.util.ArrayList;
 /**
  * Given a set of points, interpolates a trajectory to follow.
  * Does not have continuous Acceleration across knot points
- * The profile is a really bad one, it's simply a
+ * The profile is a really bad one, it's simply a one to one mapping of pose to time.
  * Use this graph to visualize connections:
  * https://www.desmos.com/calculator/blzsusrpwd
  *
