@@ -16,12 +16,6 @@ public class Path {
         HEAD_FLOAT
     }
 
-    public interface RobotAction {
-        void Action();
-    }
-
-    private ArrayList<PathPoint> path = new ArrayList<PathPoint>();
-
     public Path(PathBuilder b){
         this.path = b.getPath();
     }
@@ -48,8 +42,7 @@ public class Path {
         private double delayUntilNextPoint = 0;
         private FollowMethod followMethod = FollowMethod.HEAD_TANGENT;
 
-        public PathPoint(EditablePose2D position, double goalVelocity, double goalAcceleration, RobotAction a, double delayUntilNextPoint, FollowMethod followMethod){
-            this.a = a;
+        public PathPoint(EditablePose2D position, double goalVelocity, double goalAcceleration, double delayUntilNextPoint, FollowMethod followMethod){
             this.pos = position;
             this.followMethod = followMethod;
             this.delayUntilNextPoint = delayUntilNextPoint;
@@ -58,16 +51,12 @@ public class Path {
             this.heading = position.getH();
         }
 
-        public PathPoint(EditablePose2D position, RobotAction a, double delayUntilNextPoint){
-            this(position, MAX_V_VERT, MAX_A_VERT, a, delayUntilNextPoint, FollowMethod.HEAD_TANGENT);
+        public PathPoint(EditablePose2D position, double delayUntilNextPoint){
+            this(position, MAX_V_VERT, MAX_A_VERT, delayUntilNextPoint, FollowMethod.HEAD_TANGENT);
         }
 
-        public PathPoint(EditablePose2D position, double goalVelocity, RobotAction a, double delayUntilNextPoint){
-            this(position, goalVelocity, 1, a, delayUntilNextPoint, FollowMethod.HEAD_TANGENT );
-        }
-
-        public RobotAction getAction(){
-            return this.a;
+        public PathPoint(EditablePose2D position, double goalVelocity, double delayUntilNextPoint){
+            this(position, goalVelocity, 1, delayUntilNextPoint, FollowMethod.HEAD_TANGENT );
         }
 
         public double getDelayUntilNextPoint(){
@@ -90,20 +79,20 @@ public class Path {
     public static class PathBuilder{
         private ArrayList<PathPoint> path = new ArrayList<PathPoint>();
 
-        public PathBuilder addNewPoint(EditablePose2D position, RobotAction a, double delay){
-            PathPoint p = new PathPoint(position, a, delay);
+        public PathBuilder addNewPoint(EditablePose2D position, double delay){
+            PathPoint p = new PathPoint(position, delay);
             path.add(p);
             return this;
         }
 
-        public PathBuilder addNewPoint(EditablePose2D position, double goalVelocity, double goalAcceleration, RobotAction a, double delay, FollowMethod followMethod){
-            PathPoint p = new PathPoint(position, goalVelocity, goalAcceleration, a, delay, followMethod);
+        public PathBuilder addNewPoint(EditablePose2D position, double goalVelocity, double goalAcceleration, double delay, FollowMethod followMethod){
+            PathPoint p = new PathPoint(position, goalVelocity, goalAcceleration, delay, followMethod);
             path.add(p);
             return this;
         }
 
-        public PathBuilder addNewSplinePoint(EditablePose2D position, double goalVelocity, RobotAction a, double delayUntilNextPoint){
-            PathPoint p = new PathPoint(position, goalVelocity, a, delayUntilNextPoint);
+        public PathBuilder addNewSplinePoint(EditablePose2D position, double goalVelocity, double delayUntilNextPoint){
+            PathPoint p = new PathPoint(position, goalVelocity, delayUntilNextPoint);
             path.add(p);
             return this;
         }

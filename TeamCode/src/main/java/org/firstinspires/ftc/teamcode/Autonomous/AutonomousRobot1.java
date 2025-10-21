@@ -15,16 +15,15 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.Autonomous.Utils.MotionProfile;
+import org.firstinspires.ftc.teamcode.Autonomous.Utils.Trajectories.Trajectory;
 import org.firstinspires.ftc.teamcode.Modules.PIDController;
 import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
 import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.riptideUtil;
 
 public class AutonomousRobot1 extends Robot {
 
     private EditablePose2D startPose = new EditablePose2D(0, 0, Math.toRadians(90), DistanceUnit.INCH);
-    private MotionProfile profile;
+    private Trajectory profile;
 
     public AutonomousRobot1(HardwareMap hardwareMap) {
         super(hardwareMap);

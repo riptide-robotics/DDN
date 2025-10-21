@@ -1,14 +1,17 @@
-package org.firstinspires.ftc.teamcode.Autonomous.Utils;
+package org.firstinspires.ftc.teamcode.Autonomous.Utils.Trajectories;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.Autonomous.Utils.Path;
 import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
 
 import java.util.ArrayList;
 
 /**
  * Given a set of points, interpolates a trajectory to follow.
+ * A trajectory is a path with some kind of motion constraint/profile
  * Does not have continuous Acceleration across knot points
  * The profile is a really bad one, it's simply a one to one mapping of pose to time.
+ * That's why there isn't a dedicated Profile Class to calculate everything like there is in the linear case.
  * Use this graph to visualize connections:
  * https://www.desmos.com/calculator/blzsusrpwd
  *
@@ -16,7 +19,7 @@ import java.util.ArrayList;
  * I made this without knowing how to derive C2 Continuous splines, so this spline does not have continous acceleration at knot points
  * I don't know if we can implement some velocity based on curvature at all in these points. This would basically mean a total refactor, because once we add in curvature control, we can't specifically denote what time we want the robot to make (I think idk some math is required). But if it's possible without a total refactor, then go for it.
  */
-public class CubicHermiteSpline extends MotionProfile {
+public class CubicHermiteSpline extends Trajectory {
 
     private Path points;
     private ArrayList<SplineSegment> spline;
