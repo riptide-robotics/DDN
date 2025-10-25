@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 import static org.firstinspires.ftc.teamcode.riptideUtil.LONG_DIST_BOT;
 import static org.firstinspires.ftc.teamcode.riptideUtil.LONG_DIST_TOP;
 import static org.firstinspires.ftc.teamcode.riptideUtil.MID_DIST_BOT;
@@ -7,11 +8,14 @@ import static org.firstinspires.ftc.teamcode.riptideUtil.MID_DIST_TOP;
 import static org.firstinspires.ftc.teamcode.riptideUtil.SHORT_DIST_BOT;
 import static org.firstinspires.ftc.teamcode.riptideUtil.SHORT_DIST_TOP;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Autonomous.AutonomousRobot;
 import org.firstinspires.ftc.teamcode.Robot;
@@ -32,14 +36,14 @@ public class Meet0FSM extends LinearOpMode {
 
     boolean runOuttake = false;
 
-    public static double LONG_DIST_TOP_NOPID = 0.785;
-    public static double LONG_DIST_BOT_NOPID = 0.585;
+    public static double LONG_DIST_TOP = 0;
+    public static double LONG_DIST_BOT = 0;
 
-    public static double MID_DIST_TOP_NOPID = 0.52;
-    public static double MID_DIST_BOT_NOPID = 0.62;
+    public static double MID_DIST_TOP = 0;
+    public static double MID_DIST_BOT = 0;
 
-    public static double SHORT_DIST_TOP_NOPID = 0.48;
-    public static double SHORT_DIST_BOT_NOPID = 0.61;
+    public static double SHORT_DIST_TOP = 0;
+    public static double SHORT_DIST_BOT = 0;
 
     boolean didRumble = false;
 
@@ -51,9 +55,10 @@ public class Meet0FSM extends LinearOpMode {
     boolean leftTriggerPressedG2 = false;
     boolean xPressedG2 = false;
 
+    Telemetry tele = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
     public enum states{
         TELEOP,
-        RESET,
         ENDGAME
     }
 
@@ -82,7 +87,7 @@ public class Meet0FSM extends LinearOpMode {
             FSM();
             fieldCentricDrive();
 
-            //telemetry.addData("Angle: ", robot.getDrivetrain().getRobotHeading(AngleUnit.DEGREES));;
+            //telemetry.addData("Angle: ", robot.getDrivetrain().getRobotHeading(AngleUnit.DEGREES));
 
             if (updateTime){
                 robot.getOuttake().startFlywheel();
@@ -113,41 +118,33 @@ public class Meet0FSM extends LinearOpMode {
                 } else if (gamepad2.back){robot.getIntake().spin(1);}
                 else {robot.getIntake().spin(0);}
 
-                if (gamepad2.dpad_up){robot.getIntake().transfer(-1);}
+
+                // INTAKE TRANSFER
+                if (gamepad2.dpad_up && robot.getOuttake().isAtGoalSpeed()){robot.getIntake().transfer(-1); robot.getIntake().openTransfer();}
                 else if (gamepad2.dpad_down){robot.getIntake().transfer(1);}
-                else {robot.getIntake().transfer(0);}
-
-
-
-//                // TRANSFER
-//                if (robot.getOuttake().isAtGoalSpeed() && updateTime) {
-//                    robot.getIntake().toggleTransferServo();
-//                    robot.getIntake().transferToggle();
-//                } else {
-//                    robot.getIntake().toggleTransferServo();
-//                    robot.getIntake().transferToggle();
-//                }
+                else if (gamepad2.dpad_up && gamepad2.y){robot.getIntake().transfer(-1); robot.getIntake().openTransfer();}
+                else {robot.getIntake().transfer(0); robot.getIntake().closeTransfer();}
 
 
 
                 // OUTTAKE
                 if (gamepad2.left_trigger > 0.1 && !runOuttake && !leftTriggerPressedG2){
                     //robot.getOuttake().setFlywheelSpeed(LONG_DIST_TOP, LONG_DIST_BOT /* Long Distance needs to be tuned*/);
-                    robot.getOuttake().setFlyWheelPower(LONG_DIST_TOP_NOPID, LONG_DIST_BOT_NOPID);
+                    robot.getOuttake().runOuttakePID(LONG_DIST_TOP, LONG_DIST_BOT, tele);
                     updateTime = true;
                     runOuttake = true;
                     leftTriggerPressedG2 = true;
                     telemetry.addData("Outtake Mode: ", "LONG");
                 } else if (gamepad2.left_bumper && !runOuttake && !leftBumperPressedG2) {
                     //robot.getOuttake().setFlywheelSpeed(MID_DIST_TOP, MID_DIST_BOT /* Short Distance needs to be tuned*/);
-                    robot.getOuttake().setFlyWheelPower(MID_DIST_TOP_NOPID, MID_DIST_BOT_NOPID);
+                    robot.getOuttake().runOuttakePID(MID_DIST_TOP, MID_DIST_BOT, tele);
                     updateTime = true;
                     runOuttake = true;
                     leftBumperPressedG2 = true;
                     telemetry.addData("Outtake Mode: ", "MID");
                 } else if (gamepad2.right_bumper && !runOuttake && !rightBumperPressedG2) {
                     //robot.getOuttake().setFlywheelSpeed(SHORT_DIST_TOP, SHORT_DIST_BOT /* Short Distance needs to be tuned*/);
-                    robot.getOuttake().setFlyWheelPower(SHORT_DIST_TOP_NOPID, SHORT_DIST_BOT_NOPID);
+                    robot.getOuttake().runOuttakePID(SHORT_DIST_TOP, SHORT_DIST_BOT, tele);
                     updateTime = true;
                     runOuttake = true;
                     rightBumperPressedG2 = true;
@@ -156,41 +153,27 @@ public class Meet0FSM extends LinearOpMode {
 
                 if (gamepad2.left_trigger > 0.1 && runOuttake && !leftTriggerPressedG2){
                     robot.getOuttake().stop();
-                    updateTime = true;
+                    updateTime = false;
                     runOuttake = false;
                     leftTriggerPressedG2 = true;
                 } else if (gamepad2.left_bumper && runOuttake && !leftBumperPressedG2) {
                     robot.getOuttake().stop();
-                    updateTime = true;
+                    updateTime = false;
                     runOuttake = false;
                     leftBumperPressedG2 = true;
                 } else if (gamepad2.right_bumper && runOuttake && !rightBumperPressedG2) {
                     robot.getOuttake().stop();
-                    updateTime = true;
+                    updateTime = false;
                     runOuttake = false;
                     rightBumperPressedG2 = true;
                 }
 
+                // ENDGAME
 //                if (gamepad2.dpad_up){
 //                    currentState = states.ENDGAME;
 //                    hasrun = false;
 //                }
 
-                break;
-
-            case RESET:
-                reset();
-                if (gamepad2.back && !backPressedG2){currentState = states.TELEOP; backPressedG2 = true;}
-                if (gamepad2.right_trigger > 0.1){
-                    currentState = states.TELEOP; hasrun = false;
-                }
-                if (gamepad2.left_trigger > 0.1){
-                    currentState = states.TELEOP; hasrun = false;
-                } else if (gamepad2.left_bumper) {
-                    currentState = states.TELEOP; hasrun = false;
-                } else if (gamepad2.x) {
-                    currentState = states.TELEOP; hasrun = false;
-                }
                 break;
             case ENDGAME:
                 if (!hasrun){
@@ -244,25 +227,4 @@ public class Meet0FSM extends LinearOpMode {
             robot.getDrivetrain().resetImu();
         }
     }
-
-    public void reset(){
-        robot.getIntake().spin(1);
-        robot.getIntake().transfer(-1);
-    }
-
-
-
-    /*
-
-    -------------------------------------------------------
-                               TODO
-    --------------------------------------------------------
-
-        1. 3 seperate hard code outputs for outtake // DONE
-        2. Reverse intake // DONE
-        3. Make servo toggle based on outtake // DONE
-
-     */
-    
-    
 }
