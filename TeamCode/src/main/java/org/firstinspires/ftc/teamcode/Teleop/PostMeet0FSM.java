@@ -163,6 +163,12 @@ public class PostMeet0FSM extends LinearOpMode {
                     hasrun = false;
                 }
 
+                if (gamepad2.right_trigger > 0.1) {
+                    // hold
+                } else {
+                    // release
+                }
+
                 break;
             case ENDGAME:
                 //

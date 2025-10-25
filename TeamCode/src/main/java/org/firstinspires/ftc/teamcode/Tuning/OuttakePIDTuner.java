@@ -71,16 +71,8 @@ public class OuttakePIDTuner extends LinearOpMode {
                 1:
                     currPRMTop: 0.0
                     currRPMBottom: 2691.987410571929
-
                 2:
-
-
-
                  */
-
-
-
-
                 RPMControllerTop = new PIDController(KPTop, 0, 0);
             }
             if (rpmBottomPrev != rpmBottom) {
