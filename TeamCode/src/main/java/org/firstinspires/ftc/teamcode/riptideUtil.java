@@ -68,12 +68,12 @@ public class riptideUtil {
     public static double LONG_DIST_BOT = 4500; // UNDETERMINED
 
     public static double MID_DIST_TOP = 3500; // UNDETERMINED
-    public static double MID_DIST_BOT = 3500; // UNDETERMINED
+    public static double MID_DIST_BOT = 3500;// UNDETERMINED
 
     public static double SHORT_DIST_TOP = 2500; // UNDETERMINED
-    public static double SHORT_DIST_BOT = 2500; // UNDETERMINED
+    public static double SHORT_DIST_BOT = 2500;// UNDETERMINED
 
-    public static double TRANSFER_POWER = 0.8; // UNDETERMINED
-
+    public static double transferOpen = 0.8; // UNDETERMINED
+    public static double transferClosed = -0.8; // UNDETERMINED
 
 }

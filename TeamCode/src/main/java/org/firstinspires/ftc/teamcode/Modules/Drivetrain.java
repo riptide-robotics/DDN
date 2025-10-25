@@ -44,10 +44,10 @@ public class Drivetrain {
         brWheel = hardwareMap.dcMotor.get("brWheel");
         blWheel = hardwareMap.dcMotor.get("blWheel");
 
-        blWheel.setDirection(DcMotorSimple.Direction.REVERSE);
-        flWheel.setDirection(DcMotorSimple.Direction.REVERSE);
+        blWheel.setDirection(DcMotorSimple.Direction.FORWARD);
+        flWheel.setDirection(DcMotorSimple.Direction.FORWARD);
         frWheel.setDirection(DcMotorSimple.Direction.FORWARD);
-        brWheel.setDirection(DcMotorSimple.Direction.FORWARD);
+        brWheel.setDirection(DcMotorSimple.Direction.REVERSE);
 
         brWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         blWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -67,8 +67,8 @@ public class Drivetrain {
 
         imu = hardwareMap.get(IMU.class, "imu");
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD));
+                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
+                RevHubOrientationOnRobot.UsbFacingDirection.UP));
 
         imu.resetYaw();
         imu.initialize(parameters);

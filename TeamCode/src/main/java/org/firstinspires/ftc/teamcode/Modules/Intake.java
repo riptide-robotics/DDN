@@ -12,7 +12,8 @@ import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_G;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_G_STDEV;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R_STDEV;
-import static org.firstinspires.ftc.teamcode.riptideUtil.TRANSFER_POWER;
+import static org.firstinspires.ftc.teamcode.riptideUtil.transferClosed;
+import static org.firstinspires.ftc.teamcode.riptideUtil.transferOpen;
 
 import java.lang.Override;
 // Imports to sync
@@ -27,6 +28,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Robot;
@@ -38,8 +40,8 @@ public class Intake{
 
     NormalizedColorSensor colorSensor;
     DcMotor intakeMotor;
-    DcMotor leftTransferMotor;
     DcMotor rightTransferMotor;
+    Servo transferToggleServo;
     float gain = 2; // ...... ANYWAY
     /**
      * A Rev Color Match object is used to register and detect known colors. This can
@@ -57,9 +59,9 @@ public class Intake{
     public Intake(HardwareMap hardwareMap){
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "REVcolorSensor");
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
-        leftTransferMotor = hardwareMap.get(DcMotor.class, "leftTransferMotor");
-        rightTransferMotor = hardwareMap.get(DcMotor.class, "rightTransferMotor");
-        rightTransferMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightTransferMotor = hardwareMap.get(DcMotor.class, "transferBelt");
+        transferToggleServo = hardwareMap.get(Servo.class, "toggleServo");
+        rightTransferMotor.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 
     public String scanColor() {
@@ -206,15 +208,31 @@ public class Intake{
         intakeMotor.setPower(p);
     }
     public void transfer(double p) {
-        leftTransferMotor.setPower(p);
         rightTransferMotor.setPower(p);
     }
     public void transferToggle() {
-        if (leftTransferMotor.getPower() > 0) {
+        if (rightTransferMotor.getPower() > 0) {
             transfer(0);
         } else {
-            transfer(TRANSFER_POWER);
+            transfer(1);
         }
+    }
+
+    private boolean isTransferOpen = false;
+    private boolean isTransferClosed = false;
+    public void toggleTransferServo(){
+        if (isTransferOpen){closeTransfer();}
+        if (isTransferClosed){openTransfer();}
+    }
+    public void openTransfer(){
+        transferToggleServo.setPosition(transferOpen /* idk but should be open position*/);
+        isTransferOpen = true;
+        isTransferClosed = false;
+    }
+    public void closeTransfer(){
+        transferToggleServo.setPosition(transferClosed /* idk but should be closed position*/);
+        isTransferOpen = false;
+        isTransferClosed = true;
     }
 
     public TelemetryPacket sendTelemetry(){
