@@ -45,6 +45,9 @@ public class Meet0FSM extends LinearOpMode {
     public static double SHORT_DIST_TOP = 0;
     public static double SHORT_DIST_BOT = 0;
 
+    public static double currentTopRPMGoal;
+    public static double currentBottomRPMGoal;
+
     boolean didRumble = false;
 
 
@@ -91,6 +94,7 @@ public class Meet0FSM extends LinearOpMode {
 
             if (updateTime){
                 robot.getOuttake().startFlywheel();
+                robot.getOuttake().runOuttakePID(currentTopRPMGoal, currentBottomRPMGoal, tele);
             }
 
             double currTime = endTimer.seconds();
@@ -130,21 +134,21 @@ public class Meet0FSM extends LinearOpMode {
                 // OUTTAKE
                 if (gamepad2.left_trigger > 0.1 && !runOuttake && !leftTriggerPressedG2){
                     //robot.getOuttake().setFlywheelSpeed(LONG_DIST_TOP, LONG_DIST_BOT /* Long Distance needs to be tuned*/);
-                    robot.getOuttake().runOuttakePID(LONG_DIST_TOP, LONG_DIST_BOT, tele);
+                    robot.getOuttake().pidtunedmotor(LONG_DIST_TOP, LONG_DIST_BOT, tele);
                     updateTime = true;
                     runOuttake = true;
                     leftTriggerPressedG2 = true;
                     telemetry.addData("Outtake Mode: ", "LONG");
                 } else if (gamepad2.left_bumper && !runOuttake && !leftBumperPressedG2) {
                     //robot.getOuttake().setFlywheelSpeed(MID_DIST_TOP, MID_DIST_BOT /* Short Distance needs to be tuned*/);
-                    robot.getOuttake().runOuttakePID(MID_DIST_TOP, MID_DIST_BOT, tele);
+                    robot.getOuttake().pidtunedmotor(MID_DIST_TOP, MID_DIST_BOT, tele);
                     updateTime = true;
                     runOuttake = true;
                     leftBumperPressedG2 = true;
                     telemetry.addData("Outtake Mode: ", "MID");
                 } else if (gamepad2.right_bumper && !runOuttake && !rightBumperPressedG2) {
                     //robot.getOuttake().setFlywheelSpeed(SHORT_DIST_TOP, SHORT_DIST_BOT /* Short Distance needs to be tuned*/);
-                    robot.getOuttake().runOuttakePID(SHORT_DIST_TOP, SHORT_DIST_BOT, tele);
+                    robot.getOuttake().pidtunedmotor(SHORT_DIST_TOP, SHORT_DIST_BOT, tele);
                     updateTime = true;
                     runOuttake = true;
                     rightBumperPressedG2 = true;
@@ -152,17 +156,20 @@ public class Meet0FSM extends LinearOpMode {
                 }
 
                 if (gamepad2.left_trigger > 0.1 && runOuttake && !leftTriggerPressedG2){
-                    robot.getOuttake().stop();
+                    currentTopRPMGoal = LONG_DIST_TOP;
+                    currentBottomRPMGoal = LONG_DIST_BOT;
                     updateTime = false;
                     runOuttake = false;
                     leftTriggerPressedG2 = true;
                 } else if (gamepad2.left_bumper && runOuttake && !leftBumperPressedG2) {
-                    robot.getOuttake().stop();
+                    currentTopRPMGoal = 0;
+                    currentBottomRPMGoal = 0;
                     updateTime = false;
                     runOuttake = false;
                     leftBumperPressedG2 = true;
                 } else if (gamepad2.right_bumper && runOuttake && !rightBumperPressedG2) {
-                    robot.getOuttake().stop();
+                    currentTopRPMGoal = 0;
+                    currentBottomRPMGoal = 0;
                     updateTime = false;
                     runOuttake = false;
                     rightBumperPressedG2 = true;

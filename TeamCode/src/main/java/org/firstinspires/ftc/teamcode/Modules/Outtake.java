@@ -46,6 +46,8 @@ public class Outtake {
     private double startTime = System.nanoTime() / 1e9;
     private PIDController RPMControllerTop = new PIDController(KPTop, 0, 0);
     private PIDController RPMControllerBottom = new PIDController(KPBottom, 0, 0);
+    private double prevPosTop = 0;
+    private  double prevPosBottom = 0;
     public void runOuttakePID(double rpmTop, double rpmBottom, Telemetry tele){
 
         pidtunedmotor(rpmTop, rpmBottom, tele);
@@ -66,9 +68,6 @@ public class Outtake {
 
     private boolean atGoalSpeed = false;
     public void pidtunedmotor(double rpmTop, double rpmBottom, Telemetry telemetry) {
-
-        double prevPosTop = currPosTop;
-        double prevPosBottom = currPosBottom;
 
         prevPosTop = currPosTop;
         prevPosBottom = currPosBottom;
