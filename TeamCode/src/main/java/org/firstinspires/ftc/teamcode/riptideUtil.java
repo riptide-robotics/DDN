@@ -59,11 +59,6 @@ public class riptideUtil {
     public static double MAX_A = 72;                 // UNDETERMINED
     public static double MAX_V = 96;                 // UNDETERMINED
 
-
-
-// -----------------------------------------------------------------------------
-//                          MEET 0 STUFF
-// -----------------------------------------------------------------------------
     public static double LONG_DIST_TOP = 4500; // UNDETERMINED
     public static double LONG_DIST_BOT = 4500; // UNDETERMINED
 
@@ -75,5 +70,10 @@ public class riptideUtil {
 
     public static double transferOpen = 0.8; // UNDETERMINED
     public static double transferClosed = -0.8; // UNDETERMINED
+
+    public static double KPTop = 0.02;
+    public static double KPBottom = 0.02;
+
+    public static double tolerance = 250;
 
 }
