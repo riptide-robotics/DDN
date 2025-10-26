@@ -126,7 +126,7 @@ public class Outtake {
         telemetry.addData("top", averageTop);
         telemetry.addData("bottom", averageBottom);
 
-        double tolerance = 50;
+        double tolerance = 150;
         boolean atTopRPM = Math.abs(averageTop - rpmTop) <= tolerance;
         boolean atBotRPM = Math.abs(averageBottom - rpmBottom) <= tolerance;
         atGoalSpeed = atTopRPM && atBotRPM;

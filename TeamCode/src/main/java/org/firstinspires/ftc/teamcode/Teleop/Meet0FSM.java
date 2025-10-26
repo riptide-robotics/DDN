@@ -94,7 +94,6 @@ public class Meet0FSM extends LinearOpMode {
 
             if (updateTime){
                 robot.getOuttake().startFlywheel();
-                robot.getOuttake().runOuttakePID(currentTopRPMGoal, currentBottomRPMGoal, tele);
             }
 
             double currTime = endTimer.seconds();
@@ -156,20 +155,17 @@ public class Meet0FSM extends LinearOpMode {
                 }
 
                 if (gamepad2.left_trigger > 0.1 && runOuttake && !leftTriggerPressedG2){
-                    currentTopRPMGoal = LONG_DIST_TOP;
-                    currentBottomRPMGoal = LONG_DIST_BOT;
+                    robot.getOuttake().stop();
                     updateTime = false;
                     runOuttake = false;
                     leftTriggerPressedG2 = true;
                 } else if (gamepad2.left_bumper && runOuttake && !leftBumperPressedG2) {
-                    currentTopRPMGoal = 0;
-                    currentBottomRPMGoal = 0;
+                    robot.getOuttake().stop();
                     updateTime = false;
                     runOuttake = false;
                     leftBumperPressedG2 = true;
                 } else if (gamepad2.right_bumper && runOuttake && !rightBumperPressedG2) {
-                    currentTopRPMGoal = 0;
-                    currentBottomRPMGoal = 0;
+                    robot.getOuttake().stop();
                     updateTime = false;
                     runOuttake = false;
                     rightBumperPressedG2 = true;
