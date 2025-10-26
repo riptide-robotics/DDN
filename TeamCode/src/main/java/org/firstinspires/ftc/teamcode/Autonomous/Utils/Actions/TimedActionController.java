@@ -4,10 +4,11 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.ArrayList;
 
+// Courtesy of Aaron Xie, Oct 21, 2025
 public class TimedActionController {
 
     public interface Action {
-        public void action();
+        void action();
     }
 
     private ArrayList<TimedAction> actionList = new ArrayList<>();

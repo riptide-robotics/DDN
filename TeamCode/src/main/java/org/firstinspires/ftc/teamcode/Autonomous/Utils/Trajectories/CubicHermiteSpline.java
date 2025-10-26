@@ -16,6 +16,8 @@ import java.util.ArrayList;
  * https://www.desmos.com/calculator/blzsusrpwd
  *
  * Technical Details:
+ * A pro of having the motion profile litteraly be a linear pass-through of each spline segment is that getPosition is actually very easy to calculate, and we can use getDelayUntilNextPoint find the scale size.
+ * This will not be true for other trajectory builders, however, because those will probably have curvature dependent motion profiles.
  * I made this without knowing how to derive C2 Continuous splines, so this spline does not have continous acceleration at knot points
  * I don't know if we can implement some velocity based on curvature at all in these points. This would basically mean a total refactor, because once we add in curvature control, we can't specifically denote what time we want the robot to make (I think idk some math is required). But if it's possible without a total refactor, then go for it.
  */
@@ -23,6 +25,7 @@ public class CubicHermiteSpline extends Trajectory {
 
     private Path points;
     private ArrayList<SplineSegment> spline;
+    private double totalTime = 0;
 
     public CubicHermiteSpline(Path path) {
         this.points = path;
@@ -30,7 +33,9 @@ public class CubicHermiteSpline extends Trajectory {
         ArrayList<SplineSegment> spline  = new ArrayList<>();
         for (int i = 0; i<path.getPathSize() - 1; i++){
             spline.add(new SplineSegment(path.get(i), path.get(i+1), path.get(i).getDelayUntilNextPoint()));
+            totalTime += path.get(i).getDelayUntilNextPoint();
         }
+        totalTime += path.get(path.getPathSize()-1).getDelayUntilNextPoint();
         this.spline = spline;
     }
 
@@ -60,6 +65,23 @@ public class CubicHermiteSpline extends Trajectory {
                 DistanceUnit.INCH);
     }
 
+    /**
+     * returns how many spline segments are in this one trajectory
+     * @return the length of the array spline
+     */
+    public int getSplineLength(){
+        return spline.size();
+    }
+
+    /**
+     * returns the a spline segment of the trajectory at index i
+     * @param i index of the path
+     * @return the specific spline segment associated with the index
+     */
+    public SplineSegment getSegment(int i){
+        return spline.get(i);
+    }
+
     public static class SplineSegment{
         private final double xCubedCoefficient;
         private final double xSquaredCoefficient;
@@ -72,6 +94,7 @@ public class CubicHermiteSpline extends Trajectory {
         private final double yConstantCoefficient;
 
         public final double segmentTime;
+        public final double totalArcLength = getArcLengthTo3DecimalPlaces();
 
         public SplineSegment(Path.PathPoint p0, Path.PathPoint p1, double segmentTime) {
             double x0 = p0.getPos().getX(DistanceUnit.INCH);
@@ -94,6 +117,7 @@ public class CubicHermiteSpline extends Trajectory {
             this.yLinearCoefficient = dy0;
             this.yConstantCoefficient = y0;
 
+            //bad practice??
             this.segmentTime = segmentTime;
         }
 
@@ -145,8 +169,79 @@ public class CubicHermiteSpline extends Trajectory {
             return Math.atan2(dy, dx);
         }
 
+        //integrate speed over time to get distance
+        //trapezoidal approximation
+        public double getArcLength(int intervals){
+            if(intervals <= 1){throw new IllegalArgumentException("Arc Length Sample count must be greater than 2");}
+            double distance = 0;
+            double step = segmentTime/intervals;
+            double prev = getSpeed(0);
+            for(int i = 0; i < intervals; i++){
+                double curr = getSpeed(i * step);
+                distance += 0.5 * (curr + prev) * step;
+                prev = curr;
+            }
+            return distance;
+        }
 
+        /**
+         * will recusively run until stable to 3 decimal places, or until we've done a maximum number of
+         * allowed intervals
+         */
+        public double getArcLengthTo3DecimalPlaces(){
+            final double TOLERANCE = 5e-4;   // 0.0005 guarantees stability at 3 d.p. I think
+            final int MIN_INTERVALS = 32;
+            final int MAX_INTERVALS = 1 << 14;
 
+            int n = MIN_INTERVALS;
+            double sN = getArcLength(n);
+
+            while (n < MAX_INTERVALS) {
+                int doubleN = n * 2;
+                double sN2 = getArcLength(doubleN);
+                if (Math.abs(sN2 - sN) < TOLERANCE) {
+                    return sN2;
+                }
+                sN = sN2;
+                n = doubleN;
+            }
+            // Best effort under the cap
+            return sN;
+        }
+
+        public double getDistanceTraveled(double pastTime, double currTime){
+            double t = Math.min(currTime, segmentTime);
+            double dist = 0;
+
+            double dt = t - pastTime;
+            double currSpeed = getSpeed(currTime);
+            double pastSpeed = getSpeed(pastTime);
+
+            if (dt > 0){
+               dist += 0.5 * (currSpeed + pastSpeed) * dt;
+            }
+            return dist;
+        }
+
+        public double getDistanceTraveled(int intervals, double currTime) {
+                        if (intervals < 1) {
+                throw new IllegalArgumentException("intervals must be >= 1");
+            }
+                        if (currTime <= 0.0) return 0.0;
+                double T = Math.min(currTime, segmentTime);
+
+            double step = T / intervals;
+                double dist = 0.0;
+            double prev = getSpeed(0.0);
+
+                for (int i = 1; i <= intervals; i++) {
+                        double t = i * step;
+                double curr = getSpeed(t);
+                dist += 0.5 * (prev + curr) * step;
+                prev = curr;
+            }
+            return dist;
+        }
     }
 
 }

@@ -34,7 +34,7 @@ public class Drivetrain {
     private ElapsedTime timer;
 
     private final OdometryLocalizer robotPos;
-    private final OdometryLocalizer.OdometryMethod localizationMode = OdometryLocalizer.OdometryMethod.PINPOINT;
+    private final OdometryLocalizer.OdometryMethod localizationMode = OdometryLocalizer.OdometryMethod.PINPOINT; // to be changed
 
     ///////////////////////////////////////////////
     ////                                     /////

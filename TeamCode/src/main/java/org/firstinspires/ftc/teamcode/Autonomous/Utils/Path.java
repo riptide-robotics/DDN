@@ -10,9 +10,10 @@ import java.util.ArrayList;
 // maybe usable, idk  usable, needs some edits.
 
 public class Path {
-    public enum FollowMethod {
-        HEAD_FORWARD,
-        HEAD_TANGENT, // runs tangent to path,
+    private ArrayList<PathPoint> path;
+
+    public enum HeadingBehavior {
+        HEAD_TANGENT,
         HEAD_FLOAT
     }
 
@@ -34,17 +35,17 @@ public class Path {
 
     public static class PathPoint{
 
-        private RobotAction a = null;
         private EditablePose2D pos;
         private double heading;
         private double goalVelocity;
         private double goalAcceleration;
         private double delayUntilNextPoint = 0;
-        private FollowMethod followMethod = FollowMethod.HEAD_TANGENT;
+        private HeadingBehavior headingBehavior = HeadingBehavior.HEAD_TANGENT;
 
-        public PathPoint(EditablePose2D position, double goalVelocity, double goalAcceleration, double delayUntilNextPoint, FollowMethod followMethod){
+
+        public PathPoint(EditablePose2D position, double goalVelocity, double goalAcceleration, double delayUntilNextPoint, HeadingBehavior headingBehavior){
             this.pos = position;
-            this.followMethod = followMethod;
+            this.headingBehavior = headingBehavior;
             this.delayUntilNextPoint = delayUntilNextPoint;
             this.goalVelocity = goalVelocity; // velocity magnitude, direction will be the heading.
             this.goalAcceleration = goalAcceleration;
@@ -52,11 +53,11 @@ public class Path {
         }
 
         public PathPoint(EditablePose2D position, double delayUntilNextPoint){
-            this(position, MAX_V_VERT, MAX_A_VERT, delayUntilNextPoint, FollowMethod.HEAD_TANGENT);
+            this(position, MAX_V_VERT, MAX_A_VERT, delayUntilNextPoint, HeadingBehavior.HEAD_TANGENT);
         }
 
         public PathPoint(EditablePose2D position, double goalVelocity, double delayUntilNextPoint){
-            this(position, goalVelocity, 1, delayUntilNextPoint, FollowMethod.HEAD_TANGENT );
+            this(position, goalVelocity, 1, delayUntilNextPoint, HeadingBehavior.HEAD_TANGENT );
         }
 
         public double getDelayUntilNextPoint(){

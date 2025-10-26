@@ -84,8 +84,8 @@ public class OdometryLocalizer implements Runnable {
         double dy = C * (dodo3 - (PERP_TO_CENTER * (dodo1 - dodo2)) / LATERAL_DISTANCE) * Y_FACTOR;
         double dtheta = -((C * (dodo1 - dodo2)) / LATERAL_DISTANCE * ANGLE_FACTOR);
 
-        double rotdx = dx * Math.cos(currPos.getH()) - dy * Math.sin(currPos.getH());
-        double rotdy = dx * Math.sin(currPos.getH()) + dy * Math.cos(currPos.getH());
+        double rotdx = dx * Math.cos(-currPos.getH()) - dy * Math.sin(-currPos.getH());
+        double rotdy = dx * Math.sin(-currPos.getH()) + dy * Math.cos(-currPos.getH());
 
         previousLeftParallelTicks = leftParallelTicks;
         previousRightParallelTicks = rightParallelTicks;

@@ -20,6 +20,10 @@ import org.firstinspires.ftc.teamcode.Modules.PIDController;
 import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
 import org.firstinspires.ftc.teamcode.Robot;
 
+/**
+ * The combined trajectory and action runner
+ * that also has the basic functionalities of Robot.
+ */
 public class AutonomousRobot1 extends Robot {
 
     private EditablePose2D startPose = new EditablePose2D(0, 0, Math.toRadians(90), DistanceUnit.INCH);
@@ -71,7 +75,6 @@ public class AutonomousRobot1 extends Robot {
 
 
     public void step() {
-        if(profile == null){
         // get current position
         EditablePose2D currPos = this.getDrivetrain().getCurrPos();
         // get current time
