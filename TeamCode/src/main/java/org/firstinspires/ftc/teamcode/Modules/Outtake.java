@@ -2,8 +2,11 @@ package org.firstinspires.ftc.teamcode.Modules;
 
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad1;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+import static org.firstinspires.ftc.teamcode.riptideUtil.KPBottom;
+import static org.firstinspires.ftc.teamcode.riptideUtil.KPTop;
 import static org.firstinspires.ftc.teamcode.riptideUtil.TOP_FLYWHEEL_KP;
 import static org.firstinspires.ftc.teamcode.riptideUtil.BOTTOM_FLYWHEEL_KP;
+import static org.firstinspires.ftc.teamcode.riptideUtil.tolerance;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -33,8 +36,6 @@ public class Outtake {
 
 
     // OUTTAKE TUNER THINGS
-    public static double KPTop = 0.02;
-    public static double KPBottom = 0.02;
     LinkedList<Double> topRecords = new LinkedList<>();
     LinkedList<Double> bottomRecords = new LinkedList<>();
     public static int queueSize = 5;
@@ -126,7 +127,7 @@ public class Outtake {
         telemetry.addData("top", averageTop);
         telemetry.addData("bottom", averageBottom);
 
-        double tolerance = 150;
+
         boolean atTopRPM = Math.abs(averageTop - rpmTop) <= tolerance;
         boolean atBotRPM = Math.abs(averageBottom - rpmBottom) <= tolerance;
         atGoalSpeed = atTopRPM && atBotRPM;
