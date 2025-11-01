@@ -59,11 +59,11 @@ public class riptideUtil {
     public static double MAX_A = 72;                 // UNDETERMINED
     public static double MAX_V = 96;                 // UNDETERMINED
 
-    public static double LONG_DIST_TOP = 3150; // UNDETERMINED
+    public static double LONG_DIST_TOP = 3250; // UNDETERMINED
     public static double LONG_DIST_BOT = 3630; // UNDETERMINED
 
-    public static double MID_DIST_TOP = 3150; // UNDETERMINED
-    public static double MID_DIST_BOT = 3630;// UNDETERMINED
+    public static double MID_DIST_TOP = 2800; // UNDETERMINED
+    public static double MID_DIST_BOT = 3100;// UNDETERMINED
 
     public static double SHORT_DIST_TOP = 2950; // UNDETERMINED
     public static double SHORT_DIST_BOT = 3480;// UNDETERMINED
