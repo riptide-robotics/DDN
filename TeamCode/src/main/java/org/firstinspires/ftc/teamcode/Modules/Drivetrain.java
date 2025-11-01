@@ -29,6 +29,13 @@ public class Drivetrain {
 
     private final OdometryLocalizer robotPos;
 
+    private PIDController headingPID;
+    private final double kp = 0, ki = 0, kd = 0;
+    private double goal = 0;
+    private double initHeading = 0;
+    private double currHeading = 0;
+
+
     ///////////////////////////////////////////////
     ////                                     /////
     ////              FUNCTIONS              /////
@@ -64,6 +71,8 @@ public class Drivetrain {
         blWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         robotPos = new OdometryLocalizer(blWheel, brWheel, flWheel, 10);
+
+        headingPID = new PIDController(kp, ki, kd);
 
         imu = hardwareMap.get(IMU.class, "imu");
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
@@ -107,5 +116,18 @@ public class Drivetrain {
 
     public OdometryLocalizer getRobotPos() {
         return robotPos;
+    }
+
+    public double getPIDAngle(double angle) {
+        return headingPID.calculate(0, angle);
+    }
+
+    public double alignToGoal() {
+        double goalHeading = initHeading + goal;
+        double error = goalHeading - getRobotHeading((AngleUnit.DEGREES));
+
+        if (Math.abs(error) > 180) {error -= Math.signum(error) * 360;}
+
+        return getPIDAngle(error);
     }
 }
