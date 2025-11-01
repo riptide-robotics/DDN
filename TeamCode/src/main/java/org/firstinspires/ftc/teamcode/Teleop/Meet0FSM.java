@@ -114,8 +114,8 @@ public class Meet0FSM extends LinearOpMode {
                     robot.getIntake().transfer(0);
                 }
 
-                if (gamepad1.x && !xPressedG2){/* align */ align = true; xPressedG2 = true;}
-                 else if (gamepad1.x && !xPressedG2){align = false; xPressedG2 = true;}
+//                if (gamepad1.x && !xPressedG2){/* align */ align = true; xPressedG2 = true;}
+//                 else if (gamepad1.x && !xPressedG2){align = false; xPressedG2 = true;}
 
                 // INTAKE
                 if (gamepad2.right_trigger >= 0.1){
@@ -156,13 +156,13 @@ public class Meet0FSM extends LinearOpMode {
                     runOuttake = true;
                     leftBumperPressedG2 = true;
                     telemetry.addData("Outtake Mode: ", "MID");
-                } else if (gamepad2.right_bumper && !runOuttake && !rightBumperPressedG2) {
+                } else if (gamepad2.x && !runOuttake && !xPressedG2) {
                     //robot.getOuttake().setFlywheelSpeed(SHORT_DIST_TOP, SHORT_DIST_BOT /* Short Distance needs to be tuned*/);
                     currentTopRPMGoal = SHORT_DIST_TOP;
                     currentBottomRPMGoal = SHORT_DIST_BOT;
                     updateTime = true;
                     runOuttake = true;
-                    rightBumperPressedG2 = true;
+                    xPressedG2 = true;
                     telemetry.addData("Outtake Mode: ", "SHORT");
                 }
 
@@ -178,17 +178,17 @@ public class Meet0FSM extends LinearOpMode {
                     updateTime = false;
                     runOuttake = false;
                     leftBumperPressedG2 = true;
-                } else if (gamepad2.right_bumper && runOuttake && !rightBumperPressedG2) {
+                } else if (gamepad2.x && runOuttake && !xPressedG2) {
                     currentTopRPMGoal = 0;
                     currentBottomRPMGoal = 0;
                     updateTime = false;
                     runOuttake = false;
-                    rightBumperPressedG2 = true;
-                } else if (gamepad2.dpad_right && runOuttake && !rightPressedG2) {currentTopRPMGoal = 0;
-                    currentBottomRPMGoal = 0;
-                    updateTime = false;
-                    runOuttake = false;
-                    rightPressedG2 = true;}
+                    xPressedG2 = true;
+                } // else if (gamepad2.dpad_right && runOuttake && !rightPressedG2) {currentTopRPMGoal = 0;
+////                    currentBottomRPMGoal = 0;
+//                    updateTime = false;
+//                    runOuttake = false;
+//                    rightPressedG2 = true;}
 
                 // ENDGAME
 //                if (gamepad2.dpad_up){
