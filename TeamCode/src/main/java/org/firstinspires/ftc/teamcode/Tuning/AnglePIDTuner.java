@@ -22,7 +22,6 @@ public class AnglePIDTuner extends LinearOpMode {
     Robot robot;
     PIDController anglePID;
 
-    boolean hasrun = false;
     public static boolean align = false;
     boolean alignDebounce = false;
     public static double kp = 0, ki = 0, kd = 0;
@@ -40,22 +39,32 @@ public class AnglePIDTuner extends LinearOpMode {
 
         double prevHeading = 0;
 
+
         waitForStart();
         if (isStopRequested()) return;
 
         while(opModeIsActive()) {
-            if (gamepad1.a && !alignDebounce) {
+            if (gamepad1.x && !alignDebounce) {
                 align = true;
                 alignDebounce = true;
-                prevHeading = robot.getDrivetrain().getRobotHeading(AngleUnit.DEGREES);
             }
-            if (gamepad1.b) {
+
+            if(align && !alignDebounce) {
+                prevHeading = robot.getDrivetrain().getRobotHeading(AngleUnit.DEGREES) % 360;
+            }
+
+            if (gamepad1.triangle) {
                 align = false;
                 alignDebounce = false;
             }
 
+            if(gamepad1.circle) {
+                prevHeading = robot.getDrivetrain().getRobotHeading(AngleUnit.DEGREES) % 360;
+            }
+
             if(prevAlign != align) {
                 anglePID.setPID(kp, ki, kd);
+                robot.getDrivetrain().resetImu();
             }
 
             fieldCentricDrive(prevHeading);
@@ -75,10 +84,16 @@ public class AnglePIDTuner extends LinearOpMode {
         double slowdown = gamepad1.right_trigger > 0 ? 0.25 : 1;
         double y = -gamepad1.left_stick_y * slowdown;
         double x = gamepad1.left_stick_x * 1.1 * slowdown;
-        error -= prevHeading - robot.getDrivetrain().getRobotHeading(AngleUnit.DEGREES);
+        error = prevHeading - robot.getDrivetrain().getRobotHeading(AngleUnit.DEGREES);
+        error %= 360;
         double alignVal = turnPowerAngle(error);
-        if(alignVal == 0) { align = false; alignDebounce = false;}
-        t.addData("Turn Power: ", alignVal);
+        if(alignVal == 0 || error <= 2) { align = false; alignDebounce = false;}
+        t.addData("Current Heading", robot.getDrivetrain().getRobotHeading(AngleUnit.DEGREES));
+        t.addData("Previous Heading", prevHeading);
+        t.addData("Turn Power", alignVal);
+        t.addData("Error", error);
+        t.update();
+
         double rx = align ? alignVal : gamepad1.right_stick_x * slowdown;
 
         double heading = robot.getDrivetrain().getRobotHeading(AngleUnit.RADIANS);
