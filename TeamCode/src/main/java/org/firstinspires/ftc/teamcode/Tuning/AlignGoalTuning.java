@@ -20,7 +20,7 @@ import java.util.ArrayList;
 public class AlignGoalTuning extends LinearOpMode {
 
     /**In degrees.*/
-    public static double goal = getDesiredAngle();
+    public static double goal = 0 /*TODO get desired angle*/;
     private static double prevGoal = 0;
     Robot robot;
 
@@ -75,7 +75,7 @@ public class AlignGoalTuning extends LinearOpMode {
         prevAngle = currAngle;
         currAngle = getCurrentAngle();
 
-        if (Math.abs(goal - currAngle) > 180) goal = -(goal - 180);
+        if (Math.abs(goal - currAngle) > 180) goal = (goal - 360);
 
         double dAngle = prevAngle - currAngle;
 
@@ -88,17 +88,10 @@ public class AlignGoalTuning extends LinearOpMode {
 
         if (!cleanRun)
             robot.getDrivetrain().setWheelPowers(result,-result,-result,result);
-
-
-
-
     }
 
     public double getCurrentAngle() {
         return robot.getDrivetrain().getRobotHeading(AngleUnit.DEGREES);
 
-    }
-    public static double getDesiredAngle() {
-        throw new UnsupportedOperationException("Waiting on the AprilTags, DO NOT USE THIS!");
     }
 }
