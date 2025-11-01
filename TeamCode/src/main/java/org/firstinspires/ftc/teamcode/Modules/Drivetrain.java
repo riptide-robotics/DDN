@@ -45,7 +45,7 @@ public class Drivetrain {
         blWheel = hardwareMap.dcMotor.get("blWheel");
 
         blWheel.setDirection(DcMotorSimple.Direction.FORWARD);
-        flWheel.setDirection(DcMotorSimple.Direction.FORWARD);
+        flWheel.setDirection(DcMotorSimple.Direction.REVERSE);
         frWheel.setDirection(DcMotorSimple.Direction.FORWARD);
         brWheel.setDirection(DcMotorSimple.Direction.REVERSE);
 

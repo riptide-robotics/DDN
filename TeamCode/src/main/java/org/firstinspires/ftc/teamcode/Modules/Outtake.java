@@ -38,7 +38,7 @@ public class Outtake {
     // OUTTAKE TUNER THINGS
     LinkedList<Double> topRecords = new LinkedList<>();
     LinkedList<Double> bottomRecords = new LinkedList<>();
-    public static int queueSize = 5;
+    public static int queueSize = 3;
     private static double rpmTopPrev = 360;
     private static double rpmBottomPrev = 360;
 
@@ -52,6 +52,10 @@ public class Outtake {
     public void runOuttakePID(double rpmTop, double rpmBottom, Telemetry tele){
 
         pidtunedmotor(rpmTop, rpmBottom, tele);
+
+        tele.addData("goalRPMTop", rpmTop);
+        tele.addData("goalRPMBottom", rpmBottom);
+        tele.update();
         if (rpmTopPrev != rpmTop) {
             rpmTopPrev = rpmTop;
             RPMControllerTop = new PIDController(KPTop, 0, 0);
@@ -61,9 +65,6 @@ public class Outtake {
             rpmBottomPrev = rpmBottom;
             RPMControllerBottom = new PIDController(KPBottom, 0, 0);
         }
-
-        tele.addData("goalRPMTop", rpmTop);
-        tele.addData("goalRPMBottom", rpmBottom);
         tele.update();
     }
 
@@ -117,8 +118,8 @@ public class Outtake {
         telemetry.addData("top", averageTop);
         telemetry.addData("bottom", averageBottom);
 
-        double wantedWheelPowerTopAverage = RPMControllerTop.calculate(averageTop, rpmTop);
-        double wantedWheelPowerBottomAverage = RPMControllerBottom.calculate(averageBottom, rpmBottom);
+        double wantedWheelPowerTopAverage = RPMControllerTop.calculate(averageTop - 200, rpmTop);
+        double wantedWheelPowerBottomAverage = RPMControllerBottom.calculate(averageBottom - 200, rpmBottom);
 
 
         setFlyWheelPower(rpmTop != 0 ? wantedWheelPowerTopAverage:0,rpmBottom != 0 ? wantedWheelPowerBottomAverage:0);
