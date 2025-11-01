@@ -1,8 +1,16 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 
+import static org.firstinspires.ftc.teamcode.riptideUtil.LONG_DIST_BOT;
+import static org.firstinspires.ftc.teamcode.riptideUtil.LONG_DIST_TOP;
+import static org.firstinspires.ftc.teamcode.riptideUtil.MID_DIST_BOT;
+import static org.firstinspires.ftc.teamcode.riptideUtil.MID_DIST_TOP;
+import static org.firstinspires.ftc.teamcode.riptideUtil.SHORT_DIST_BOT;
+import static org.firstinspires.ftc.teamcode.riptideUtil.SHORT_DIST_TOP;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Robot;
@@ -14,6 +22,9 @@ public class PostMeet0FSM extends LinearOpMode {
 
     boolean hasrun = false;
     boolean a2WasPressed = false;
+    boolean updateTime = false;
+
+    ElapsedTime endTimer = new ElapsedTime();
 
     public enum states{
         IDLE,
@@ -41,7 +52,17 @@ public class PostMeet0FSM extends LinearOpMode {
         while(opModeIsActive()){
             telemetry.addData("Current State:", currentState);
             telemetry.update();
+            FSM();
             fieldCentricDrive();
+            if (updateTime){
+                robot.getOuttake().startFlywheel();
+            }
+
+            double currTime = endTimer.seconds();
+            if (currTime >= 80) {
+                gamepad1.rumble(1, 1, 500);
+                gamepad2.rumble(1, 1, 500);
+            }
         }
     }
 
@@ -113,6 +134,20 @@ public class PostMeet0FSM extends LinearOpMode {
                     a2WasPressed = false;
                 }
 
+                if (gamepad2.left_trigger > 0.1){
+                    robot.getOuttake().setFlywheelSpeed(LONG_DIST_TOP, LONG_DIST_BOT /* Long Distance needs to be tuned*/);
+                    updateTime = true;
+                } else if (gamepad2.left_bumper) {
+                    robot.getOuttake().setFlywheelSpeed(MID_DIST_TOP, MID_DIST_BOT /* Short Distance needs to be tuned*/);
+                    updateTime = true;
+                } else if (gamepad2.x) {
+                    robot.getOuttake().setFlywheelSpeed(SHORT_DIST_TOP, SHORT_DIST_BOT /* Short Distance needs to be tuned*/);
+                    updateTime = true;
+                }else{
+                    robot.getOuttake().stop();
+                    updateTime = false;
+                }
+
                 if (gamepad2.b) {
                     currentState = PostMeet0FSM.states.IDLE;
                     hasrun = false;
@@ -126,6 +161,12 @@ public class PostMeet0FSM extends LinearOpMode {
                 if (gamepad2.dpad_up) {
                     currentState = PostMeet0FSM.states.ENDGAME;
                     hasrun = false;
+                }
+
+                if (gamepad2.right_trigger > 0.1) {
+                    // hold
+                } else {
+                    // release
                 }
 
                 break;

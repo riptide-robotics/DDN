@@ -123,7 +123,7 @@ public class Intake{
         order[toSet] = color;
         t.addLine("Uptake Result: Success - " + color + " artifact uptaked into position " + toSet);
 
-        // UPTAKE FUNCTION
+        //intakeMotor.setPower(1);
     }
 
     public void ejectArtifact(char colorReq){ // colorReq should b 'p' (purple) or 'g' (green)
