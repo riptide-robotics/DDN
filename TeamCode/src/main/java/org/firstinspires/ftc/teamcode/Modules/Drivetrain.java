@@ -90,10 +90,6 @@ public class Drivetrain {
         imu.resetYaw();
     }
 
-    public double getRobotHeading(AngleUnit unit) {
-        return imu.getRobotYawPitchRollAngles().getYaw(unit); // heading of bot in radians
-    }
-
     // ------------ SETTERS ------------ //
 
 
@@ -116,6 +112,10 @@ public class Drivetrain {
 
     public OdometryLocalizer getRobotPos() {
         return robotPos;
+    }
+
+    public double getRobotHeading(AngleUnit unit) {
+        return imu.getRobotYawPitchRollAngles().getYaw(unit); // heading of bot in radians
     }
 
     public double getPIDAngle(double angle) {
