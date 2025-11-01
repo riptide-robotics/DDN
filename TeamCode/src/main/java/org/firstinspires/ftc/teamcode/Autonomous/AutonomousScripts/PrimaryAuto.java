@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Autonomous.AutonomousScripts;
 
+import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -11,6 +13,8 @@ import org.firstinspires.ftc.teamcode.Modules.Outtake;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.Tuning.Odometry;
 
+@Config
+@Autonomous(name = "Primary Auto")
 public class PrimaryAuto extends LinearOpMode {
     //TODO please dont use this yet
 
@@ -37,15 +41,16 @@ public class PrimaryAuto extends LinearOpMode {
         intake = new Intake(hardwareMap);
 
         outtake.startFlywheel();
+        waitForStart();
 
 
         while (opModeIsActive()) {
-            if ((System.currentTimeMillis() - time)/1e6 < 3)
-                fieldCentricDrive(0.425, 0.85 * (red ? 1 : -1), Math.toRadians(45) * (red ? 1 : -1));
-            else {
-                //TODO move the intake belt
-                outtake.runOuttakePID(2000, 2000, telemetry);
-            }
+          //  if ((System.currentTimeMillis() - time)/1e6 < 3)
+          //      fieldCentricDrive(0.425, 0.85 * (red ? 1 : -1), Math.toRadians(45) * (red ? 1 : -1));
+          //  else {
+                intake.spin(1);
+                outtake.runOuttakePID(2000, 2100, telemetry);
+           // }
         }
 
     }
