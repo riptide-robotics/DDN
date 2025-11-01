@@ -1,13 +1,24 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad1;
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+import static org.firstinspires.ftc.teamcode.riptideUtil.KPBottom;
+import static org.firstinspires.ftc.teamcode.riptideUtil.KPTop;
 import static org.firstinspires.ftc.teamcode.riptideUtil.TOP_FLYWHEEL_KP;
 import static org.firstinspires.ftc.teamcode.riptideUtil.BOTTOM_FLYWHEEL_KP;
+import static org.firstinspires.ftc.teamcode.riptideUtil.tolerance;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Modules.PIDController;
+import org.firstinspires.ftc.teamcode.Tuning.OuttakePIDTuner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -18,6 +29,109 @@ public class Outtake {
 
     private final PIDController flywheelVelocityControllerBottom = new PIDController(TOP_FLYWHEEL_KP, 0, 0);
     private final PIDController flywheelVelocityControllerTop = new PIDController(BOTTOM_FLYWHEEL_KP, 0, 0);
+
+
+
+
+
+
+    // OUTTAKE TUNER THINGS
+    LinkedList<Double> topRecords = new LinkedList<>();
+    LinkedList<Double> bottomRecords = new LinkedList<>();
+    public static int queueSize = 5;
+    private static double rpmTopPrev = 360;
+    private static double rpmBottomPrev = 360;
+
+    private double currPosTop;
+    private double currPosBottom;
+    private double startTime = System.nanoTime() / 1e9;
+    private PIDController RPMControllerTop = new PIDController(KPTop, 0, 0);
+    private PIDController RPMControllerBottom = new PIDController(KPBottom, 0, 0);
+    private double prevPosTop = 0;
+    private  double prevPosBottom = 0;
+    public void runOuttakePID(double rpmTop, double rpmBottom, Telemetry tele){
+
+        pidtunedmotor(rpmTop, rpmBottom, tele);
+        if (rpmTopPrev != rpmTop) {
+            rpmTopPrev = rpmTop;
+            RPMControllerTop = new PIDController(KPTop, 0, 0);
+
+        }
+        if (rpmBottomPrev != rpmBottom) {
+            rpmBottomPrev = rpmBottom;
+            RPMControllerBottom = new PIDController(KPBottom, 0, 0);
+        }
+
+        tele.addData("goalRPMTop", rpmTop);
+        tele.addData("goalRPMBottom", rpmBottom);
+        tele.update();
+    }
+
+    private boolean atGoalSpeed = false;
+    public void pidtunedmotor(double rpmTop, double rpmBottom, Telemetry telemetry) {
+
+        prevPosTop = currPosTop;
+        prevPosBottom = currPosBottom;
+
+        currPosTop = currPosL();
+        currPosBottom = currPosR();
+
+        double dThetaTop = (currPosTop - prevPosTop)/28;
+        double dThetaBottom = (currPosBottom - prevPosBottom)/28;
+
+        double dt = System.nanoTime() / 1e9 - startTime;
+        startTime = System.nanoTime() / 1e9;
+
+        double currRPMTop = dThetaTop / (dt / 60);
+        double currRPMBottom = dThetaBottom / (dt / 60);
+
+        topRecords.add(currRPMTop);
+        while (topRecords.size() > queueSize)
+            topRecords.remove(0);
+
+        bottomRecords.add(currRPMBottom);
+        while (bottomRecords.size() > queueSize)
+            bottomRecords.remove(0);
+
+        double undividedAverageBottom = 0;
+        double undividedAverageTop = 0;
+
+        for (int i = 0; i < topRecords.size(); i++) {
+            undividedAverageTop += topRecords.get(i);
+            undividedAverageBottom += bottomRecords.get(i);
+        }
+        double averageTop;
+        double averageBottom;
+        if (topRecords.size() == queueSize) {
+            averageTop = undividedAverageTop / queueSize;
+            averageBottom = undividedAverageBottom / queueSize;
+        } else {
+            averageTop = currRPMTop;
+            averageBottom = currRPMBottom;
+        }
+
+        //double averageTop = topRecords.size() >= queueSize ? (topRecords.get(0)+topRecords.get(1)+topRecords.get(2)+topRecords.get(3)+topRecords.get(4))/5 : currRPMTop;
+        //double averageBottom = bottomRecords.size() >= queueSize ? (bottomRecords.get(0)+bottomRecords.get(1)+bottomRecords.get(2)+bottomRecords.get(3)+bottomRecords.get(4))/5 : currRPMBottom;
+
+        telemetry.addData("ready", bottomRecords.size() >= queueSize);
+        telemetry.addData("top", averageTop);
+        telemetry.addData("bottom", averageBottom);
+
+        double wantedWheelPowerTopAverage = RPMControllerTop.calculate(averageTop, rpmTop);
+        double wantedWheelPowerBottomAverage = RPMControllerBottom.calculate(averageBottom, rpmBottom);
+
+
+        setFlyWheelPower(rpmTop != 0 ? wantedWheelPowerTopAverage:0,rpmBottom != 0 ? wantedWheelPowerBottomAverage:0);
+
+        telemetry.addData("ready", bottomRecords.size() >= queueSize);
+        telemetry.addData("top", averageTop);
+        telemetry.addData("bottom", averageBottom);
+
+
+        boolean atTopRPM = Math.abs(averageTop - rpmTop) <= tolerance;
+        boolean atBotRPM = Math.abs(averageBottom - rpmBottom) <= tolerance;
+        atGoalSpeed = atTopRPM && atBotRPM;
+    }
 
     public Outtake(HardwareMap hardwareMap){
 
@@ -47,81 +161,6 @@ public class Outtake {
         topFlywheel.setPower(0);
     }
 
-    private double startTime = System.nanoTime() / 1e9;
-
-    ArrayList<Double> topQueue = new ArrayList<>();
-    ArrayList<Double> bottomQueue = new ArrayList<>();
-
-    private double prevPosTop, prevPosBottom, currPosTop, currPosBottom;
-
-    private final int queueSize = 10;
-
-    private boolean atGoalSpeed = false;
-
-    public void setFlywheelSpeed(double goalRPMTop, double goalRPMBottom){
-
-        prevPosTop = currPosTop;
-        prevPosBottom = currPosBottom;
-
-        currPosTop = currPosL();
-        currPosBottom = currPosR();
-
-        double dThetaTop = (currPosTop - prevPosTop)/28;
-        double dThetaBottom = (currPosBottom - prevPosBottom)/28;
-
-        double dt = System.nanoTime() / 1e9 - startTime;
-        startTime = System.nanoTime() / 1e9;
-
-        double currRPMTop = dThetaTop / (dt / 60);
-        double currRPMBottom = dThetaBottom / (dt / 60);
-
-        // telemetry.addData("currPRMTop", currRPMTop);
-        // telemetry.addData("currRPMBottom", currRPMBottom);
-
-        double wantedWheelPowerTop = flywheelVelocityControllerTop.calculate(currRPMTop, goalRPMTop);
-        double wantedWheelPowerBottom = flywheelVelocityControllerBottom.calculate(currRPMBottom, goalRPMBottom);
-
-        topQueue.add(currRPMTop);
-//        bottomQueue.add(currRPMBottom);
-//
-//        if (topQueue.size() > queueSize){
-//            topQueue.remove(0);
-//            topQueue.trimToSize();
-//        }
-//
-//        if (bottomQueue.size() > queueSize){
-//            bottomQueue.remove(0);
-//            bottomQueue.trimToSize();
-//        }
-//
-//        double undividedAverageBottom = 0;
-//        double undividedAverageTop = 0;
-//
-//        for (int i = 0; i < topQueue.size(); i++) {
-//            undividedAverageTop += topQueue.get(i);
-//            undividedAverageBottom += bottomQueue.get(i);
-//        }
-//
-//        double averageTop;
-//        double averageBottom;
-//        if (undividedAverageTop > 0) {
-//            averageTop = undividedAverageTop / topQueue.size();
-//            averageBottom = undividedAverageBottom / bottomQueue.size();
-//        } else {
-//            averageTop = currRPMTop;
-//            averageBottom = currRPMBottom;
-//        }
-//
-//        double wantedWheelPowerTopAverage = flywheelVelocityControllerTop.calculate(averageTop, goalRPMTop);
-//        double wantedWheelPowerBottomAverage = flywheelVelocityControllerBottom.calculate(averageBottom, goalRPMBottom);
-
-        setFlyWheelPower(wantedWheelPowerTop,wantedWheelPowerBottom);
-
-//        double tolerance = 50;
-//        boolean atTopRPM = Math.abs(averageTop - goalRPMTop) <= tolerance;
-//        boolean atBotRPM = Math.abs(averageBottom - goalRPMTop) <= tolerance;
-//        atGoalSpeed = atTopRPM && atBotRPM;
-    }
 
     public boolean isAtGoalSpeed(){
         return atGoalSpeed;
