@@ -114,8 +114,8 @@ public class Meet0FSM extends LinearOpMode {
                     robot.getIntake().transfer(0);
                 }
 
-                if (gamepad1.x){/* align */ align = true;}
-                else {align = false;}
+                if (gamepad1.x && !xPressedG2){/* align */ align = true; xPressedG2 = true;}
+                 else if (gamepad1.x && !xPressedG2){align = false; xPressedG2 = true;}
 
                 // INTAKE
                 if (gamepad2.right_trigger >= 0.1){
@@ -131,13 +131,13 @@ public class Meet0FSM extends LinearOpMode {
                 else {robot.getIntake().transfer(0); robot.getIntake().closeTransfer();}
 
 
-                if (gamepad2.dpad_right && !rightPressedG2 && !runOuttake){
-                    currentTopRPMGoal = -1;
-                    currentBottomRPMGoal = -1;
-                    updateTime = true;
-                    runOuttake = true;
-                    rightPressedG2 = true;
-                }
+//                if (gamepad2.dpad_right && !rightPressedG2 && !runOuttake){
+//                    currentTopRPMGoal = -1;
+//                    currentBottomRPMGoal = -1;
+//                    updateTime = true;
+//                    runOuttake = true;
+//                    rightPressedG2 = true;
+//                }
 
                 // OUTTAKE
                 if (gamepad2.left_trigger > 0.1 && !runOuttake && !leftTriggerPressedG2){
@@ -223,7 +223,7 @@ public class Meet0FSM extends LinearOpMode {
         if (!gamepad2.right_bumper){rightBumperPressedG2 = false;}
         if (!gamepad2.left_bumper){leftBumperPressedG2 = false;}
         if (!(gamepad2.left_trigger > 0.1)){leftTriggerPressedG2 = false;}
-        if (!gamepad2.x){xPressedG2 = false;}
+        if (!gamepad1.x){xPressedG2 = false;}
         if (!gamepad2.back){backPressedG2 = false;}
     }
 
