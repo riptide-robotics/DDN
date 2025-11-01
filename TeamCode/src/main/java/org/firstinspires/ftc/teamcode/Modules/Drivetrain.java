@@ -29,6 +29,13 @@ public class Drivetrain {
 
     private final OdometryLocalizer robotPos;
 
+    private PIDController headingPID;
+    private final double kp = 0, ki = 0, kd = 0;
+    private double goal = 0;
+    private double initHeading = 0;
+    private double currHeading = 0;
+
+
     ///////////////////////////////////////////////
     ////                                     /////
     ////              FUNCTIONS              /////
@@ -45,7 +52,7 @@ public class Drivetrain {
         blWheel = hardwareMap.dcMotor.get("blWheel");
 
         blWheel.setDirection(DcMotorSimple.Direction.FORWARD);
-        flWheel.setDirection(DcMotorSimple.Direction.FORWARD);
+        flWheel.setDirection(DcMotorSimple.Direction.REVERSE);
         frWheel.setDirection(DcMotorSimple.Direction.FORWARD);
         brWheel.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -65,6 +72,8 @@ public class Drivetrain {
 
         robotPos = new OdometryLocalizer(blWheel, brWheel, flWheel, 10);
 
+        headingPID = new PIDController(kp, ki, kd);
+
         imu = hardwareMap.get(IMU.class, "imu");
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
@@ -79,10 +88,6 @@ public class Drivetrain {
 
     public void resetImu() {
         imu.resetYaw();
-    }
-
-    public double getRobotHeading(AngleUnit unit) {
-        return imu.getRobotYawPitchRollAngles().getYaw(unit); // heading of bot in radians
     }
 
     // ------------ SETTERS ------------ //
@@ -107,5 +112,22 @@ public class Drivetrain {
 
     public OdometryLocalizer getRobotPos() {
         return robotPos;
+    }
+
+    public double getRobotHeading(AngleUnit unit) {
+        return imu.getRobotYawPitchRollAngles().getYaw(unit); // heading of bot in radians
+    }
+
+    public double getPIDAngle(double angle) {
+        return headingPID.calculate(0, angle);
+    }
+
+    public double alignToGoal() {
+        double goalHeading = initHeading + goal;
+        double error = goalHeading - getRobotHeading((AngleUnit.DEGREES));
+
+        if (Math.abs(error) > 180) {error -= Math.signum(error) * 360;}
+
+        return getPIDAngle(error);
     }
 }

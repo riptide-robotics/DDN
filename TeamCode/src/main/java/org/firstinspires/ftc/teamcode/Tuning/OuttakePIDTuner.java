@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Modules.PIDController;
 import org.firstinspires.ftc.teamcode.Modules.Outtake;
+import org.firstinspires.ftc.teamcode.Robot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,13 +28,15 @@ public class OuttakePIDTuner extends LinearOpMode {
 
     Outtake outtake;
     public static double rpmTop = 360;
-    public static int queueSize = 5;
+    public static int queueSize = 8;
     private static double rpmTopPrev = 360;
 
     public static double rpmBottom = 360;
     private static double rpmBottomPrev = 360;
 
     Telemetry tele = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
+    Robot robot;
 
     private double prevPosTop, prevPosBottom, currPosTop, currPosBottom;
     private double startTime = System.nanoTime() / 1e9;
@@ -46,6 +49,7 @@ public class OuttakePIDTuner extends LinearOpMode {
         outtake = new Outtake(hardwareMap);
         telemetry.addData("Robot status", "successfully initiated");
         telemetry.update();
+        robot  = new Robot((hardwareMap));
 
         waitForStart();
         if (isStopRequested()) return;
@@ -71,6 +75,8 @@ public class OuttakePIDTuner extends LinearOpMode {
                 rpmBottomPrev = rpmBottom;
                 RPMControllerBottom = new PIDController(KPBottom, 0, 0);
             }
+            robot.getIntake().transfer(-1);
+            robot.getIntake().spin(-1);
         }
     }
     public void pidtunedmotor(Telemetry telemetry) {
