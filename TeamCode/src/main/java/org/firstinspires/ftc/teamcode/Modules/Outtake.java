@@ -33,8 +33,6 @@ public class Outtake {
 
 
 
-
-
     // OUTTAKE TUNER THINGS
     LinkedList<Double> topRecords = new LinkedList<>();
     LinkedList<Double> bottomRecords = new LinkedList<>();
@@ -184,8 +182,21 @@ public class Outtake {
     public double currPosR(){
         return bottomFlywheel.getCurrentPosition();
     }
-    //Stops here
 
 
+    public void setPowerOnDist(double dist, Telemetry tele){
+        double rBottom = 15 /* idk */;
+        double rTop = 15 /* idk */;
+        double angle = 30 /* idk */;
+        double height = 25-rBottom-Math.cos(angle)*(rBottom+2.4*Math.sqrt(2)-1);
+        double angularVelocity = 25 /* idk */;
+        double econserved = 0.8 /* idk */;
 
+        double ballVelocity = Math.sqrt((((9.8*dist*dist)/2*Math.cos(angle))*Math.cos(angle)*(dist*Math.tan(angle)-height)));
+
+        double rpmTop = (ballVelocity*60)/2*Math.PI*rTop*econserved - angularVelocity/2*econserved;
+        double rpmBottom = (ballVelocity*60)/2*Math.PI*rBottom*econserved - angularVelocity/2*econserved;
+
+        pidtunedmotor(rpmTop, rpmBottom, tele);
+    }
 }
