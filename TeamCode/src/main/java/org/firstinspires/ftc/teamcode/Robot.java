@@ -22,7 +22,7 @@ public class Robot {
         this.hardwareMap = hardwareMap;
 
         drivetrain = new Drivetrain(hardwareMap);
-        camera = new Camera(hardwareMap.get(WebcamName.class, "Webcam 1"));
+        camera = new Camera(hardwareMap);
         table = new TurnTable(2, 0, 0);
     }
 

@@ -1,6 +1,10 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
 // --- CONSTANTS & OTHER STUFF --- //
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.riptideUtil;
@@ -16,6 +20,8 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
 import org.firstinspires.ftc.vision.opencv.ColorRange;
+
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 
 import org.firstinspires.ftc.vision.opencv.Circle;
@@ -28,6 +34,7 @@ import java.util.List;
 
 import android.util.Size;
 
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.SortOrder;
 
 /*
@@ -61,6 +68,7 @@ public class Camera {
     ArrayList<AprilTagDetection> detections;
     ArrayList<ArrayList<Double>> blobs = new ArrayList<>();
     String goalTag;
+    CameraName cameraname;
     public enum processors_enabled {
         NONE,
         TAG,
@@ -74,8 +82,8 @@ public class Camera {
     ////                                     /////
     //////////////////////////////////////////////
 
-    public Camera(CameraName cameraname) {
-
+    public Camera(HardwareMap hardwareMap) {
+        cameraname = hardwareMap.get(WebcamName.class, "Webcam 1");
         tag_processor = new AprilTagProcessor.Builder()
                 .setTagLibrary(riptideUtil.getLibrary())
                 .setDrawAxes(true)
@@ -326,5 +334,71 @@ public class Camera {
 
     public void stop() {
         vision_portal.close();
+    }
+
+    @SuppressLint("DefaultLocale")
+    public void distanceFromGoal(double x, double y, double z){
+
+        //telemetry.addLine(String.format(" --- %d AprilTags Detected --- ", detections.size()));
+        for (AprilTagDetection detection : detections) {
+            if (detection.metadata != null) {
+                //telemetry.addLine(String.format("%s (ID %d)", detection.metadata.name, detection.id));
+                if (!detection.metadata.name.contains("Obelisk")) {
+                    telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)",
+                            detection.robotPose.getPosition().x,
+                            detection.robotPose.getPosition().y,
+                            detection.robotPose.getPosition().z));
+                    telemetry.addLine(String.format("Distance %f (inch)",
+                            getAprilTagDistance(detection)));
+                    telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)",
+                            detection.robotPose.getOrientation().getPitch(AngleUnit.DEGREES),
+                            detection.robotPose.getOrientation().getRoll(AngleUnit.DEGREES),
+                            detection.robotPose.getOrientation().getYaw(AngleUnit.DEGREES)));
+                }
+            } else {
+                telemetry.addLine(String.format("Unknown Name (ID %d)", detection.id));
+            }
+
+
+            telemetry.addLine(String.format("Center %6.0f %6.0f (pixels)", detection.center.x, detection.center.y));
+            x = detection.robotPose.getPosition().x;
+            y = detection.robotPose.getPosition().y;
+            z = detection.robotPose.getPosition().z;
+        }
+
+        telemetry.addLine(String.format(" --- %d Artifacts Detected --- ", blobs.size()));
+
+        for (List<Double> blob : blobs) {
+            telemetry.addLine(String.format("Position: (%f, %f)", blob.get(0), blob.get(1)));
+            telemetry.addLine(String.format("Circularity: %f", blob.get(4)));
+            telemetry.addLine(String.format("Contour Area: %f", blob.get(3)));
+            telemetry.addLine(String.format("Distance: %f Inches Away", blob.get(2)));
+        }
+    }
+
+    public void tagAngle(double angle){
+
+    }
+
+    public Double getGoalDistance() {
+        AprilTagDetection goalDetection = getGoalApriltag();
+        if (goalDetection == null) {
+            return null;
+        }
+
+        double x = goalDetection.robotPose.getPosition().x;
+        double y = goalDetection.robotPose.getPosition().y;
+        double z = goalDetection.robotPose.getPosition().z;
+
+        return Math.sqrt(x * x + y * y + z * z);
+    }
+
+    public Double getGoalAngleError() {
+        AprilTagDetection goalDetection = getGoalApriltag();
+        if (goalDetection == null) {
+            return null;
+        }
+
+        return getTagHorizontalAngle(goalDetection);
     }
 }

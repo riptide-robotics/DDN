@@ -9,6 +9,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Modules.Camera;
+import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 import java.util.ArrayList;
@@ -16,13 +17,13 @@ import java.util.List;
 
 @TeleOp(name="Test Vision")
 public class TestVision extends LinearOpMode {
-
+    Robot robot;
     @Override
     public void runOpMode() throws InterruptedException {
+        robot = new Robot(hardwareMap);
 
-        Camera camera = new Camera(hardwareMap.get(WebcamName.class, "Webcam 1"));
         Camera.processors_enabled processor = Camera.processors_enabled.ALL;
-        camera.setPipeline(processor);
+        robot.getCamera().setPipeline(processor);
         boolean a_debounce = false;
 
         telemetry.setMsTransmissionInterval(100);   // speed up telemetry updates for debugging
@@ -37,15 +38,15 @@ public class TestVision extends LinearOpMode {
                     switch (processor) {
                         case ALL:
                             processor = Camera.processors_enabled.TAG;
-                            camera.setPipeline(processor);
+                            robot.getCamera().setPipeline(processor);
                             break;
                         case TAG:
                             processor = Camera.processors_enabled.COLOR;
-                            camera.setPipeline(processor);
+                            robot.getCamera().setPipeline(processor);
                             break;
                         case COLOR:
                             processor = Camera.processors_enabled.ALL;
-                            camera.setPipeline(processor);
+                            robot.getCamera().setPipeline(processor);
                             break;
                     }
                 }
@@ -53,10 +54,10 @@ public class TestVision extends LinearOpMode {
             } else {
                 a_debounce = false;
             }
-            telemetryStuff(camera);
+            telemetryStuff(robot.getCamera());
         }
 
-        camera.stop();
+        robot.getCamera().stop();
     }
 
     @SuppressLint("DefaultLocale")
@@ -101,3 +102,5 @@ public class TestVision extends LinearOpMode {
         sleep(100);
     }
 }
+
+
