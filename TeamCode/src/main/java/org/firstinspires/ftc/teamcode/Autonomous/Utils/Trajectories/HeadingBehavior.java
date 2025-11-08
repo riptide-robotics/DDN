@@ -1,10 +1,5 @@
 package org.firstinspires.ftc.teamcode.Autonomous.Utils.Trajectories;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.Autonomous.Utils.Path;
-import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
-
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -67,7 +62,4 @@ public class HeadingBehavior{
         }
 
     }
-
-
-
 }
