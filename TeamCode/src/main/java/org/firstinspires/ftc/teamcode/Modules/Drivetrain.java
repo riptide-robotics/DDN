@@ -51,10 +51,10 @@ public class Drivetrain {
         brWheel = hardwareMap.dcMotor.get("brWheel");
         blWheel = hardwareMap.dcMotor.get("blWheel");
 
-        blWheel.setDirection(DcMotorSimple.Direction.FORWARD);
-        flWheel.setDirection(DcMotorSimple.Direction.REVERSE);
-        frWheel.setDirection(DcMotorSimple.Direction.FORWARD);
-        brWheel.setDirection(DcMotorSimple.Direction.REVERSE);
+        blWheel.setDirection(DcMotorSimple.Direction.REVERSE);
+        flWheel.setDirection(DcMotorSimple.Direction.FORWARD);
+        frWheel.setDirection(DcMotorSimple.Direction.REVERSE);
+        brWheel.setDirection(DcMotorSimple.Direction.FORWARD);
 
         brWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         blWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
