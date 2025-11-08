@@ -73,13 +73,13 @@ public class TurnAnAngle extends LinearOpMode {
          */
 
         while(opModeIsActive()) {
-            if(prevGoalDeg != goalDeg) {
+            if(prevGoalDeg != (goalDeg * 3)) {
                 startTime.reset();
-                prevGoalDeg = goalDeg;
+                prevGoalDeg = (goalDeg * 3);
             }
             motorController.setPID(kp, ki, kd);
 
-            goalTicks = goalDeg * degreesToTicks;
+            goalTicks = (goalDeg * 3) * degreesToTicks;
 
             currPosTicks = motor.getCurrentPosition();
             motor.setPower(motorController.calculate(currPosTicks, goalTicks) + kf);
