@@ -30,8 +30,8 @@ public class TurnAnAngle extends LinearOpMode {
     public static double goalDeg = 0;
     double prevGoalDeg;
     double goalTicks = 0;
-    static final double ticksToDegrees = 360/1993.6;
-    static final double degreesToTicks = 1993.6/360;
+    static final double ticksToDegrees = 360/145.1;
+    static final double degreesToTicks = 145.1/360;
 
     public ElapsedTime startTime= new ElapsedTime();
 
