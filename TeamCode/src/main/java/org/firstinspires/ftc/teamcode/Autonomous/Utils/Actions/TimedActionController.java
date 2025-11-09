@@ -38,11 +38,9 @@ public class TimedActionController {
 
         private final Action action;
         private boolean actionedOnce = false;
-        private Action runOnce = () -> {
-        };
+        private Action runOnce = () -> {};
 
-        private Action cleanup = () -> {
-        };
+        private Action cleanup = () -> {};
         private boolean cleanedUpOnce = false;
 
         public TimedAction(double startTimeInSeconds, double endTimeInSeconds, Action action, Action runOnce, Action cleanup) {
