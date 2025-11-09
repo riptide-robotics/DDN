@@ -33,6 +33,8 @@ public class Robot {
         endgameServos = new EndgameServos(hardwareMap);
 
         outtake = new Outtake(hardwareMap);
+
+        camera = new Camera(hardwareMap);
     }
 
     public Drivetrain getDrivetrain(){
@@ -45,8 +47,10 @@ public class Robot {
 
     public Outtake getOuttake() {return outtake;}
 
-    public void setFlyWheelPowerOnDistance(Telemetry tele){
-        double distance = 0;
-        outtake.setPowerOnDist(distance, tele);
+    public Camera getCamera() {return camera;}
+
+    public void setFlyWheelPowerOnDistance(boolean run, Telemetry tele){
+        double distance = camera.getGoalDistance();
+        outtake.setPowerOnDist(distance, run, tele);
     }
 }

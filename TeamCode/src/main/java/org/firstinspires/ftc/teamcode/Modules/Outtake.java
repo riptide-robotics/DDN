@@ -6,6 +6,8 @@ import static org.firstinspires.ftc.teamcode.riptideUtil.KPBottom;
 import static org.firstinspires.ftc.teamcode.riptideUtil.KPTop;
 import static org.firstinspires.ftc.teamcode.riptideUtil.TOP_FLYWHEEL_KP;
 import static org.firstinspires.ftc.teamcode.riptideUtil.BOTTOM_FLYWHEEL_KP;
+import static org.firstinspires.ftc.teamcode.riptideUtil.angularVelocity;
+import static org.firstinspires.ftc.teamcode.riptideUtil.econserved;
 import static org.firstinspires.ftc.teamcode.riptideUtil.tolerance;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -30,6 +32,7 @@ public class Outtake {
     private final PIDController flywheelVelocityControllerBottom = new PIDController(TOP_FLYWHEEL_KP, 0, 0);
     private final PIDController flywheelVelocityControllerTop = new PIDController(BOTTOM_FLYWHEEL_KP, 0, 0);
 
+    private boolean updatePID = false;
 
 
 
@@ -67,6 +70,8 @@ public class Outtake {
     }
 
     private boolean atGoalSpeed = false;
+
+
     public void pidtunedmotor(double rpmTop, double rpmBottom, Telemetry telemetry) {
 
         prevPosTop = currPosTop;
@@ -139,8 +144,6 @@ public class Outtake {
 
         topFlywheel.setDirection(DcMotorSimple.Direction.REVERSE);
         bottomFlywheel.setDirection(DcMotorSimple.Direction.REVERSE);
-
-
     }
 
     public void start(double speed){
@@ -184,19 +187,33 @@ public class Outtake {
     }
 
 
-    public void setPowerOnDist(double dist, Telemetry tele){
-        double rBottom = 15 /* idk */;
-        double rTop = 15 /* idk */;
-        double angle = 30 /* idk */;
-        double height = 25-rBottom-Math.cos(angle)*(rBottom+2.4*Math.sqrt(2)-1);
-        double angularVelocity = 25 /* idk */;
-        double econserved = 0.8 /* idk */;
+    public void setPowerOnDist(double dist /* INCHES */, boolean run, Telemetry tele){
+        double rBottom = 1.41732; // INCHES
+        double rTop = 1.41732; // INCHES
+        double angle = Math.toRadians(30);
+        double height = (23 /* height of artifact in outtake */- rBottom - Math.cos(angle) * (rBottom + 2.4 * Math.sqrt(2) - 1));
 
-        double ballVelocity = Math.sqrt((((9.8*dist*dist)/2*Math.cos(angle))*Math.cos(angle)*(dist*Math.tan(angle)-height)));
+        double rpmTop;
+        double rpmBottom;
 
-        double rpmTop = (ballVelocity*60)/2*Math.PI*rTop*econserved - angularVelocity/2*econserved;
-        double rpmBottom = (ballVelocity*60)/2*Math.PI*rBottom*econserved - angularVelocity/2*econserved;
+        double numerator = (9.8 * 39.3701 /* meters per second to inches per second*/) * Math.pow(dist, 2);
+        double denominator = 2 * Math.pow(Math.cos(angle), 2) * (dist * Math.tan(angle) - height);
 
+        double ballVelocity = Math.sqrt(numerator / denominator);
+
+        if (run) {
+            rpmTop = ((ballVelocity * 60) / (2 * Math.PI * rTop)) * econserved - (angularVelocity * 30 / Math.PI) * econserved;
+            rpmBottom = ((ballVelocity * 60) / (2 * Math.PI * rBottom)) * econserved - (angularVelocity * 30 / Math.PI) * econserved;
+        }
+        else {rpmTop = 0; rpmBottom = 0;}
         pidtunedmotor(rpmTop, rpmBottom, tele);
+        tele.addData("Calculated rpm top: ", rpmTop);
+        tele.addData("Calculated rpm bottom: ", rpmBottom);
     }
+
+    private double rpmTopGoal;
+    private double rpmBottomGoal;
+
+    public void setOuttakeRPM (double rpmTop, double rpmBottom){rpmTopGoal = rpmTop; rpmBottomGoal = rpmBottom;}
+    public void runOuttakePID(Telemetry tele){pidtunedmotor(rpmTopGoal, rpmBottomGoal, tele);}
 }
