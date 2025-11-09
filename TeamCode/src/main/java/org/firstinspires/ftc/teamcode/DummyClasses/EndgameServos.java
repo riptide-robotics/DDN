@@ -11,8 +11,11 @@ public class EndgameServos {
 
     public EndgameServos(HardwareMap hardwareMap){
         sL = hardwareMap.servo.get("liftServoLeft");
-        sR =  hardwareMap.servo.get("liftServoRight");
+        sR = hardwareMap.servo.get("liftServoRight");
+
+        sL.setDirection(Servo.Direction.FORWARD);
         sR.setDirection(Servo.Direction.REVERSE);
+
     }
 
     public void lift(){
