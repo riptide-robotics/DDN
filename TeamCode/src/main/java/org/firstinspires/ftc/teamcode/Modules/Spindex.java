@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.Modules;
 
 public class Spindex {
     int current = 0;
-    enum artifactColor {
+    public enum artifactColor {
         EMPTY, GREEN, PURPLE
     }
     artifactColor slot0 = artifactColor.EMPTY;
