@@ -50,11 +50,15 @@ public class TestVision extends LinearOpMode {
                             break;
                     }
                 }
+
+
+
                 a_debounce = true;
             } else {
                 a_debounce = false;
             }
             telemetryStuff(robot.getCamera());
+            robot.setFlyWheelPowerOnDistance(true, telemetry);
         }
 
         robot.getCamera().stop();
@@ -65,38 +69,40 @@ public class TestVision extends LinearOpMode {
         List<AprilTagDetection> detections = camera.getTagDetections();
         ArrayList<ArrayList<Double>> color_blobs = camera.getBlobDetections();
 
-        telemetry.addLine(String.format(" --- %d AprilTags Detected --- ", detections.size()));
+        //telemetry.addLine(String.format(" --- %d AprilTags Detected --- ", detections.size()));
 
         for (AprilTagDetection detection : detections) {
             if (detection.metadata != null) {
-                telemetry.addLine(String.format("%s (ID %d)", detection.metadata.name, detection.id));
+                // telemetry.addLine(String.format("%s (ID %d)", detection.metadata.name, detection.id));
                 if (!detection.metadata.name.contains("Obelisk")) {
-                    telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)",
-                            detection.robotPose.getPosition().x,
-                            detection.robotPose.getPosition().y,
-                            detection.robotPose.getPosition().z));
+//                    telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)",
+//                            detection.robotPose.getPosition().x,
+//                            detection.robotPose.getPosition().y,
+//                            detection.robotPose.getPosition().z));
                     telemetry.addLine(String.format("Distance %f (inch)",
                             camera.getAprilTagDistance(detection)));
-                    telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)",
-                            detection.robotPose.getOrientation().getPitch(AngleUnit.DEGREES),
-                            detection.robotPose.getOrientation().getRoll(AngleUnit.DEGREES),
-                            detection.robotPose.getOrientation().getYaw(AngleUnit.DEGREES)));
+                    telemetry.addLine(String.format("Goal Angle Error %f (Degrees)",
+                            camera.getGoalAngleError()));
+//                    telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)",
+//                            detection.robotPose.getOrientation().getPitch(AngleUnit.DEGREES),
+//                            detection.robotPose.getOrientation().getRoll(AngleUnit.DEGREES),
+//                            detection.robotPose.getOrientation().getYaw(AngleUnit.DEGREES)));
                 }
             } else {
-                telemetry.addLine(String.format("Unknown Name (ID %d)", detection.id));
+                // telemetry.addLine(String.format("Unknown Name (ID %d)", detection.id));
             }
-            telemetry.addLine(String.format("Center %6.0f %6.0f (pixels)", detection.center.x, detection.center.y));
+            // telemetry.addLine(String.format("Center %6.0f %6.0f (pixels)", detection.center.x, detection.center.y));
 
         }
 
-        telemetry.addLine(String.format(" --- %d Artifacts Detected --- ", color_blobs.size()));
-
-        for (List<Double> blob : color_blobs) {
-            telemetry.addLine(String.format("Position: (%f, %f)", blob.get(0), blob.get(1)));
-            telemetry.addLine(String.format("Circularity: %f", blob.get(4)));
-            telemetry.addLine(String.format("Contour Area: %f", blob.get(3)));
-            telemetry.addLine(String.format("Distance: %f Inches Away", blob.get(2)));
-        }
+//        telemetry.addLine(String.format(" --- %d Artifacts Detected --- ", color_blobs.size()));
+//
+//        for (List<Double> blob : color_blobs) {
+//            telemetry.addLine(String.format("Position: (%f, %f)", blob.get(0), blob.get(1)));
+//            telemetry.addLine(String.format("Circularity: %f", blob.get(4)));
+//            telemetry.addLine(String.format("Contour Area: %f", blob.get(3)));
+//            telemetry.addLine(String.format("Distance: %f Inches Away", blob.get(2)));
+//        }
 
         telemetry.update();
         sleep(100);

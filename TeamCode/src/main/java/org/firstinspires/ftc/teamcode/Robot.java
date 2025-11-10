@@ -2,36 +2,43 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Modules.Camera;
 import org.firstinspires.ftc.teamcode.Modules.Drivetrain;
-import org.firstinspires.ftc.teamcode.Modules.Slides;
-import org.firstinspires.ftc.teamcode.Modules.TurnTable;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.teamcode.Modules.Outtake;
 
 public class Robot {
 
     HardwareMap hardwareMap;
 
     Drivetrain drivetrain;
-    Camera camera;
 
-    TurnTable table;
+    Outtake outtake;
+
+    Camera camera;
 
     public Robot (HardwareMap hardwareMap){
         this.hardwareMap = hardwareMap;
 
         drivetrain = new Drivetrain(hardwareMap);
+
+        outtake = new Outtake(hardwareMap);
+
         camera = new Camera(hardwareMap);
-        table = new TurnTable(2, 0, 0);
     }
 
     public Drivetrain getDrivetrain(){
         return drivetrain;
     }
-    public Camera getCamera() {
-        return camera;
-    }
-    public TurnTable getTable() {return table;}
 
+    public Outtake getOuttake() {return outtake;}
+
+    public Camera getCamera() {return camera;}
+
+    public void setFlyWheelPowerOnDistance(boolean run, Telemetry tele){
+        Double distance = camera.getGoalDistance();
+        if (distance != null) {
+            outtake.setPowerOnDist(distance, run, tele);
+        }
+    }
 }

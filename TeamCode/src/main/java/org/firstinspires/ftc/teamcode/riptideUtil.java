@@ -2,9 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.config.Config;
 
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
 import org.firstinspires.ftc.vision.apriltag.AprilTagLibrary;
 
 @Config
@@ -17,7 +15,26 @@ public class riptideUtil {
      */
 
     /** General constants */
+    // COLOR SENSING
+    // Green
+    public static final float GREEN_R = 0.136f;
+    public static final float GREEN_R_STDEV = 0.05f;
+    public static final float GREEN_G = 0.578f;
+    public static final float GREEN_G_STDEV = 0.15f;
+    public static final float GREEN_B = 0.404f;
+    public static final float GREEN_B_STDEV = 0.13f;
+    // Purple
+    public static final float PURPLE_R = 0.346f;
+    public static final float PURPLE_R_STDEV = 0.02f;
+    public static final float PURPLE_G = 0.376f;
+    public static final float PURPLE_G_STDEV = 0.03f;
+    public static final float PURPLE_B = 0.686f;
+    public static final float PURPLE_B_STDEV = 0.04f;
 
+    //flywheel
+
+    public static double TOP_FLYWHEEL_KP = 0.001;
+    public static double BOTTOM_FLYWHEEL_KP = 0.001;
 
     /** Autonomous Constants */
     public static final double POINT_TOLERANCE = 2; // UNDETERMINED
@@ -45,8 +62,25 @@ public class riptideUtil {
     public static double MAX_A = 72;                 // UNDETERMINED
     public static double MAX_V = 96;                 // UNDETERMINED
 
-    // ----- VISION ----- //
+    public static double LONG_DIST_TOP = 3250; // UNDETERMINED
+    public static double LONG_DIST_BOT = 3730; // UNDETERMINED
 
+    public static double MID_DIST_TOP = 2650; // UNDETERMINED
+    public static double MID_DIST_BOT = 3000;// UNDETERMINED
+
+    public static double SHORT_DIST_TOP = 2950; // UNDETERMINED
+    public static double SHORT_DIST_BOT = 3480;// UNDETERMINED
+
+    public static double transferOpen = 0.8; // UNDETERMINED
+    public static double transferClosed = -0.8; // UNDETERMINED
+
+    public static double KPTop = 0.0032; //0.004
+    public static double KPBottom = 0.004; // 0.0045
+
+    public static double tolerance = 50;
+
+
+    // Vision
     public static int CAMERA_WIDTH = 640;
     public static int CAMERA_HEIGHT = 480;
     public static double CAMERA_ANGLE = 0;
@@ -98,4 +132,7 @@ public class riptideUtil {
                 )
                 .build();
     }
+
+    public static double angularVelocity = 37.5;
+    public static double econserved = 1;
 }

@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
 // --- CONSTANTS & OTHER STUFF --- //
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -197,10 +196,15 @@ public class Camera {
         return blobs;
     }
 
+    public boolean isGoalTag(AprilTagDetection detection) {
+        // For red alliance goal
+        return detection.id == 24;
+    }
+
     public AprilTagDetection getGoalApriltag() {
         detections = getTagDetections();
         for(AprilTagDetection detection : detections) {
-            if(detection.metadata.name.equals(goalTag)) {
+            if(isGoalTag(detection)/* detection.metadata.name.equals(goalTag) */) {
                 return detection;
             }
         }
@@ -221,9 +225,10 @@ public class Camera {
     }
 
     public double getAprilTagDistance(AprilTagDetection tag) {
-        return Math.pow(tag.robotPose.getPosition().x, 2) *
-               Math.pow(tag.robotPose.getPosition().y, 2) *
-               Math.pow(tag.robotPose.getPosition().z, 2);
+        double x = tag.robotPose.getPosition().x;
+        double y = tag.robotPose.getPosition().y;
+        double z = tag.robotPose.getPosition().z;
+        return Math.sqrt(x * x + y * y + z * z);
     }
 
     public double getTagHorizontalAngle(AprilTagDetection tag) {
@@ -350,10 +355,6 @@ public class Camera {
                             detection.robotPose.getPosition().z));
                     telemetry.addLine(String.format("Distance %f (inch)",
                             getAprilTagDistance(detection)));
-                    telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)",
-                            detection.robotPose.getOrientation().getPitch(AngleUnit.DEGREES),
-                            detection.robotPose.getOrientation().getRoll(AngleUnit.DEGREES),
-                            detection.robotPose.getOrientation().getYaw(AngleUnit.DEGREES)));
                 }
             } else {
                 telemetry.addLine(String.format("Unknown Name (ID %d)", detection.id));
@@ -389,6 +390,8 @@ public class Camera {
         double x = goalDetection.robotPose.getPosition().x;
         double y = goalDetection.robotPose.getPosition().y;
         double z = goalDetection.robotPose.getPosition().z;
+
+
 
         return Math.sqrt(x * x + y * y + z * z);
     }
