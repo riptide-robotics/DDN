@@ -18,9 +18,9 @@ public class TurnAnAngle extends LinearOpMode {
 
     DcMotor motor;
 
-    public static double kp = 0.08;
-    public static double ki = 0.12;
-    public static double kd = 0.4;
+    public static double kp = 0.002;
+    public static double ki = 0.003;
+    public static double kd = 0.00005;
     public static double kf = 0;
     public static double deadZone = 5;
 
@@ -30,8 +30,8 @@ public class TurnAnAngle extends LinearOpMode {
     public static double goalDeg = 0;
     double prevGoalDeg;
     double goalTicks = 0;
-    static final double ticksToDegrees = 360/1993.6;
-    static final double degreesToTicks = 1993.6/360;
+    static final double ticksToDegrees = 360/751.8;
+    static final double degreesToTicks = 751.8/360;
 
     public ElapsedTime startTime= new ElapsedTime();
 
@@ -85,7 +85,7 @@ public class TurnAnAngle extends LinearOpMode {
             motor.setPower(motorController.calculate(currPosTicks, goalTicks) + kf);
             currPosDeg = currPosTicks * ticksToDegrees;
 
-            t.addData("Current Position", currPosDeg);
+            t.addData("Current Position", currPosDeg / 3);
             t.addData("Goal Position", goalDeg);
             t.update();
         }

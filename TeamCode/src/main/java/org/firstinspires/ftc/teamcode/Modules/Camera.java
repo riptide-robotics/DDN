@@ -1,28 +1,58 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+// --- CONSTANTS & OTHER STUFF --- //
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
-//opencv for vision stuff
-import org.opencv.calib3d.Calib3d;
-import org.opencv.core.*;
-import org.opencv.imgproc.Imgproc;
-import org.openftc.apriltag.AprilTagDetection;
-import org.openftc.apriltag.AprilTagDetectorJNI;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
+import org.firstinspires.ftc.teamcode.riptideUtil;
+
+// --- CAMERA --- //
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
+import org.firstinspires.ftc.vision.opencv.ImageRegion;
+import org.opencv.core.Mat;
 import org.openftc.easyopencv.OpenCvPipeline;
+import org.openftc.easyopencv.OpenCvWebcam;
+
+// --- PORTALS & PROCESSORS & SIMILAR STUFF --- //
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
+import org.firstinspires.ftc.vision.opencv.ColorRange;
+
+import android.annotation.SuppressLint;
+import android.graphics.Color;
+
+import org.firstinspires.ftc.vision.opencv.Circle;
+
+// --- LISTS --- //
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+
+import android.util.Size;
+
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.SortOrder;
+
 /*
- * This is the pipeline which will be processing the cameras feed
- * It should be able to:
- *  - detect and recognize april tags
- *  - detect and locate (if I will we able to) artifacts
- *  - get the current state of the ramp
- *
- * welp lets see how well I make this
+    Resources:
+        - https://github.com/FIRST-Tech-Challenge/FtcRobotController/blob/master/FtcRobotController/src/main/java/org/firstinspires/ftc/robotcontroller/external/samples/ConceptVisionColorLocator_Rectangle.java
+        -
  */
 
-// omg this is going to need so much cleaning up
+/*
+ * We have to have two classes because java does not support multiple inheritance
+ *
+ * This class is the hardware aspect of the camera, the camera class will be used for the pipeline (what processes the feed)
+ *
+ */
+
 public class Camera extends OpenCvPipeline {
 
     ///////////////////////////////////////////////
@@ -31,71 +61,32 @@ public class Camera extends OpenCvPipeline {
     ////                                     /////
     //////////////////////////////////////////////
 
-    // -------------- ARTIFACTS -------------- //
+    // this used to be called webcamdude, I'm looking at you Aaron (actually Aroon)
+    OpenCvWebcam webcam = null;
 
-    /*
-    Purple lower: (0, 136.0, 120.4)
-    Purple upper: (255, 255, 255)
-     */
-    public Scalar lower = new Scalar(0, 136.0, 120.4);
-    public Scalar upper = new Scalar(255, 255, 255);
+    AprilTagProcessor tag_processor;
+    ColorBlobLocatorProcessor blob_processor_purple;
+    ColorBlobLocatorProcessor blob_processor_green;
+    VisionPortal vision_portal;
+    ArrayList<AprilTagDetection> detections;
+    ArrayList<ArrayList<Double>> blobs = new ArrayList<>();
+    String goalTag;
+    CameraName cameraname;
 
+    public Camera(double v, double v1, double v2, double v3, double v4) {
+    }
 
-    private final Mat ycrcbmat = new Mat();
-    private final Mat binaryMat = new Mat();
-    private final Mat maskedInputMat = new Mat();
-    private final Mat grayscaleMat = new Mat();
+    @Override
+    public Mat processFrame(Mat input) {
+        return null;
+    }
 
-    // Contour Vars
-
-    List<MatOfPoint> contours = new ArrayList<>();
-    public double lowerContourThreshold = 0;
-    public double upperContourThreshold = 300;
-    public Scalar contourColors = new Scalar(0,255,0);
-    public double noiseSensitivity = 153;
-    public int contourSize = 1;
-
-    private final Mat edgeDetectorFrame = new Mat();
-    private int onlyContours = 1;
-
-    public static double currentLargest = 0;
-
-    Mat activeMat;
-    Mat emptyMat = Mat.zeros(edgeDetectorFrame.size(), CvType.CV_8UC3);
-    int index = 0;
-    double contourArea;
-    double largestArea = 0;
-
-    // -------------- APRIL TAGS ------------- //
-
-    private long nativeApriltagPtr;
-    private Mat grey = new Mat();
-    private ArrayList<AprilTagDetection> detections = new ArrayList<>();
-
-
-    private ArrayList<AprilTagDetection> detectionsUpdate = new ArrayList<>();
-    private final Object detectionsUpdateSync = new Object();
-
-    Mat cameraMatrix;
-
-    Scalar blue = new Scalar(7,197,235,255);
-    Scalar red = new Scalar(255,0,0,255);
-    Scalar green = new Scalar(0,255,0,255);
-    Scalar white = new Scalar(255,255,255,255);
-
-    double fx;
-    double fy;
-    double cx;
-    double cy;
-
-    // UNITS ARE METERS
-    double tagsize;
-    double tagsizeX;
-    double tagsizeY;
-
-    private float decimation;
-    private boolean needToSetDecimation;
-    private final Object decimationSync = new Object();
+    public enum processors_enabled {
+        NONE,
+        TAG,
+        COLOR,
+        ALL
+    }
 
     ///////////////////////////////////////////////
     ////                                     /////
@@ -103,373 +94,319 @@ public class Camera extends OpenCvPipeline {
     ////                                     /////
     //////////////////////////////////////////////
 
-    public Camera(double tagsize, double fx, double fy, double cx, double cy) {
-        this.tagsize = tagsize;
-        this.tagsizeX = tagsize;
-        this.tagsizeY = tagsize;
-        this.fx = fx;
-        this.fy = fy;
-        this.cx = cx;
-        this.cy = cy;
+    public Camera(HardwareMap hardwareMap) {
+        cameraname = hardwareMap.get(WebcamName.class, "Webcam 1");
+        tag_processor = new AprilTagProcessor.Builder()
+                .setTagLibrary(riptideUtil.getLibrary())
+                .setDrawAxes(true)
+                .setDrawCubeProjection(true)
+                .setDrawTagID(true)
+                .setDrawTagOutline(true)
+                .setOutputUnits(DistanceUnit.INCH, AngleUnit.DEGREES)
+                //.setCameraPose(cameraPosition, cameraOrientation)
+                .build();
 
-        constructMatrix();
+        blob_processor_purple = new ColorBlobLocatorProcessor.Builder()
+                .setTargetColorRange(ColorRange.ARTIFACT_PURPLE)
+                .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)
+                .setRoi(ImageRegion.asUnityCenterCoordinates(-1, 1, 1, -1))
+                .setDrawContours(true)
+                .setBoxFitColor(0)
+                .setCircleFitColor(Color.rgb(255, 0, 255))
+                .setBlurSize(5)
+                .setDilateSize(15)
+                .setErodeSize(15)
+                .setMorphOperationType(ColorBlobLocatorProcessor.MorphOperationType.CLOSING)
+                .build();
 
-        // Allocate a native context object. See the corresponding deletion in the finalizer
-        nativeApriltagPtr = AprilTagDetectorJNI.createApriltagDetector(AprilTagDetectorJNI.TagFamily.TAG_36h11.string, 3, 3);
+        blob_processor_green = new ColorBlobLocatorProcessor.Builder()
+                .setTargetColorRange(ColorRange.ARTIFACT_GREEN)
+                .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)
+                .setRoi(ImageRegion.asUnityCenterCoordinates(-1, 1, 1, -1))
+                .setDrawContours(true)
+                .setBoxFitColor(0)
+                .setCircleFitColor(Color.rgb(0, 255, 0))
+                .setBlurSize(5)
+                .setDilateSize(15)
+                .setErodeSize(15)
+                .setMorphOperationType(ColorBlobLocatorProcessor.MorphOperationType.CLOSING)
+                .build();
 
+        // can also be 640 and 488
+        // there is also YUY2
+        vision_portal = new VisionPortal.Builder()
+                .addProcessors(tag_processor, blob_processor_purple, blob_processor_green)
+                //.addProcessor(new CameraPipeline(0.047, 578.272, 578.272, 402.145, 221.506, hardwareMap.get(WebcamName.class, "Webcam 1")))
+                .setCamera(cameraname)
+                .setCameraResolution(new Size(riptideUtil.CAMERA_WIDTH, riptideUtil.CAMERA_HEIGHT))
+                .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
+                //.enableCameraMonitoring(true)
+                .setAutoStopLiveView(true)
+                .build();
     }
 
-    @Override
-    public Mat processFrame(Mat input) {
-
-        // Convert to greyscale
-        Imgproc.cvtColor(input, grey, Imgproc.COLOR_RGBA2GRAY);
-
-        synchronized (decimationSync)
-        {
-            if(needToSetDecimation)
-            {
-                AprilTagDetectorJNI.setApriltagDetectorDecimation(nativeApriltagPtr, decimation);
-                needToSetDecimation = false;
-            }
-        }
-
-        // Run AprilTag
-        detections = AprilTagDetectorJNI.runAprilTagDetectorSimple(nativeApriltagPtr, grey, tagsize, fx, fy, cx, cy);
-
-        synchronized (detectionsUpdateSync)
-        {
-            detectionsUpdate = detections;
-        }
-
-        // For fun, use OpenCV to draw 6DOF markers on the image. We actually recompute the pose using
-        // OpenCV because I haven't yet figured out how to re-use AprilTag's pose in OpenCV.
-        for(AprilTagDetection detection : detections)
-        {
-            Pose pose = poseFromTrapezoid(detection.corners, cameraMatrix, tagsizeX, tagsizeY);
-            drawAxisMarker(input, tagsizeY/2.0, 6, pose.rvec, pose.tvec, cameraMatrix);
-            draw3dCubeMarker(input, tagsizeX, tagsizeX, tagsizeY, 5, pose.rvec, pose.tvec, cameraMatrix);
-        }
-
-        //Takes our "input" mat as an input, and outputs to a separate Mat buffer "ycrcbMat"
-        Imgproc.cvtColor(input, ycrcbmat, Imgproc.COLOR_RGB2YCrCb);
-        //Order is source, lowerBound, upperbound, dst.
-        Core.inRange(ycrcbmat, lower, upper, binaryMat);
-        /*
-         * Release the reusable Mat so that old data doesn't
-         * affect the next step in the current processing
-         */
-        maskedInputMat.release();
-
-        //Order: src1, src2, dst, mask.
-        Core.bitwise_and(input, input, maskedInputMat, binaryMat);
-
-        // now the masked input mat is the filtered image with colors and shit.
-        // Sorry Alok I ripped u off ;P
-
-        // filter maskedinputmat to grey.
-        Imgproc.cvtColor(maskedInputMat, grayscaleMat, Imgproc.COLOR_RGB2GRAY);
-
-        // Order: input image, output edges(Array), lowerthreshold, upperthreshold
-        Imgproc.Canny(grayscaleMat, edgeDetectorFrame, lowerContourThreshold, upperContourThreshold);
-
-        contours.clear();
-        //Order : input image, the contours from output, hierarchy, mode, and method
-
-        Imgproc.findContours(edgeDetectorFrame, contours, new Mat(), Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
-
-        MatOfPoint2f[] contoursPoly  = new MatOfPoint2f[contours.size()];
-
-        Rect[] boundRect = new Rect[contours.size()];
-        //Might be useful later, idk so I am going to leave this here
-        //Point[] centers = new Point[contours.size()];
-
-
-        for (int i = 0; i < contours.size(); i++) {
-            contoursPoly[i] = new MatOfPoint2f();
-            Imgproc.approxPolyDP(new MatOfPoint2f(contours.get(i).toArray()), contoursPoly[i], 3, true);
-            boundRect[i] = Imgproc.boundingRect(contours.get(i));
-            //centers[i] = new Point();
-        }
-
-
-        List<MatOfPoint> contoursPolyList = new ArrayList<>(contoursPoly.length);
-        for (MatOfPoint2f poly : contoursPoly) {
-            //Just to make sure that no problems really come up.
-            if(poly == null)
-            {
-                break;
-            }
-
-            contoursPolyList.add(new MatOfPoint(poly.toArray()));
-        }
-
-
-        // now this can be removed during the meet.
-        if (onlyContours == 1)
-        {
-            activeMat = maskedInputMat;
-        }
-        else if (onlyContours == 2)
-        {
-            activeMat = emptyMat;
-        }
-        else {
-            activeMat = input;
-        }
-
-        largestArea = 0;
-
-        for (int i = 0; i < contours.size(); i++) {
-
-            MatOfPoint contour = contours.get(i);
-
-            contourArea = Imgproc.contourArea(contour);
-            // A simple filter I cam up with ;P
-            if (contourArea < noiseSensitivity)
-            {
-                continue;
-            }
-
-            if (contourArea > largestArea)
-            {
-                largestArea = contourArea;
-                index = i;
-            }
-
-        }
-
-        currentLargest = largestArea;
-
-
-        // pretty sure that we actually don't need this for the meet either,
-        // but is good for demonstration purposes and debugging
-        if (contours.size() != 0 && largestArea != 0)
-        {
-            // Adding Text3
-            Imgproc.putText (
-                    activeMat,                                                             // Matrix obj of the image
-                    largestArea + "",                                                      // Text to be added
-                    new Point(boundRect[index].tl().x, boundRect[index].tl().y),           // point
-                    Imgproc.FONT_HERSHEY_SIMPLEX ,                                         // front face
-                    1,                                                                     // front scale
-                    contourColors,                                                         // Scalar object for color
-                    2                                                                      // Thickness
-            );
-            Imgproc.drawContours(activeMat, contoursPolyList, index, contourColors, contourSize);
-            Imgproc.rectangle(activeMat, boundRect[index].tl(), boundRect[index].br(), contourColors, 2);
-        }
-
-        return activeMat;
+    public void setGoalTag(String goalTag) {
+        this.goalTag = goalTag;
     }
 
-    // I think we could have just returned a Mat frame and have the FSM and Auton do the computing, but that is like
-    // not smart
-    public static double getLargestSize()
-    {
-        return currentLargest;
+    public String getGoalTag() {
+        return goalTag;
     }
 
-    // boilerplate code if there is a better way to do this, please tell me
-    @Override
-    public void onViewportTapped()
-    {
-        if (onlyContours == 1 || onlyContours == 2)
-            onlyContours++;
-        else
-            onlyContours = 1;
-    }
-
-    @Override
-    public void finalize()
-    {
-        // Might be null if createApriltagDetector() threw an exception
-        if(nativeApriltagPtr != 0)
-        {
-            // Delete the native context we created in the constructor
-            AprilTagDetectorJNI.releaseApriltagDetector(nativeApriltagPtr);
-            nativeApriltagPtr = 0;
-        }
-        else
-        {
-            System.out.println("AprilTagDetectionPipeline.finalize(): nativeApriltagPtr was NULL");
-        }
-    }
-
-    public void setDecimation(float decimation)
-    {
-        synchronized (decimationSync)
-        {
-            this.decimation = decimation;
-            needToSetDecimation = true;
-        }
-    }
-
-    public ArrayList<AprilTagDetection> getLatestDetections()
-    {
+    public ArrayList<AprilTagDetection> getTagDetections() {
+        detections = tag_processor.getDetections();
+        detections.removeIf(detection -> System.nanoTime() - detection.frameAcquisitionNanoTime > riptideUtil.DETECTION_TIMEOUT);
         return detections;
     }
 
-    public ArrayList<AprilTagDetection> getDetectionsUpdate()
-    {
-        synchronized (detectionsUpdateSync)
-        {
-            ArrayList<AprilTagDetection> ret = detectionsUpdate;
-            detectionsUpdate = null;
-            return ret;
-        }
-    }
+    public ArrayList<ArrayList<Double>> getBlobDetections() {
+        /*
+         * Returns an ArrayList of ArrayLists with 5 elements describing the artifact
+         * They are (in order):
+         *  - x location (on the camera screen)
+         *  - y location (on the camera screen)
+         *  - distance away from the camera (needs tuning)
+         *  - contour area
+         *  - circularity
+         */
+        blobs.clear();
+        List<ColorBlobLocatorProcessor.Blob> blobs_detected = blob_processor_purple.getBlobs();
+        blobs_detected.addAll(blob_processor_green.getBlobs());
 
-    void constructMatrix()
-    {
-        //     Construct the camera matrix.
-        //
-        //      --         --
-        //     | fx   0   cx |
-        //     | 0    fy  cy |
-        //     | 0    0   1  |
-        //      --         --
-        //
-
-        cameraMatrix = new Mat(3,3, CvType.CV_32FC1);
-
-        cameraMatrix.put(0,0, fx);
-        cameraMatrix.put(0,1,0);
-        cameraMatrix.put(0,2, cx);
-
-        cameraMatrix.put(1,0,0);
-        cameraMatrix.put(1,1,fy);
-        cameraMatrix.put(1,2,cy);
-
-        cameraMatrix.put(2, 0, 0);
-        cameraMatrix.put(2,1,0);
-        cameraMatrix.put(2,2,1);
-    }
-
-    /**
-     * Draw a 3D axis marker on a detection. (Similar to what Vuforia does)
-     *
-     * @param buf the RGB buffer on which to draw the marker
-     * @param length the length of each of the marker 'poles'
-     * @param rvec the rotation vector of the detection
-     * @param tvec the translation vector of the detection
-     * @param cameraMatrix the camera matrix used when finding the detection
-     */
-    void drawAxisMarker(Mat buf, double length, int thickness, Mat rvec, Mat tvec, Mat cameraMatrix)
-    {
-        // The points in 3D space we wish to project onto the 2D image plane.
-        // The origin of the coordinate space is assumed to be in the center of the detection.
-        MatOfPoint3f axis = new MatOfPoint3f(
-                new Point3(0,0,0),
-                new Point3(length,0,0),
-                new Point3(0,length,0),
-                new Point3(0,0,-length)
+        ColorBlobLocatorProcessor.Util.filterByCriteria(
+                ColorBlobLocatorProcessor.BlobCriteria.BY_CONTOUR_AREA,
+                250,
+                9000,
+                blobs_detected
         );
 
-        // Project those points
-        MatOfPoint2f matProjectedPoints = new MatOfPoint2f();
-        Calib3d.projectPoints(axis, rvec, tvec, cameraMatrix, new MatOfDouble(), matProjectedPoints);
-        Point[] projectedPoints = matProjectedPoints.toArray();
+        ColorBlobLocatorProcessor.Util.filterByCriteria(
+                ColorBlobLocatorProcessor.BlobCriteria.BY_CIRCULARITY,
+                0.1,
+                1,
+                blobs_detected
+        );
 
-        // Draw the marker!
-        Imgproc.line(buf, projectedPoints[0], projectedPoints[1], red, thickness);
-        Imgproc.line(buf, projectedPoints[0], projectedPoints[2], green, thickness);
-        Imgproc.line(buf, projectedPoints[0], projectedPoints[3], blue, thickness);
+        ColorBlobLocatorProcessor.Util.sortByCriteria(
+                ColorBlobLocatorProcessor.BlobCriteria.BY_CONTOUR_AREA,
+                SortOrder.DESCENDING,
+                blobs_detected
+        );
 
-        Imgproc.circle(buf, projectedPoints[0], thickness, white, -1);
-    }
-
-    void draw3dCubeMarker(Mat buf, double length, double tagWidth, double tagHeight, int thickness, Mat rvec, Mat tvec, Mat cameraMatrix)
-    {
-        //axis = np.float32([[0,0,0], [0,3,0], [3,3,0], [3,0,0],
-        //       [0,0,-3],[0,3,-3],[3,3,-3],[3,0,-3] ])
-
-        // The points in 3D space we wish to project onto the 2D image plane.
-        // The origin of the coordinate space is assumed to be in the center of the detection.
-        MatOfPoint3f axis = new MatOfPoint3f(
-                new Point3(-tagWidth/2, tagHeight/2,0),
-                new Point3( tagWidth/2, tagHeight/2,0),
-                new Point3( tagWidth/2,-tagHeight/2,0),
-                new Point3(-tagWidth/2,-tagHeight/2,0),
-                new Point3(-tagWidth/2, tagHeight/2,-length),
-                new Point3( tagWidth/2, tagHeight/2,-length),
-                new Point3( tagWidth/2,-tagHeight/2,-length),
-                new Point3(-tagWidth/2,-tagHeight/2,-length));
-
-        // Project those points
-        MatOfPoint2f matProjectedPoints = new MatOfPoint2f();
-        Calib3d.projectPoints(axis, rvec, tvec, cameraMatrix, new MatOfDouble(), matProjectedPoints);
-        Point[] projectedPoints = matProjectedPoints.toArray();
-
-        // Pillars
-        for(int i = 0; i < 4; i++)
-        {
-            Imgproc.line(buf, projectedPoints[i], projectedPoints[i+4], blue, thickness);
+        for (ColorBlobLocatorProcessor.Blob blob : blobs_detected) {
+            // the circle which fits the artifacts
+            Circle circle_fit = blob.getCircle();
+            double distance = (riptideUtil.LENS_FOCAL_LEN_INCHES * riptideUtil.ARTIFACT_SIZE_INCHES * 480)
+                    / (circle_fit.getRadius() * 2 * riptideUtil.SENSOR_HEIGHT);
+            ArrayList<Double> temp = new ArrayList<>(Arrays.asList((double) circle_fit.getX(), (double) circle_fit.getY(), distance, (double) blob.getContourArea(), blob.getCircularity()));
+            blobs.add(temp);
         }
 
-        // Base lines
-        //Imgproc.line(buf, projectedPoints[0], projectedPoints[1], blue, thickness);
-        //Imgproc.line(buf, projectedPoints[1], projectedPoints[2], blue, thickness);
-        //Imgproc.line(buf, projectedPoints[2], projectedPoints[3], blue, thickness);
-        //Imgproc.line(buf, projectedPoints[3], projectedPoints[0], blue, thickness);
+//        if(blobs_detected.isEmpty()) {return new ArrayList<>();}
+//        Circle circle_fit = blobs_detected.get(0).getCircle();
+//        blobs.add(new ArrayList<>(Arrays.asList((double) circle_fit.getX(), (double) circle_fit.getY() /*blob.getCircularity(), distance*/)));
 
-        // Top lines
-        Imgproc.line(buf, projectedPoints[4], projectedPoints[5], green, thickness);
-        Imgproc.line(buf, projectedPoints[5], projectedPoints[6], green, thickness);
-        Imgproc.line(buf, projectedPoints[6], projectedPoints[7], green, thickness);
-        Imgproc.line(buf, projectedPoints[4], projectedPoints[7], green, thickness);
+        return blobs;
     }
 
-    /**
-     * Extracts 6DOF pose from a trapezoid, using a camera intrinsics matrix and the
-     * original size of the tag.
-     *
-     * @param points the points which form the trapezoid
-     * @param cameraMatrix the camera intrinsics matrix
-     * @param tagsizeX the original width of the tag
-     * @param tagsizeY the original height of the tag
-     * @return the 6DOF pose of the camera relative to the tag
-     */
-    Pose poseFromTrapezoid(Point[] points, Mat cameraMatrix, double tagsizeX , double tagsizeY)
-    {
-        // The actual 2d points of the tag detected in the image
-        MatOfPoint2f points2d = new MatOfPoint2f(points);
-
-        // The 3d points of the tag in an 'ideal projection'
-        Point3[] arrayPoints3d = new Point3[4];
-        arrayPoints3d[0] = new Point3(-tagsizeX/2, tagsizeY/2, 0);
-        arrayPoints3d[1] = new Point3(tagsizeX/2, tagsizeY/2, 0);
-        arrayPoints3d[2] = new Point3(tagsizeX/2, -tagsizeY/2, 0);
-        arrayPoints3d[3] = new Point3(-tagsizeX/2, -tagsizeY/2, 0);
-        MatOfPoint3f points3d = new MatOfPoint3f(arrayPoints3d);
-
-        // Using this information, actually solve for pose
-        Pose pose = new Pose();
-        Calib3d.solvePnP(points3d, points2d, cameraMatrix, new MatOfDouble(), pose.rvec, pose.tvec, false);
-
-        return pose;
+    public AprilTagDetection getGoalApriltag() {
+        detections = getTagDetections();
+        for(AprilTagDetection detection : detections) {
+            if(detection.metadata.name.equals(goalTag)) {
+                return detection;
+            }
+        }
+        return null;
     }
 
-    /*
-     * A simple container to hold both rotation and translation
-     * vectors, which together form a 6DOF pose.
-     */
-    class Pose
-    {
-        Mat rvec;
-        Mat tvec;
+    public EditablePose2D getGoalApriltagLocation() {
+        detections = getTagDetections();
+        for(AprilTagDetection detection : detections) {
+            if (!detection.metadata.name.contains("Obelisk")) {
+                return new EditablePose2D(
+                        detection.robotPose.getPosition().x,
+                        detection.robotPose.getPosition().y, 0,
+                        DistanceUnit.INCH);
+            }
+        }
+        return null;
+    }
 
-        public Pose()
-        {
-            rvec = new Mat();
-            tvec = new Mat();
+    public double getAprilTagDistance(AprilTagDetection tag) {
+        return Math.pow(tag.robotPose.getPosition().x, 2) *
+                Math.pow(tag.robotPose.getPosition().y, 2) *
+                Math.pow(tag.robotPose.getPosition().z, 2);
+    }
+
+    public double getTagHorizontalAngle(AprilTagDetection tag) {
+        /*
+         * Gets the angle of the april tag relative to the camera.
+         */
+
+        // essentially setting the origin to the center of the screen
+        double delta_x = (double) riptideUtil.CAMERA_WIDTH / 2 - tag.center.x;
+
+        // relative to the camera
+        double horizontal_angle = delta_x * riptideUtil.CAM_FOV / riptideUtil.CAMERA_WIDTH;
+
+        //the angle of the april tag relative to the camera
+        return horizontal_angle;
+    }
+
+    public EditablePose2D findNearestArtifact() {
+        return nearestArtifact(0);
+    }
+
+    public EditablePose2D findNearestArtifact(double turret_angle) {
+        return nearestArtifact(turret_angle);
+    }
+
+    private EditablePose2D nearestArtifact(double turret_angle) {
+        /*
+         * This is just so the code looks nice and if there is no turret_angle, it is:
+         *    findNearestArtifact();
+         * instead of:
+         *    findNearestArtifact(0);
+         * This is litterly a minor, insignificant, useless detail and Aaron will probably yell
+         * at me for this and I will probably change this in the future
+         * Future Aaron, I predicted your response, and I chose to do this useless thing.
+         * hahhahahahahhhahahahahahhahahahahahhahahahahahhashashahahahahahahahahahahahahah
+         * ahahahahahahahahahahahahahahahhahahahahahahahahahhahahahahahahahahahahahahahahah
+         * ahahhahahahahahhahahhhahahahahahahah
+         */
+        if(blobs.isEmpty()) {return null;}
+        ArrayList<Double> largest_contour = new ArrayList<>(blobs.get(0));
+
+        double distance = largest_contour.get(2);
+
+        // essentially setting the origin to the center of the screen
+        double delta_x = (double) riptideUtil.CAMERA_WIDTH / 2 - largest_contour.get(0);
+        double delta_y = (double) riptideUtil.CAMERA_HEIGHT / 2 - largest_contour.get(1);
+
+        // relative to the camera
+        double horizontal_distance = delta_x * riptideUtil.CAM_FOV / riptideUtil.CAMERA_WIDTH;
+        double vertical_distance = delta_y * riptideUtil.CAM_FOV / riptideUtil.CAMERA_HEIGHT;
+
+        double horizontal_angle_error = Math.atan(horizontal_distance/distance);
+        double vertical_angle_error = Math.atan(vertical_distance/distance);
+
+        // difference between the errors and the camera angle, so this is relative to what ever
+        // the angle of the camera is relative to
+        double horizontal_angle = turret_angle - horizontal_angle_error;
+        double vertical_angle = riptideUtil.CAMERA_ANGLE - vertical_angle_error;
+
+        // relative to whatever the turret_angle is
+        // 0 degrees means relative to the camera or robot (if they are looking in the same direction)
+        // anything else would imply relative to the robot
+        double horizontal_dist = Math.sin(horizontal_angle_error) * distance;
+
+        // relative to the ground
+        double height = Math.sin(vertical_angle) * distance;
+
+        return new EditablePose2D(
+                horizontal_dist,
+                height,
+                0,
+                DistanceUnit.INCH
+        );
+    }
+
+    // the default is ALL
+    public void setPipeline(processors_enabled processors) {
+        switch (processors) {
+            case TAG:
+                vision_portal.setProcessorEnabled(tag_processor, true);
+                vision_portal.setProcessorEnabled(blob_processor_purple, false);
+                vision_portal.setProcessorEnabled(blob_processor_green, false);
+                break;
+            case COLOR:
+                vision_portal.setProcessorEnabled(tag_processor, false);
+                vision_portal.setProcessorEnabled(blob_processor_purple, true);
+                vision_portal.setProcessorEnabled(blob_processor_green, true);
+                break;
+            case NONE:
+                vision_portal.setProcessorEnabled(tag_processor, false);
+                vision_portal.setProcessorEnabled(blob_processor_purple, false);
+                vision_portal.setProcessorEnabled(blob_processor_green, false);
+                break;
+            default:
+                vision_portal.setProcessorEnabled(tag_processor, true);
+                vision_portal.setProcessorEnabled(blob_processor_purple, true);
+                vision_portal.setProcessorEnabled(blob_processor_green, true);
+        }
+    }
+
+    public void stopStreaming() {
+        vision_portal.stopStreaming();
+    }
+
+    public void resumeStreaming() {
+        vision_portal.resumeStreaming();
+    }
+
+    public void stop() {
+        vision_portal.close();
+    }
+
+    @SuppressLint("DefaultLocale")
+    public void distanceFromGoal(double x, double y, double z){
+
+        //telemetry.addLine(String.format(" --- %d AprilTags Detected --- ", detections.size()));
+        for (AprilTagDetection detection : detections) {
+            if (detection.metadata != null) {
+                //telemetry.addLine(String.format("%s (ID %d)", detection.metadata.name, detection.id));
+                if (!detection.metadata.name.contains("Obelisk")) {
+                    telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)",
+                            detection.robotPose.getPosition().x,
+                            detection.robotPose.getPosition().y,
+                            detection.robotPose.getPosition().z));
+                    telemetry.addLine(String.format("Distance %f (inch)",
+                            getAprilTagDistance(detection)));
+                    telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)",
+                            detection.robotPose.getOrientation().getPitch(AngleUnit.DEGREES),
+                            detection.robotPose.getOrientation().getRoll(AngleUnit.DEGREES),
+                            detection.robotPose.getOrientation().getYaw(AngleUnit.DEGREES)));
+                }
+            } else {
+                telemetry.addLine(String.format("Unknown Name (ID %d)", detection.id));
+            }
+
+
+            telemetry.addLine(String.format("Center %6.0f %6.0f (pixels)", detection.center.x, detection.center.y));
+            x = detection.robotPose.getPosition().x;
+            y = detection.robotPose.getPosition().y;
+            z = detection.robotPose.getPosition().z;
         }
 
-        public Pose(Mat rvec, Mat tvec)
-        {
-            this.rvec = rvec;
-            this.tvec = tvec;
+        telemetry.addLine(String.format(" --- %d Artifacts Detected --- ", blobs.size()));
+
+        for (List<Double> blob : blobs) {
+            telemetry.addLine(String.format("Position: (%f, %f)", blob.get(0), blob.get(1)));
+            telemetry.addLine(String.format("Circularity: %f", blob.get(4)));
+            telemetry.addLine(String.format("Contour Area: %f", blob.get(3)));
+            telemetry.addLine(String.format("Distance: %f Inches Away", blob.get(2)));
         }
     }
 
+    public Double getGoalDistance() {
+        AprilTagDetection goalDetection = getGoalApriltag();
+        if (goalDetection == null) {
+            return null;
+        }
+
+        double x = goalDetection.robotPose.getPosition().x;
+        double y = goalDetection.robotPose.getPosition().y;
+        double z = goalDetection.robotPose.getPosition().z;
+
+        return Math.sqrt(x * x + y * y + z * z) * 0.03937008 /* convert from mm to inches*/;
+    }
+
+    public Double getGoalAngleError() {
+        AprilTagDetection goalDetection = getGoalApriltag();
+        if (goalDetection == null) {
+            return null;
+        }
+
+        return getTagHorizontalAngle(goalDetection);
+    }
 }

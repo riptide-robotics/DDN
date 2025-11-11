@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.Robot;
 
 
 @Config
-@TeleOp(name = "Meet 0 FSM")
+@TeleOp(name = "Meet 2 FSM Manual")
 public class Meet0FSM extends LinearOpMode {
     //HardwareMap hardwareMap;
     Robot robot;

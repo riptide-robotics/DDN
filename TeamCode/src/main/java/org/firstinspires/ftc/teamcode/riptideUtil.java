@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.config.Config;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.vision.apriltag.AprilTagLibrary;
+
 @Config
 public class riptideUtil {
 
@@ -76,4 +79,60 @@ public class riptideUtil {
 
     public static double tolerance = 50;
 
+
+    // Vision
+    public static int CAMERA_WIDTH = 640;
+    public static int CAMERA_HEIGHT = 480;
+    public static double CAMERA_ANGLE = 0;
+
+    public static double DETECTION_TIMEOUT = 25e+7;
+    public static double ARTIFACT_SIZE_INCHES = 5;
+
+    public static double LENS_FOCAL_LEN_INCHES = 0.15748;
+    public static double SENSOR_HEIGHT = 0.086;
+    public static double CAM_FOV = 55;
+
+    public static double MOTOR_POS_CONST = 1; // needs tuning
+
+    public static AprilTagLibrary getLibrary() {
+        return new AprilTagLibrary.Builder()
+                .addTag(
+                        20,
+                        "Blue Goal",
+                        6.5,
+                        //new VectorF(-0f, -0f, 0f),
+                        DistanceUnit.INCH//,
+                        //Quaternion.identityQuaternion()
+                )
+                .addTag(
+                        21,
+                        "Obelisk Green Purple Purple (GPP)",
+                        6.5,
+                        DistanceUnit.INCH
+                )
+                .addTag(
+                        22,
+                        "Obelisk Purple Green Purple (PGP)",
+                        6.5,
+                        DistanceUnit.INCH
+                )
+                .addTag(
+                        23,
+                        "Obelisk Purple Purple Green (PPG)",
+                        6.5,
+                        DistanceUnit.INCH
+                )
+                .addTag(
+                        24,
+                        "Red Goal",
+                        6.5,
+                        //new VectorF(-0f, -0f, -0f),
+                        DistanceUnit.INCH//,
+                        //Quaternion.identityQuaternion()
+                )
+                .build();
+    }
+
+    public static double angularVelocity = 25;
+    public static double econserved = 0.8;
 }

@@ -2,7 +2,9 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.DummyClasses.EndgameServos;
+import org.firstinspires.ftc.teamcode.Modules.Camera;
 import org.firstinspires.ftc.teamcode.Modules.Drivetrain;
 import org.firstinspires.ftc.teamcode.Modules.Intake;
 import org.firstinspires.ftc.teamcode.Modules.Outtake;
@@ -19,6 +21,8 @@ public class Robot {
 
     Outtake outtake;
 
+    Camera camera;
+
     public Robot (HardwareMap hardwareMap){
         this.hardwareMap = hardwareMap;
 
@@ -29,6 +33,8 @@ public class Robot {
         endgameServos = new EndgameServos(hardwareMap);
 
         outtake = new Outtake(hardwareMap);
+
+        camera = new Camera(hardwareMap);
     }
 
     public Drivetrain getDrivetrain(){
@@ -40,4 +46,11 @@ public class Robot {
     public EndgameServos getEndgameServos() {return endgameServos;}
 
     public Outtake getOuttake() {return outtake;}
+
+    public Camera getCamera() {return camera;}
+
+    public void setFlyWheelPowerOnDistance(boolean run, Telemetry tele){
+        double distance = camera.getGoalDistance();
+        outtake.setPowerOnDist(distance, run, tele);
+    }
 }
