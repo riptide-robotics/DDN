@@ -60,50 +60,26 @@ public class HeadingPIDTuner extends LinearOpMode {
                 initHeading = getCurrentAngle();
             }
 
-            fieldCentricDrive(getTurnValue());
+            double rot = getTurnValue();
+            robot.getDrivetrain().setWheelPowers(-rot,rot,rot,-rot);
             t.update();
         }
     }
 
     public double getTurnValue() {
         double currAngle = getCurrentAngle();
-        double goalHeading = initHeading + goal;
-        double error = goalHeading - currAngle;
 
-        if (Math.abs(error) > 180) {error -= Math.signum(error) * 360;}
+        double error =prevGoal - currAngle;
+
+        if (Math.abs(error) > 180) {error += Math.signum(error) * 360;}
 
         t.addData("Goal ", goal);
         t.addData("Error ", error);
-        t.addData("Init Heading ", goal);
-        t.addData("Current Heading ", goal);
+        t.addData("Current Heading ", currAngle);
 
         return controller.calculate(0, error);
     }
 
-    private void fieldCentricDrive(double rx) {
-        double slowdown = gamepad1.right_trigger > 0 ? 0.25 : 1;
-        double y = -gamepad1.left_stick_y * slowdown;
-        double x = gamepad1.left_stick_x * 1.1 * slowdown;
-        //double rx = gamepad1.right_stick_x * slowdown;
-
-        double heading = robot.getDrivetrain().getRobotHeading(AngleUnit.RADIANS);
-
-
-        double rotX = x * Math.cos(-heading) - y * Math.sin(-heading);
-        double rotY = x * Math.sin(-heading) + y * Math.cos(-heading);
-
-        double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
-        double frWheelPower = (rotY - rotX - rx) / denominator;
-        double flWheelPower = (rotY + rotX + rx) / denominator;
-        double brWheelPower = (rotY + rotX - rx) / denominator;
-        double blWheelPower = (rotY - rotX + rx) / denominator;
-
-        robot.getDrivetrain().setWheelPowers(flWheelPower, frWheelPower, brWheelPower, blWheelPower);
-
-        if (gamepad1.y) {
-            robot.getDrivetrain().resetImu();
-        }
-    }
 
     public double getCurrentAngle() {
         return robot.getDrivetrain().getRobotHeading(AngleUnit.DEGREES);
