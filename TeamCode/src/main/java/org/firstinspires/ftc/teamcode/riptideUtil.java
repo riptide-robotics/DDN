@@ -133,6 +133,6 @@ public class riptideUtil {
                 .build();
     }
 
-    public static double angularVelocity = 25;
-    public static double econserved = 0.8;
+    public static double angularVelocity = 20;
+    public static double econserved = 0.1;
 }

@@ -114,8 +114,8 @@ public class Outtake {
             averageBottom = currRPMBottom;
         }
 
-        //double averageTop = topRecords.size() >= queueSize ? (topRecords.get(0)+topRecords.get(1)+topRecords.get(2)+topRecords.get(3)+topRecords.get(4))/5 : currRPMTop;
-        //double averageBottom = bottomRecords.size() >= queueSize ? (bottomRecords.get(0)+bottomRecords.get(1)+bottomRecords.get(2)+bottomRecords.get(3)+bottomRecords.get(4))/5 : currRPMBottom;
+//        averageTop = topRecords.size() >= queueSize ? (topRecords.get(0)+topRecords.get(1)+topRecords.get(2)+topRecords.get(3)+topRecords.get(4))/5 : currRPMTop;
+//        averageBottom = bottomRecords.size() >= queueSize ? (bottomRecords.get(0)+bottomRecords.get(1)+bottomRecords.get(2)+bottomRecords.get(3)+bottomRecords.get(4))/5 : currRPMBottom;
 
         telemetry.addData("ready", bottomRecords.size() >= queueSize);
         telemetry.addData("top", averageTop);
@@ -130,7 +130,6 @@ public class Outtake {
         telemetry.addData("ready", bottomRecords.size() >= queueSize);
         telemetry.addData("top", averageTop);
         telemetry.addData("bottom", averageBottom);
-
 
         boolean atTopRPM = Math.abs(averageTop - rpmTop) <= tolerance;
         boolean atBotRPM = Math.abs(averageBottom - rpmBottom) <= tolerance;
@@ -220,8 +219,8 @@ public class Outtake {
             rpmBottom = 0;
         }
         pidtunedmotor(rpmTop, rpmBottom, tele);
-//        tele.addLine(String.format("Calculated rpm top: %f", rpmTop));
-//        tele.addLine(String.format("Calculated rpm bottom: %f", rpmBottom));
+        tele.addLine(String.format("Calculated rpm top: %f", rpmTop));
+        tele.addLine(String.format("Calculated rpm bottom: %f", rpmBottom));
     }
 
     private double rpmTopGoal;
