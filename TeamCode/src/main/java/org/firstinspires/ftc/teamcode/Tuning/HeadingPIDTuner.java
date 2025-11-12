@@ -21,7 +21,6 @@ public class HeadingPIDTuner extends LinearOpMode {
     public static double goal = 0 /*TODO get desired angle*/;
     private static double prevGoal = 0;
 
-    private double initHeading = 0;
     Robot robot;
 
     public static double kp = 0;
@@ -57,7 +56,6 @@ public class HeadingPIDTuner extends LinearOpMode {
             if (prevGoal != goal) {
                 prevGoal = goal;
                 controller = new PIDController(kp, ki, kd);
-                initHeading = getCurrentAngle();
             }
 
             double rot = getTurnValue();

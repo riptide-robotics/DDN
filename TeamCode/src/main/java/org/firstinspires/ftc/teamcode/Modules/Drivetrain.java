@@ -10,7 +10,9 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
+import org.firstinspires.ftc.teamcode.Modules.Utils.GoBildaPinpointDriver;
 
 // ----- READY TO TRANSFER ----- //
 
@@ -24,10 +26,13 @@ public class Drivetrain {
 
     // -------- DRIVETRAIN MOTORS -------- //
     private final DcMotor frWheel, flWheel, brWheel, blWheel;
+    private final GoBildaPinpointDriver pinpoint;
     private final IMU imu;
     private ElapsedTime timer;
 
     private final OdometryLocalizer robotPos;
+    private final double xOdoOffsetInInches = 0;
+    private final double yOdoOffsetInInches = 0;
 
     private PIDController headingPID;
     private final double kp = 0, ki = 0, kd = 0;
@@ -70,7 +75,12 @@ public class Drivetrain {
         flWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         blWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        robotPos = new OdometryLocalizer(blWheel, brWheel, flWheel, 10);
+        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class,"odo");
+        pinpoint.setOffsets(xOdoOffsetInInches, yOdoOffsetInInches, DistanceUnit.INCH);
+        pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+        pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+
+        robotPos = new OdometryLocalizer(pinpoint, 10);
 
         headingPID = new PIDController(kp, ki, kd);
 
