@@ -15,23 +15,16 @@ import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R_STDEV;
 import static org.firstinspires.ftc.teamcode.riptideUtil.transferClosed;
 import static org.firstinspires.ftc.teamcode.riptideUtil.transferOpen;
 
-import java.lang.Override;
 // Imports to sync
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.qualcomm.hardware.rev.RevColorSensorV3;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
-
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Robot;
 
 public class Intake{
     String[] order = new String[3];
@@ -40,7 +33,7 @@ public class Intake{
 
     NormalizedColorSensor colorSensor;
     DcMotor intakeMotor;
-    DcMotor rightTransferMotor;
+    CRServo spindexServo;
     Servo transferToggleServo;
     float gain = 2; // ...... ANYWAY
     /**
@@ -59,9 +52,9 @@ public class Intake{
     public Intake(HardwareMap hardwareMap){
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "REVcolorSensor");
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
-        rightTransferMotor = hardwareMap.get(DcMotor.class, "transferBelt");
+        spindexServo = hardwareMap.get(CRServo.class, "transferBelt");
         transferToggleServo = hardwareMap.get(Servo.class, "toggleServo");
-        rightTransferMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        spindexServo.setDirection(DcMotorSimple.Direction.FORWARD);
     }
 
     public String scanColor() {
@@ -208,10 +201,11 @@ public class Intake{
         intakeMotor.setPower(p);
     }
     public void transfer(double p) {
-        rightTransferMotor.setPower(p);
+        spindexServo.setPower(p);
     }
+
     public void transferToggle() {
-        if (rightTransferMotor.getPower() > 0) {
+        if (spindexServo.getPower() > 0) {
             transfer(0);
         } else {
             transfer(1);

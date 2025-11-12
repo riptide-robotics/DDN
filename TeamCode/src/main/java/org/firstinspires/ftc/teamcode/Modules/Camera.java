@@ -1,8 +1,9 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
 // --- CONSTANTS & OTHER STUFF --- //
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+import static org.firstinspires.ftc.teamcode.Modules.Camera.processors_enabled.ALL;
+import static org.firstinspires.ftc.teamcode.Modules.Camera.processors_enabled.COLOR;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -13,8 +14,6 @@ import org.firstinspires.ftc.teamcode.riptideUtil;
 // --- CAMERA --- //
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.vision.opencv.ImageRegion;
-import org.opencv.core.Mat;
-import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 // --- PORTALS & PROCESSORS & SIMILAR STUFF --- //
@@ -53,7 +52,7 @@ import com.qualcomm.robotcore.util.SortOrder;
  *
  */
 
-public class Camera extends OpenCvPipeline {
+public class Camera {
 
     ///////////////////////////////////////////////
     ////                                     /////
@@ -72,15 +71,6 @@ public class Camera extends OpenCvPipeline {
     ArrayList<ArrayList<Double>> blobs = new ArrayList<>();
     String goalTag;
     CameraName cameraname;
-
-    public Camera(double v, double v1, double v2, double v3, double v4) {
-    }
-
-    @Override
-    public Mat processFrame(Mat input) {
-        return null;
-    }
-
     public enum processors_enabled {
         NONE,
         TAG,
@@ -209,10 +199,15 @@ public class Camera extends OpenCvPipeline {
         return blobs;
     }
 
+    public boolean isGoalTag(AprilTagDetection detection) {
+        // For red alliance goal
+        return detection.id == 24;
+    }
+
     public AprilTagDetection getGoalApriltag() {
         detections = getTagDetections();
         for(AprilTagDetection detection : detections) {
-            if(detection.metadata.name.equals(goalTag)) {
+            if(isGoalTag(detection)/* detection.metadata.name.equals(goalTag) */) {
                 return detection;
             }
         }
@@ -233,9 +228,10 @@ public class Camera extends OpenCvPipeline {
     }
 
     public double getAprilTagDistance(AprilTagDetection tag) {
-        return Math.pow(tag.robotPose.getPosition().x, 2) *
-                Math.pow(tag.robotPose.getPosition().y, 2) *
-                Math.pow(tag.robotPose.getPosition().z, 2);
+        double x = tag.robotPose.getPosition().x;
+        double y = tag.robotPose.getPosition().y;
+        double z = tag.robotPose.getPosition().z;
+        return Math.sqrt(x * x + y * y + z * z);
     }
 
     public double getTagHorizontalAngle(AprilTagDetection tag) {
@@ -362,10 +358,6 @@ public class Camera extends OpenCvPipeline {
                             detection.robotPose.getPosition().z));
                     telemetry.addLine(String.format("Distance %f (inch)",
                             getAprilTagDistance(detection)));
-                    telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)",
-                            detection.robotPose.getOrientation().getPitch(AngleUnit.DEGREES),
-                            detection.robotPose.getOrientation().getRoll(AngleUnit.DEGREES),
-                            detection.robotPose.getOrientation().getYaw(AngleUnit.DEGREES)));
                 }
             } else {
                 telemetry.addLine(String.format("Unknown Name (ID %d)", detection.id));
@@ -388,6 +380,10 @@ public class Camera extends OpenCvPipeline {
         }
     }
 
+    public void tagAngle(double angle){
+
+    }
+
     public Double getGoalDistance() {
         AprilTagDetection goalDetection = getGoalApriltag();
         if (goalDetection == null) {
@@ -398,7 +394,9 @@ public class Camera extends OpenCvPipeline {
         double y = goalDetection.robotPose.getPosition().y;
         double z = goalDetection.robotPose.getPosition().z;
 
-        return Math.sqrt(x * x + y * y + z * z) * 0.03937008 /* convert from mm to inches*/;
+
+
+        return Math.sqrt(x * x + y * y + z * z);
     }
 
     public Double getGoalAngleError() {
@@ -408,5 +406,22 @@ public class Camera extends OpenCvPipeline {
         }
 
         return getTagHorizontalAngle(goalDetection);
+    }
+
+    public void runCamera(processors_enabled processor){
+        switch (processor) {
+            case ALL:
+                processor = Camera.processors_enabled.TAG;
+                setPipeline(processor);
+                break;
+            case TAG:
+                processor = Camera.processors_enabled.COLOR;
+                setPipeline(processor);
+                break;
+            case COLOR:
+                processor = Camera.processors_enabled.ALL;
+                setPipeline(processor);
+                break;
+        }
     }
 }

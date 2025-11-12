@@ -1,12 +1,7 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 import static org.firstinspires.ftc.teamcode.riptideUtil.LONG_DIST_BOT;
 import static org.firstinspires.ftc.teamcode.riptideUtil.LONG_DIST_TOP;
-import static org.firstinspires.ftc.teamcode.riptideUtil.MID_DIST_BOT;
-import static org.firstinspires.ftc.teamcode.riptideUtil.MID_DIST_TOP;
-import static org.firstinspires.ftc.teamcode.riptideUtil.SHORT_DIST_BOT;
-import static org.firstinspires.ftc.teamcode.riptideUtil.SHORT_DIST_TOP;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -18,12 +13,13 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Autonomous.AutonomousRobot;
+import org.firstinspires.ftc.teamcode.Modules.Camera;
 import org.firstinspires.ftc.teamcode.Robot;
 
 
 @Config
-@TeleOp(name = "Meet 2 FSM Manual")
-public class Meet0FSM extends LinearOpMode {
+@TeleOp(name = "Meet 2 FSM Automatic")
+public class Meet2FSMAutomatic extends LinearOpMode {
     //HardwareMap hardwareMap;
     Robot robot;
     AutonomousRobot autoRobot;
@@ -70,8 +66,8 @@ public class Meet0FSM extends LinearOpMode {
         telemetry.addData("Robot status:", "succesfully initiated");
         telemetry.update();
 
-        currentTopRPMGoal = 0;
-        currentBottomRPMGoal = 0;
+        Camera.processors_enabled processor = Camera.processors_enabled.ALL;
+        robot.getCamera().setPipeline(processor);
 
         waitForStart();
         if (isStopRequested()) return;
@@ -86,21 +82,19 @@ public class Meet0FSM extends LinearOpMode {
         while(opModeIsActive()){
 
             FSM();
-            fieldCentricDrive();
+            // fieldCentricDrive();
+            tankDrive();
+            robot.getCamera().runCamera(processor);
+            robot.setFlyWheelPowerOnDistance(runOuttake, tele);
 
-            //telemetry.addData("Angle: ", robot.getDrivetrain().getRobotHeading(AngleUnit.DEGREES));
-//
-//            if (updateTime){
-//                robot.getOuttake().startFlywheel();
-//            }
-            robot.getOuttake().runOuttakePID(currentTopRPMGoal, currentBottomRPMGoal, tele);
 
             double currTime = endTimer.seconds();
 
             if (currTime >= 80 && !didRumble){gamepad1.rumble(1, 1, 500); gamepad2.rumble(1, 1, 500);}
             if (currTime >= 82) {didRumble = true;}
-            telemetry.addData("Current State:", currentState);
-            telemetry.update();
+
+
+            tele.update();
         }
     }
 
@@ -119,7 +113,7 @@ public class Meet0FSM extends LinearOpMode {
 
                 // INTAKE
                 if (gamepad2.right_trigger >= 0.1){
-                    robot.getIntake().spin(-1);
+                    robot.getIntake().spin(-0.7);
                 } else if (gamepad2.back){robot.getIntake().spin(1);}
                 else {robot.getIntake().spin(0);}
 
@@ -141,49 +135,13 @@ public class Meet0FSM extends LinearOpMode {
 
                 // OUTTAKE
                 if (gamepad2.left_trigger > 0.1 && !runOuttake && !leftTriggerPressedG2){
-                    //robot.getOuttake().setFlywheelSpeed(LONG_DIST_TOP, LONG_DIST_BOT /* Long Distance needs to be tuned*/);
-                    currentTopRPMGoal = LONG_DIST_TOP;
-                    currentBottomRPMGoal = LONG_DIST_BOT;
-                    updateTime = true;
                     runOuttake = true;
                     leftTriggerPressedG2 = true;
-                    telemetry.addData("Outtake Mode: ", "LONG");
-                } else if (gamepad2.left_bumper && !runOuttake && !leftBumperPressedG2) {
-                    //robot.getOuttake().setFlywheelSpeed(MID_DIST_TOP, MID_DIST_BOT /* Short Distance needs to be tuned*/);
-                    currentTopRPMGoal = MID_DIST_TOP;
-                    currentBottomRPMGoal = MID_DIST_BOT;
-                    updateTime = true;
-                    runOuttake = true;
-                    leftBumperPressedG2 = true;
-                    telemetry.addData("Outtake Mode: ", "MID");
-                } else if (gamepad2.x && !runOuttake && !xPressedG2) {
-                    //robot.getOuttake().setFlywheelSpeed(SHORT_DIST_TOP, SHORT_DIST_BOT /* Short Distance needs to be tuned*/);
-                    currentTopRPMGoal = SHORT_DIST_TOP;
-                    currentBottomRPMGoal = SHORT_DIST_BOT;
-                    updateTime = true;
-                    runOuttake = true;
-                    xPressedG2 = true;
-                    telemetry.addData("Outtake Mode: ", "SHORT");
                 }
 
                 if (gamepad2.left_trigger > 0.1 && runOuttake && !leftTriggerPressedG2){
-                    currentTopRPMGoal = 0;
-                    currentBottomRPMGoal = 0;
-                    updateTime = false;
                     runOuttake = false;
                     leftTriggerPressedG2 = true;
-                } else if (gamepad2.left_bumper && runOuttake && !leftBumperPressedG2) {
-                    currentTopRPMGoal = 0;
-                    currentBottomRPMGoal = 0;
-                    updateTime = false;
-                    runOuttake = false;
-                    leftBumperPressedG2 = true;
-                } else if (gamepad2.x && runOuttake && !xPressedG2) {
-                    currentTopRPMGoal = 0;
-                    currentBottomRPMGoal = 0;
-                    updateTime = false;
-                    runOuttake = false;
-                    xPressedG2 = true;
                 } // else if (gamepad2.dpad_right && runOuttake && !rightPressedG2) {currentTopRPMGoal = 0;
 ////                    currentBottomRPMGoal = 0;
 //                    updateTime = false;
@@ -191,10 +149,10 @@ public class Meet0FSM extends LinearOpMode {
 //                    rightPressedG2 = true;}
 
                 // ENDGAME
-//                if (gamepad2.dpad_up){
-//                    currentState = states.ENDGAME;
-//                    hasrun = false;
-//                }
+                if (gamepad2.y){
+                    currentState = states.ENDGAME;
+                    hasrun = false;
+                }
 
                 break;
             case ENDGAME:
@@ -203,11 +161,11 @@ public class Meet0FSM extends LinearOpMode {
                     hasrun = true;
                 }
 
-                if (gamepad2.dpad_down){
+                if (gamepad2.a){
                     robot.getEndgameServos().lower();
                 }
 
-                if (gamepad2.dpad_up){
+                if (gamepad2.y){
                     hasrun = false;
                 }
 
@@ -249,5 +207,15 @@ public class Meet0FSM extends LinearOpMode {
         if (gamepad1.y) {
             robot.getDrivetrain().resetImu();
         }
+    }
+
+    public void tankDrive() {
+        double slowdown = gamepad1.right_trigger > 0 ? 0.25 : 1;
+        robot.getDrivetrain().setWheelPowers(
+                -gamepad1.left_stick_y * slowdown,
+                -gamepad1.right_stick_y * slowdown,
+                -gamepad1.right_stick_y * slowdown,
+                -gamepad1.left_stick_y * slowdown
+        );
     }
 }

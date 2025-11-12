@@ -51,7 +51,7 @@ public class CameraHardware {
         webcam = OpenCvCameraFactory.getInstance().createWebcam(webcamname, cameraMonitorViewId);
 
         // set webcam pipeline
-        webcam.setPipeline(new Camera(0.047, 578.272, 578.272, 402.145, 221.506));
+        //webcam.setPipeline(new Camera(0.047, 578.272, 578.272, 402.145, 221.506));
 
         // this is the asyncrounous camera open listener class
         // it has the methods : onOpened and onError

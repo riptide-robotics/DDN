@@ -10,6 +10,8 @@ import static org.firstinspires.ftc.teamcode.riptideUtil.angularVelocity;
 import static org.firstinspires.ftc.teamcode.riptideUtil.econserved;
 import static org.firstinspires.ftc.teamcode.riptideUtil.tolerance;
 
+import android.annotation.SuppressLint;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -56,7 +58,6 @@ public class Outtake {
 
         tele.addData("goalRPMTop", rpmTop);
         tele.addData("goalRPMBottom", rpmBottom);
-        tele.update();
         if (rpmTopPrev != rpmTop) {
             rpmTopPrev = rpmTop;
             RPMControllerTop = new PIDController(KPTop, 0, 0);
@@ -66,7 +67,6 @@ public class Outtake {
             rpmBottomPrev = rpmBottom;
             RPMControllerBottom = new PIDController(KPBottom, 0, 0);
         }
-        tele.update();
     }
 
     private boolean atGoalSpeed = false;
@@ -187,28 +187,41 @@ public class Outtake {
     }
 
 
-    public void setPowerOnDist(double dist /* INCHES */, boolean run, Telemetry tele){
+    @SuppressLint("DefaultLocale")
+    public void setPowerOnDist(Double dist /* INCHES */, boolean run, Telemetry tele) {
+
+
         double rBottom = 1.41732; // INCHES
         double rTop = 1.41732; // INCHES
-        double angle = Math.toRadians(30);
-        double height = (23 /* height of artifact in outtake */- rBottom - Math.cos(angle) * (rBottom + 2.4 * Math.sqrt(2) - 1));
+        double angle = Math.toRadians(75);
+        double y = 25 - rBottom;
+
+        double term = dist * Math.tan(angle) - y;
+        if (term <= 0) {
+            tele.addLine("Invalid term: target too close or below launch point");
+            tele.addData("term", term);
+            pidtunedmotor(0, 0, tele);
+            return;
+        }
+
+        double numerator = 9.8 * 39.3701 * dist * dist;
+        double denominator = 2 * Math.pow(Math.cos(angle), 2) * term;
+
+        double ballVelocity = Math.sqrt(numerator / denominator);
 
         double rpmTop;
         double rpmBottom;
 
-        double numerator = (9.8 * 39.3701 /* meters per second to inches per second*/) * Math.pow(dist, 2);
-        double denominator = 2 * Math.pow(Math.cos(angle), 2) * (dist * Math.tan(angle) - height);
-
-        double ballVelocity = Math.sqrt(numerator / denominator);
-
         if (run) {
             rpmTop = ((ballVelocity * 60) / (2 * Math.PI * rTop)) * econserved - (angularVelocity * 30 / Math.PI) * econserved;
             rpmBottom = ((ballVelocity * 60) / (2 * Math.PI * rBottom)) * econserved - (angularVelocity * 30 / Math.PI) * econserved;
+        } else {
+            rpmTop = 0;
+            rpmBottom = 0;
         }
-        else {rpmTop = 0; rpmBottom = 0;}
         pidtunedmotor(rpmTop, rpmBottom, tele);
-        tele.addData("Calculated rpm top: ", rpmTop);
-        tele.addData("Calculated rpm bottom: ", rpmBottom);
+//        tele.addLine(String.format("Calculated rpm top: %f", rpmTop));
+//        tele.addLine(String.format("Calculated rpm bottom: %f", rpmBottom));
     }
 
     private double rpmTopGoal;
@@ -216,4 +229,5 @@ public class Outtake {
 
     public void setOuttakeRPM (double rpmTop, double rpmBottom){rpmTopGoal = rpmTop; rpmBottomGoal = rpmBottom;}
     public void runOuttakePID(Telemetry tele){pidtunedmotor(rpmTopGoal, rpmBottomGoal, tele);}
+
 }
