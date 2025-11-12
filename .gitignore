@@ -79,3 +79,15 @@ lint/generated/
 lint/outputs/
 lint/tmp/
 # lint/reports/
+
+# Eclipse/IDE metadata
+.project
+.classpath
+.settings/
+FtcRobotController/.classpath
+FtcRobotController/.project
+FtcRobotController/.settings/
+TeamCode/.classpath
+TeamCode/.project
+TeamCode/.settings/
+
