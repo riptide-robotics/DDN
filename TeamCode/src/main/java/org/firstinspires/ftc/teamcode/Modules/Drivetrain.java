@@ -34,13 +34,6 @@ public class Drivetrain {
     private final double xOdoOffsetInInches = 0;
     private final double yOdoOffsetInInches = 0;
 
-    private PIDController headingPID;
-    private final double kp = 0, ki = 0, kd = 0;
-    private double goal = 0;
-    private double initHeading = 0;
-    private double currHeading = 0;
-
-
     ///////////////////////////////////////////////
     ////                                     /////
     ////              FUNCTIONS              /////
@@ -126,18 +119,5 @@ public class Drivetrain {
 
     public double getRobotHeading(AngleUnit unit) {
         return imu.getRobotYawPitchRollAngles().getYaw(unit); // heading of bot in radians
-    }
-
-    public double getPIDAngle(double angle) {
-        return headingPID.calculate(0, angle);
-    }
-
-    public double alignToGoal() {
-        double goalHeading = initHeading + goal;
-        double error = goalHeading - getRobotHeading((AngleUnit.DEGREES));
-
-        if (Math.abs(error) > 180) {error -= Math.signum(error) * 360;}
-
-        return getPIDAngle(error);
     }
 }
