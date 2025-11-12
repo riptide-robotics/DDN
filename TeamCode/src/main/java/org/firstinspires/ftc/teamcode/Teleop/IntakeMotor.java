@@ -1,12 +1,12 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.Robot;
-
+@TeleOp(name = "tankDrive")
 public class IntakeMotor extends LinearOpMode {
-    DcMotor motor = hardwareMap.dcMotor.get("IntakeMotor");
+    DcMotor motor = hardwareMap.dcMotor.get("intakeMotor");
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry.addData("Robot status", "succesfully initiated");
