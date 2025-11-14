@@ -75,8 +75,6 @@ public class Drivetrain {
 
         robotPos = new OdometryLocalizer(pinpoint, 10);
 
-        headingPID = new PIDController(kp, ki, kd);
-
         imu = hardwareMap.get(IMU.class, "imu");
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,

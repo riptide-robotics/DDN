@@ -42,7 +42,7 @@ public class Path {
     public static class PathPoint{
 
         private RobotAction a = null;
-        private Waypoint w;
+        //private Waypoint w;
         private double delayUntilNextPoint = 0;
 
         // The grave of setRobotAction(RobotAction a)
@@ -53,9 +53,9 @@ public class Path {
         //     It feels like we should be using this :|
         //     It was basically just "this.w = w" in case you wanna revive it
 
-        public Waypoint getWaypoint(){
-            return w;
-        }
+//        public Waypoint getWaypoint(){
+//            return w;
+//        }
 
         public RobotAction getAction(){
             return this.a;
@@ -65,9 +65,9 @@ public class Path {
             return delayUntilNextPoint;
         }
 
-        public PathPoint(Waypoint w, RobotAction a, double delayUntilNextPoint){
+        public PathPoint(RobotAction a, double delayUntilNextPoint){
             this.a = a;
-            this.w = w;
+//            this.w = w;
             this.delayUntilNextPoint = delayUntilNextPoint;
         }
 
@@ -78,8 +78,8 @@ public class Path {
 
         // This is the grave of a few PathBuilders that nobody knows why they existed
 
-        public PathBuilder addNewFullPoint(Waypoint w, RobotAction a, double delay){
-            PathPoint p = new PathPoint(w, a, delay);
+        public PathBuilder addNewFullPoint( RobotAction a, double delay){
+            PathPoint p = new PathPoint(a, delay);
             path.add(p);
             return this;
         }
