@@ -8,9 +8,9 @@ import static org.firstinspires.ftc.teamcode.riptideUtil.MAX_V;
 import static org.firstinspires.ftc.teamcode.riptideUtil.TURN_KD;
 import static org.firstinspires.ftc.teamcode.riptideUtil.TURN_KI;
 import static org.firstinspires.ftc.teamcode.riptideUtil.TURN_KP;
-import static org.firstinspires.ftc.teamcode.riptideUtil.VERT_KD;
-import static org.firstinspires.ftc.teamcode.riptideUtil.VERT_KI;
-import static org.firstinspires.ftc.teamcode.riptideUtil.VERT_KP;
+import static org.firstinspires.ftc.teamcode.riptideUtil.FORWARD_KD;
+import static org.firstinspires.ftc.teamcode.riptideUtil.FORWARD_KI;
+import static org.firstinspires.ftc.teamcode.riptideUtil.FORWARD_KP;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -74,7 +74,7 @@ public class AutonomousRobot extends Robot {
     public moveStates currentState = moveStates.IDLE;
 
     PIDController latPid = new PIDController(riptideUtil.LAT_KP, riptideUtil.LAT_KI, riptideUtil.LAT_KD);
-    PIDController vertPid = new PIDController(riptideUtil.VERT_KP, riptideUtil.VERT_KI, riptideUtil.VERT_KD);
+    PIDController vertPid = new PIDController(riptideUtil.FORWARD_KP, riptideUtil.FORWARD_KI, riptideUtil.FORWARD_KD);
     PIDController turnPid = new PIDController(TURN_KP, TURN_KI, TURN_KD);
     private ElapsedTime timer;
     private double goalPosX;
@@ -147,7 +147,7 @@ public class AutonomousRobot extends Robot {
                 double yComponent = start.getY(DistanceUnit.INCH) + magnitude * Math.sin(lineSlope);
 
                 //Set Pids to what they are supposed to be.a
-                vertPid.setPID(VERT_KP, VERT_KI, VERT_KD);
+                vertPid.setPID(FORWARD_KP, FORWARD_KI, FORWARD_KD);
                 latPid.setPID(LAT_KP, LAT_KI, LAT_KD);
                 turnPid.setPID(TURN_KP, TURN_KI, TURN_KD);
 

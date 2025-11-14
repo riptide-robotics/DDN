@@ -32,7 +32,6 @@ public class riptideUtil {
     public static final float PURPLE_B_STDEV = 0.04f;
 
     //flywheel
-
     public static double TOP_FLYWHEEL_KP = 0.001;
     public static double BOTTOM_FLYWHEEL_KP = 0.001;
 
@@ -45,14 +44,11 @@ public class riptideUtil {
     public static double MAX_V_LAT = 0;             // UNDETERMINED
 
     public static double MAX_WHEEL_POWER = 1;       // Probably always going to be 1
-    // Lateral
-    public static double LAT_KP = 0.1;                // UNDETERMINED
-    public static double LAT_KI = 0.05;                // UNDETERMINED
-    public static double LAT_KD = 0;                // UNDETERMINED
-    // Vertical
-    public static double VERT_KP = 0.065;               // UNDETERMINED
-    public static double VERT_KI = 0.03;               // UNDETERMINED
-    public static double VERT_KD = 0.003;               // UNDETERMINED
+
+    // Forward
+    public static double FORWARD_KP = 0.065;               // UNDETERMINED
+    public static double FORWARD_KI = 0.03;               // UNDETERMINED
+    public static double FORWARD_KD = 0.003;               // UNDETERMINED
     // Turn
     public static double TURN_KP = 0.03;
     public static double TURN_KI = 0.02;
@@ -62,22 +58,10 @@ public class riptideUtil {
     public static double MAX_A = 72;                 // UNDETERMINED
     public static double MAX_V = 96;                 // UNDETERMINED
 
-    public static double LONG_DIST_TOP = 3250; // UNDETERMINED
-    public static double LONG_DIST_BOT = 3730; // UNDETERMINED
-
-    public static double MID_DIST_TOP = 2650; // UNDETERMINED
-    public static double MID_DIST_BOT = 3000;// UNDETERMINED
-
-    public static double SHORT_DIST_TOP = 2950; // UNDETERMINED
-    public static double SHORT_DIST_BOT = 3480;// UNDETERMINED
-
-    public static double transferOpen = 0.8; // UNDETERMINED
-    public static double transferClosed = -0.8; // UNDETERMINED
-
     public static double KPTop = 0.0032; //0.004
     public static double KPBottom = 0.004; // 0.0045
 
-    public static double tolerance = 50;
+    public static double tolerance = 50; //?? what
 
 
     // Vision

@@ -1,5 +1,10 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
+import static org.firstinspires.ftc.teamcode.riptideUtil.TURN_KD;
+import static org.firstinspires.ftc.teamcode.riptideUtil.TURN_KI;
+import static org.firstinspires.ftc.teamcode.riptideUtil.TURN_KP;
+import static org.firstinspires.ftc.teamcode.riptideUtil.FORWARD_KI;
+import static org.firstinspires.ftc.teamcode.riptideUtil.FORWARD_KP;
 import static java.lang.Thread.sleep;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -34,7 +39,13 @@ public class Drivetrain {
     private final double xOdoOffsetInInches = 0;
     private final double yOdoOffsetInInches = 0;
 
-    ///////////////////////////////////////////////
+    // -------- AUTONOMOUS CONTROLLERS -------- //
+
+    private final PIDController headingController = new PIDController(TURN_KP, TURN_KI, TURN_KD);
+    private final PIDController forwardController = new PIDController(FORWARD_KP, FORWARD_KI)
+
+
+    //////////////////////////////////////////////
     ////                                     /////
     ////              FUNCTIONS              /////
     ////                                     /////

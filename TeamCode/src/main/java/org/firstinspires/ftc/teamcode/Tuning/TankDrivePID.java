@@ -11,8 +11,12 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Modules.PIDController;
 import org.firstinspires.ftc.teamcode.Robot;
 
+
+/**
+ * This tuner is supposed to solely tune the forward-backward motion of a tank drive robot.
+ */
 @Config
-@TeleOp(name="tankDrivePIDTuning", group="tuning")
+@TeleOp(name = "tankDrivePIDTuning", group = "tuning")
 public class TankDrivePID extends LinearOpMode {
     Robot robot;
 
@@ -46,23 +50,27 @@ public class TankDrivePID extends LinearOpMode {
 
         t.clear();
 
-        while(opModeIsActive()){
-           if (goal != VerticalDistanceInInches){
-               goal = VerticalDistanceInInches;
-               vertController.setPID(kp, ki, kd);
-           }
+        while (opModeIsActive()) {
+            if (goal != VerticalDistanceInInches) {
+                goal = VerticalDistanceInInches;
+                vertController.setPID(kp, ki, kd);
+            }
 
-           double power = setWheelPower(t);
+            t.update();
 
-           t.update();
+            double power = setWheelPower(t);
 
-            
+            robot.getDrivetrain().setWheelPowers(power, power, power, power);
+
+
         }
 
 
     }
 
-    private double setWheelPower(Telemetry t){
+    private double setWheelPower(Telemetry t) {
+        
+        return 1;
 
     }
 }
