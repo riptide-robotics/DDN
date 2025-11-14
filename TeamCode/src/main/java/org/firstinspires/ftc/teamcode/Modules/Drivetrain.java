@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
+import static org.firstinspires.ftc.teamcode.riptideUtil.FORWARD_KD;
 import static org.firstinspires.ftc.teamcode.riptideUtil.TURN_KD;
 import static org.firstinspires.ftc.teamcode.riptideUtil.TURN_KI;
 import static org.firstinspires.ftc.teamcode.riptideUtil.TURN_KP;
@@ -42,7 +43,7 @@ public class Drivetrain {
     // -------- AUTONOMOUS CONTROLLERS -------- //
 
     private final PIDController headingController = new PIDController(TURN_KP, TURN_KI, TURN_KD);
-    private final PIDController forwardController = new PIDController(FORWARD_KP, FORWARD_KI)
+    private final PIDController forwardController = new PIDController(FORWARD_KP, FORWARD_KI, FORWARD_KD);
 
 
     //////////////////////////////////////////////
