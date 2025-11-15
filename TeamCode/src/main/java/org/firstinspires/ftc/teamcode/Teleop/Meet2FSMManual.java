@@ -6,6 +6,7 @@ import static org.firstinspires.ftc.teamcode.riptideUtil.MID_DIST_BOT;
 import static org.firstinspires.ftc.teamcode.riptideUtil.MID_DIST_TOP;
 import static org.firstinspires.ftc.teamcode.riptideUtil.SHORT_DIST_BOT;
 import static org.firstinspires.ftc.teamcode.riptideUtil.SHORT_DIST_TOP;
+import static org.firstinspires.ftc.teamcode.riptideUtil.SPINDEX_ARM_UP;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -110,7 +111,7 @@ public class Meet2FSMManual extends LinearOpMode {
                 if (!hasrun){
                     // do teleop setup
                     robot.getIntake().spin(0);
-                    robot.getIntake().transfer(0);
+                    robot.getIntake().rotateSpindexOnce();
                 }
 
 //                if (gamepad1.x && !xPressedG2){/* align */ align = true; xPressedG2 = true;}
@@ -124,10 +125,10 @@ public class Meet2FSMManual extends LinearOpMode {
 
 
                 // INTAKE TRANSFER
-                if (gamepad2.dpad_up && robot.getOuttake().isAtGoalSpeed()){robot.getIntake().transfer(-1); robot.getIntake().openTransfer();}
-                else if (gamepad2.dpad_down){robot.getIntake().transfer(1);}
-                else if (gamepad2.dpad_up && gamepad2.y){robot.getIntake().transfer(-1); robot.getIntake().openTransfer();}
-                else {robot.getIntake().transfer(0); robot.getIntake().closeTransfer();}
+                if (gamepad2.dpad_up && robot.getOuttake().isAtGoalSpeed()){robot.getIntake().rotateSpindexOnce(); robot.getIntake().openTransfer(SPINDEX_ARM_UP);}
+                else if (gamepad2.dpad_down){robot.getIntake().rotateSpindexOnce();}
+                else if (gamepad2.dpad_up && gamepad2.y){robot.getIntake().rotateSpindexOnce(); robot.getIntake().openTransfer(SPINDEX_ARM_UP);}
+                else {robot.getIntake().rotateSpindexOnce(); robot.getIntake().ResetBootKick(0);}
 
 
 //                if (gamepad2.dpad_right && !rightPressedG2 && !runOuttake){

@@ -71,13 +71,17 @@ public class riptideUtil {
     public static double SHORT_DIST_TOP = 2950; // UNDETERMINED
     public static double SHORT_DIST_BOT = 3480;// UNDETERMINED
 
-    public static double transferOpen = 0.8; // UNDETERMINED
-    public static double transferClosed = -0.8; // UNDETERMINED
+
 
     public static double KPTop = 0.0032; //0.004
     public static double KPBottom = 0.004; // 0.0045
 
     public static double tolerance = 50;
+
+    // Spindex
+    public static double SPINDEX_ARM_UP = 0; // UNDETERMINED
+    public static double SPINDEX_ARM_RESTING = 0.8; // UNDETERMINED
+    public static double ROTATE_SPINDEX_ONCE = 0;
 
 
     // Vision
@@ -133,6 +137,6 @@ public class riptideUtil {
                 .build();
     }
 
-    public static double angularVelocity = 20;
+    public static double angularVelocity = 45;
     public static double econserved = 0.1;
 }

@@ -197,7 +197,6 @@ public class Outtake {
 
         double term = dist * Math.tan(angle) - y;
         if (term <= 0) {
-            tele.addLine("Invalid term: target too close or below launch point");
             tele.addData("term", term);
             pidtunedmotor(0, 0, tele);
             return;
