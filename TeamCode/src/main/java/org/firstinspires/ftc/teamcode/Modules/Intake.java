@@ -12,26 +12,16 @@ import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_G;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_G_STDEV;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R_STDEV;
-import static org.firstinspires.ftc.teamcode.riptideUtil.transferClosed;
-import static org.firstinspires.ftc.teamcode.riptideUtil.transferOpen;
+import static org.firstinspires.ftc.teamcode.riptideUtil.ROTATE_SPINDEX_ONCE;
 
-import java.lang.Override;
 // Imports to sync
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.qualcomm.hardware.rev.RevColorSensorV3;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
-
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Robot;
 
 public class Intake{
     String[] order = new String[3];
@@ -40,8 +30,8 @@ public class Intake{
 
     NormalizedColorSensor colorSensor;
     DcMotor intakeMotor;
-    DcMotor rightTransferMotor;
-    Servo transferToggleServo;
+    Servo spindexServo;
+    Servo spindexArm;
     float gain = 2; // ...... ANYWAY
     /**
      * A Rev Color Match object is used to register and detect known colors. This can
@@ -59,9 +49,9 @@ public class Intake{
     public Intake(HardwareMap hardwareMap){
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "REVcolorSensor");
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
-        rightTransferMotor = hardwareMap.get(DcMotor.class, "transferBelt");
-        transferToggleServo = hardwareMap.get(Servo.class, "toggleServo");
-        rightTransferMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        spindexServo = hardwareMap.get(Servo.class, "spindexServo");
+        spindexArm = hardwareMap.get(Servo.class, "spindexArm");
+        spindexServo.setDirection(Servo.Direction.FORWARD);
     }
 
     public String scanColor() {
@@ -122,9 +112,61 @@ public class Intake{
         }
         order[toSet] = color;
         t.addLine("Uptake Result: Success - " + color + " artifact uptaked into position " + toSet);
-
-        //intakeMotor.setPower(1);
     }
+
+    public boolean CanBootKick(boolean canBootKick){
+        return canBootKick;
+    }
+
+    public void movetoEmptySlot() {
+        int emptySlot = -1;
+        for (int i = 0; i < order.length; i++) {
+            if (order[i] == null) {
+                emptySlot = i;
+                break;
+            }
+        }
+
+        if (emptySlot == -1) {
+            t.addLine("Intake failed: Full intake");
+            return;
+        }
+
+        while (emptySlot != 0) {
+
+
+//            ElapsedTime timer = new ElapsedTime();
+//            timer.reset();
+//            while (timer.milliseconds() < slotMoveTimeMs) {
+//                spinSpindex(spindexPower);
+//            }
+
+            rotateOne(true);
+            emptySlot--;
+            CanBootKick(false);
+        }
+        rotateOne(false);
+        CanBootKick(true);
+        t.addLine("Empty slot aligned at intake");
+
+        String color = scanColor();
+        if (color.equals("Purple")) {
+            pgratio[0]++;
+        } else if (color.equals("Green")) {
+            pgratio[1]++;
+        }
+
+        order[0] = color;
+    }
+
+    public void BootKick(double pos){
+        spindexArm.setPosition(pos);
+    }
+
+    public void ResetBootKick(double pos){
+        spindexArm.setPosition(pos);
+    }
+
 
     public void ejectArtifact(char colorReq){ // colorReq should b 'p' (purple) or 'g' (green)
         String tmp;
@@ -194,6 +236,7 @@ public class Intake{
     public void rotateOne(boolean forwards) { // HAVE ROTATOR FUNCTIONALITY W/IN THIS FUNCTION
         String tmp = order[0];
         if (forwards) {
+            rotateSpindexOnce();
             order[0] = order[1];
             order[1] = order[2];
             order[2] = tmp;
@@ -202,40 +245,57 @@ public class Intake{
             order[2] = order[1];
             order[1] = tmp;
         }
+
     }
 
     public void spin(double p) {
         intakeMotor.setPower(p);
     }
-    public void transfer(double p) {
-        rightTransferMotor.setPower(p);
-    }
-    public void transferToggle() {
-        if (rightTransferMotor.getPower() > 0) {
-            transfer(0);
-        } else {
-            transfer(1);
+    public void rotateSpindexOnce() {
+        double currPos = spindexServo.getPosition() * 900;
+        if (900 > currPos + ROTATE_SPINDEX_ONCE){
+            spindexServo.setPosition(fiveTurnToServo(currPos - ROTATE_SPINDEX_ONCE));
+            t.addLine("Rotating Spindex to " + fiveTurnToServo(currPos - ROTATE_SPINDEX_ONCE) + "(deg)");
         }
+        if (-900 < currPos - ROTATE_SPINDEX_ONCE){
+            spindexServo.setPosition(fiveTurnToServo(currPos + ROTATE_SPINDEX_ONCE));
+            t.addLine("Rotating Spindex " + fiveTurnToServo(currPos + ROTATE_SPINDEX_ONCE) + "(deg)");
+        }
+
     }
+
+    // THIS IS PURELY FOR TUNING DELETE AFTER
+    public void spindexPos(double pos){
+        spindexServo.setPosition(fiveTurnToServo(pos));
+    }
+
+//    public void transferToggle() {
+//        if (spindexServo.getPower() > 0) {
+//            spinSpindex(0);
+//        } else {
+//            spinSpindex(1);
+//        }
+//    }
 
     private boolean isTransferOpen = false;
     private boolean isTransferClosed = false;
-    public void toggleTransferServo(){
-        if (isTransferOpen){closeTransfer();}
-        if (isTransferClosed){openTransfer();}
-    }
-    public void openTransfer(){
-        transferToggleServo.setPosition(transferOpen /* idk but should be open position*/);
+    public void openTransfer(double pos){
+        spindexArm.setPosition(/* SPINDEX_ARM_UP */ pos);
         isTransferOpen = true;
         isTransferClosed = false;
     }
-    public void closeTransfer(){
-        transferToggleServo.setPosition(transferClosed /* idk but should be closed position*/);
+    public void closeTransfer(double pos){
+        spindexArm.setPosition(/* SPINDEX_ARM_RESTING */ pos);
         isTransferOpen = false;
         isTransferClosed = true;
     }
 
     public TelemetryPacket sendTelemetry(){
         return t;
+    }
+
+    public double fiveTurnToServo(double angle){
+        //900 instead of 1800 because we using 2:1 gear ratio (180*5)
+        return angle <= 900 && angle >= 0 ? angle / 900 : angle > 900 ? 1 : 0;
     }
 }

@@ -11,13 +11,14 @@ import org.firstinspires.ftc.teamcode.Modules.Drivetrain;
 import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
 import org.firstinspires.ftc.teamcode.Robot;
 
-// this will probably be usefull
-
+/**
+ * For the 3 wheel setup refer to the Meet 2 repo for the Into the Deep season.
+ * Uses Tank Drive
+ */
 @TeleOp(name = "Odometry Test")
 public class Odometry extends LinearOpMode {
 
     Robot robot;
-    Drivetrain drivetrain;
     DcMotor frWheel, flWheel, brWheel, blWheel;
 
     @Override
@@ -78,18 +79,13 @@ public class Odometry extends LinearOpMode {
          */
 
         while(opModeIsActive()) {
+            tankDrive();
 
-            fieldCentricDrive();
             EditablePose2D currPos = robot.getDrivetrain().getCurrPos();
 
             telemetry.addData("X Position", currPos.getX(DistanceUnit.INCH));
             telemetry.addData("Y Position", currPos.getY(DistanceUnit.INCH));
             telemetry.addData("Orientation (Degrees)", Math.toDegrees(currPos.getH()));
-
-            telemetry.addLine("\n Raw Values \n")
-                    .addData("leftEncoder", robot.getDrivetrain().getRobotPos().getLeftEncoder())
-                    .addData("rightEncoder", robot.getDrivetrain().getRobotPos().getRightEncoder())
-                    .addData("perpendicularEncoder", robot.getDrivetrain().getRobotPos().getPerpendicularEncoder());
 
             telemetry.addLine("\n IMU measured heading \n")
                     .addData("Orientation (Degrees)", robot.getDrivetrain().getRobotHeading(AngleUnit.DEGREES));
@@ -98,22 +94,10 @@ public class Odometry extends LinearOpMode {
         }
     }
 
-    public void fieldCentricDrive() {
-        double y = -gamepad1.left_stick_y;
-        double x = gamepad1.left_stick_x * 1.1; // 1.1 is to account for hardware inconsistencies.
-        double rx = gamepad1.right_stick_x;
+    public void tankDrive(){
+        double leftPower = -gamepad1.left_stick_y;
+        double rightPower = -gamepad1.right_stick_y;
 
-        double heading = robot.getDrivetrain().getRobotHeading(AngleUnit.RADIANS); // heading of bot in radians
-
-        double rotX = x * Math.cos(-heading) - y * Math.sin(-heading); // Linear transformations yay
-        double rotY = x * Math.sin(-heading) + y * Math.cos(-heading);
-
-        double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1); // we like our drivers to have more control
-        double frWheelPower = (rotY - rotX - rx) / denominator;
-        double flWheelPower = (rotY + rotX + rx) / denominator;
-        double brWheelPower = (rotY + rotX - rx) / denominator;
-        double blWheelPower = (rotY - rotX + rx) / denominator;
-
-        robot.getDrivetrain().setWheelPowers(flWheelPower, frWheelPower, brWheelPower, blWheelPower);
+        robot.getDrivetrain().setWheelPowers(leftPower, rightPower, rightPower, leftPower);
     }
 }

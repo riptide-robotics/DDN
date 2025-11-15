@@ -1,5 +1,11 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
+import static org.firstinspires.ftc.teamcode.riptideUtil.FORWARD_KD;
+import static org.firstinspires.ftc.teamcode.riptideUtil.TURN_KD;
+import static org.firstinspires.ftc.teamcode.riptideUtil.TURN_KI;
+import static org.firstinspires.ftc.teamcode.riptideUtil.TURN_KP;
+import static org.firstinspires.ftc.teamcode.riptideUtil.FORWARD_KI;
+import static org.firstinspires.ftc.teamcode.riptideUtil.FORWARD_KP;
 import static java.lang.Thread.sleep;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -10,7 +16,9 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
+import org.firstinspires.ftc.teamcode.Modules.Utils.GoBildaPinpointDriver;
 
 // ----- READY TO TRANSFER ----- //
 
@@ -24,19 +32,21 @@ public class Drivetrain {
 
     // -------- DRIVETRAIN MOTORS -------- //
     private final DcMotor frWheel, flWheel, brWheel, blWheel;
+    private final GoBildaPinpointDriver pinpoint;
     private final IMU imu;
     private ElapsedTime timer;
 
     private final OdometryLocalizer robotPos;
+    private final double xOdoOffsetInInches = 0;
+    private final double yOdoOffsetInInches = 0;
 
-    private PIDController headingPID;
-    private final double kp = 0, ki = 0, kd = 0;
-    private double goal = 0;
-    private double initHeading = 0;
-    private double currHeading = 0;
+    // -------- AUTONOMOUS CONTROLLERS -------- //
+
+    private final PIDController headingController = new PIDController(TURN_KP, TURN_KI, TURN_KD);
+    private final PIDController forwardController = new PIDController(FORWARD_KP, FORWARD_KI, FORWARD_KD);
 
 
-    ///////////////////////////////////////////////
+    //////////////////////////////////////////////
     ////                                     /////
     ////              FUNCTIONS              /////
     ////                                     /////
@@ -70,9 +80,12 @@ public class Drivetrain {
         flWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         blWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        robotPos = new OdometryLocalizer(blWheel, brWheel, flWheel, 10);
+        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class,"odo");
+        pinpoint.setOffsets(xOdoOffsetInInches, yOdoOffsetInInches, DistanceUnit.INCH);
+        pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+        pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
 
-        headingPID = new PIDController(kp, ki, kd);
+        robotPos = new OdometryLocalizer(pinpoint, 10);
 
         imu = hardwareMap.get(IMU.class, "imu");
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
@@ -116,18 +129,5 @@ public class Drivetrain {
 
     public double getRobotHeading(AngleUnit unit) {
         return imu.getRobotYawPitchRollAngles().getYaw(unit); // heading of bot in radians
-    }
-
-    public double getPIDAngle(double angle) {
-        return headingPID.calculate(0, angle);
-    }
-
-    public double alignToGoal() {
-        double goalHeading = initHeading + goal;
-        double error = goalHeading - getRobotHeading((AngleUnit.DEGREES));
-
-        if (Math.abs(error) > 180) {error -= Math.signum(error) * 360;}
-
-        return getPIDAngle(error);
     }
 }

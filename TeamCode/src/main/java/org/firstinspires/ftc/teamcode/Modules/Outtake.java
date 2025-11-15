@@ -1,26 +1,30 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
-import static org.firstinspires.ftc.teamcode.riptideUtil.DEADZONE;
-import static org.firstinspires.ftc.teamcode.riptideUtil.DEGREES_TO_TICKS;
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad1;
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 import static org.firstinspires.ftc.teamcode.riptideUtil.KPBottom;
 import static org.firstinspires.ftc.teamcode.riptideUtil.KPTop;
-import static org.firstinspires.ftc.teamcode.riptideUtil.TICKS_TO_DEGREES;
 import static org.firstinspires.ftc.teamcode.riptideUtil.TOP_FLYWHEEL_KP;
 import static org.firstinspires.ftc.teamcode.riptideUtil.BOTTOM_FLYWHEEL_KP;
-import static org.firstinspires.ftc.teamcode.riptideUtil.TURNTABLE_KD;
-import static org.firstinspires.ftc.teamcode.riptideUtil.TURNTABLE_KI;
-import static org.firstinspires.ftc.teamcode.riptideUtil.TURNTABLE_KP;
 import static org.firstinspires.ftc.teamcode.riptideUtil.angularVelocity;
 import static org.firstinspires.ftc.teamcode.riptideUtil.econserved;
 import static org.firstinspires.ftc.teamcode.riptideUtil.tolerance;
 
+import android.annotation.SuppressLint;
+
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Modules.PIDController;
+import org.firstinspires.ftc.teamcode.Tuning.OuttakePIDTuner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class Outtake {
@@ -32,15 +36,7 @@ public class Outtake {
 
     private boolean updatePID = false;
 
-    // turntable vars
-    private final DcMotor turntable;
 
-    private final PIDController turntablePid = new PIDController(TURNTABLE_KP, TURNTABLE_KI, TURNTABLE_KD);
-
-    private double turntableAbsoluteAngle;
-    private double turntableGoalAngle;
-    private double turntablePrevGoalAngle;
-    private double turntableGoalTicks;
 
     // OUTTAKE TUNER THINGS
     LinkedList<Double> topRecords = new LinkedList<>();
@@ -62,7 +58,6 @@ public class Outtake {
 
         tele.addData("goalRPMTop", rpmTop);
         tele.addData("goalRPMBottom", rpmBottom);
-        tele.update();
         if (rpmTopPrev != rpmTop) {
             rpmTopPrev = rpmTop;
             RPMControllerTop = new PIDController(KPTop, 0, 0);
@@ -72,7 +67,6 @@ public class Outtake {
             rpmBottomPrev = rpmBottom;
             RPMControllerBottom = new PIDController(KPBottom, 0, 0);
         }
-        tele.update();
     }
 
     private boolean atGoalSpeed = false;
@@ -120,8 +114,8 @@ public class Outtake {
             averageBottom = currRPMBottom;
         }
 
-        //double averageTop = topRecords.size() >= queueSize ? (topRecords.get(0)+topRecords.get(1)+topRecords.get(2)+topRecords.get(3)+topRecords.get(4))/5 : currRPMTop;
-        //double averageBottom = bottomRecords.size() >= queueSize ? (bottomRecords.get(0)+bottomRecords.get(1)+bottomRecords.get(2)+bottomRecords.get(3)+bottomRecords.get(4))/5 : currRPMBottom;
+//        averageTop = topRecords.size() >= queueSize ? (topRecords.get(0)+topRecords.get(1)+topRecords.get(2)+topRecords.get(3)+topRecords.get(4))/5 : currRPMTop;
+//        averageBottom = bottomRecords.size() >= queueSize ? (bottomRecords.get(0)+bottomRecords.get(1)+bottomRecords.get(2)+bottomRecords.get(3)+bottomRecords.get(4))/5 : currRPMBottom;
 
         telemetry.addData("ready", bottomRecords.size() >= queueSize);
         telemetry.addData("top", averageTop);
@@ -137,7 +131,6 @@ public class Outtake {
         telemetry.addData("top", averageTop);
         telemetry.addData("bottom", averageBottom);
 
-
         boolean atTopRPM = Math.abs(averageTop - rpmTop) <= tolerance;
         boolean atBotRPM = Math.abs(averageBottom - rpmBottom) <= tolerance;
         atGoalSpeed = atTopRPM && atBotRPM;
@@ -150,13 +143,6 @@ public class Outtake {
 
         topFlywheel.setDirection(DcMotorSimple.Direction.REVERSE);
         bottomFlywheel.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        turntable = hardwareMap.dcMotor.get("turntable");
-        turntable.setDirection(DcMotor.Direction.FORWARD);
-        turntable.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        turntable.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        turntable.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        turntablePid.setDeadZone(DEADZONE);
     }
 
     public void start(double speed){
@@ -200,28 +186,40 @@ public class Outtake {
     }
 
 
-    public void setPowerOnDist(double dist /* INCHES */, boolean run, Telemetry tele){
+    @SuppressLint("DefaultLocale")
+    public void setPowerOnDist(Double dist /* INCHES */, boolean run, Telemetry tele) {
+
+
         double rBottom = 1.41732; // INCHES
         double rTop = 1.41732; // INCHES
-        double angle = Math.toRadians(30);
-        double height = (23 /* height of artifact in outtake */- rBottom - Math.cos(angle) * (rBottom + 2.4 * Math.sqrt(2) - 1));
+        double angle = Math.toRadians(75);
+        double y = 25 - rBottom;
+
+        double term = dist * Math.tan(angle) - y;
+        if (term <= 0) {
+            tele.addData("term", term);
+            pidtunedmotor(0, 0, tele);
+            return;
+        }
+
+        double numerator = 9.8 * 39.3701 * dist * dist;
+        double denominator = 2 * Math.pow(Math.cos(angle), 2) * term;
+
+        double ballVelocity = Math.sqrt(numerator / denominator);
 
         double rpmTop;
         double rpmBottom;
 
-        double numerator = (9.8 * 39.3701 /* meters per second to inches per second*/) * Math.pow(dist, 2);
-        double denominator = 2 * Math.pow(Math.cos(angle), 2) * (dist * Math.tan(angle) - height);
-
-        double ballVelocity = Math.sqrt(numerator / denominator);
-
         if (run) {
             rpmTop = ((ballVelocity * 60) / (2 * Math.PI * rTop)) * econserved - (angularVelocity * 30 / Math.PI) * econserved;
             rpmBottom = ((ballVelocity * 60) / (2 * Math.PI * rBottom)) * econserved - (angularVelocity * 30 / Math.PI) * econserved;
+        } else {
+            rpmTop = 0;
+            rpmBottom = 0;
         }
-        else {rpmTop = 0; rpmBottom = 0;}
         pidtunedmotor(rpmTop, rpmBottom, tele);
-        tele.addData("Calculated rpm top: ", rpmTop);
-        tele.addData("Calculated rpm bottom: ", rpmBottom);
+        tele.addLine(String.format("Calculated rpm top: %f", rpmTop));
+        tele.addLine(String.format("Calculated rpm bottom: %f", rpmBottom));
     }
 
     private double rpmTopGoal;
@@ -230,29 +228,4 @@ public class Outtake {
     public void setOuttakeRPM (double rpmTop, double rpmBottom){rpmTopGoal = rpmTop; rpmBottomGoal = rpmBottom;}
     public void runOuttakePID(Telemetry tele){pidtunedmotor(rpmTopGoal, rpmBottomGoal, tele);}
 
-    // turntable stuff
-    public void setTurntableGoalAngle (double goalAngle) {
-        turntableGoalAngle = goalAngle;
-    }
-
-    public void setGoalWithError (double error) {
-        double turntableAngle = turntable.getCurrentPosition() * TICKS_TO_DEGREES;
-        if (error + turntableAngle < 0) {
-            turntableAbsoluteAngle = error + turntableAngle + 360;
-        }
-    }
-
-    public ElapsedTime turntableTime= new ElapsedTime();
-    public void turntableGoToAngle() {
-        if(turntablePrevGoalAngle != (turntableGoalAngle * 3)) {
-            turntableTime.reset();
-            turntablePrevGoalAngle = (turntableGoalAngle * 3);
-        }
-        turntablePid.setPID(TURNTABLE_KP, TURNTABLE_KI, TURNTABLE_KD);
-
-        turntableGoalTicks = (turntableGoalAngle * 3) * DEGREES_TO_TICKS;
-
-        double currPosTicks = turntable.getCurrentPosition();
-        turntable.setPower(turntablePid.calculate(currPosTicks, turntableGoalTicks));
-    }
 }

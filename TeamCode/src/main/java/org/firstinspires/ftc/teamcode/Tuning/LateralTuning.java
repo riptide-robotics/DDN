@@ -6,8 +6,8 @@ import static org.firstinspires.ftc.teamcode.riptideUtil.LAT_KP;
 import static org.firstinspires.ftc.teamcode.riptideUtil.MAX_A;
 import static org.firstinspires.ftc.teamcode.riptideUtil.MAX_V;
 import static org.firstinspires.ftc.teamcode.riptideUtil.TURN_KP;
-import static org.firstinspires.ftc.teamcode.riptideUtil.VERT_KD;
-import static org.firstinspires.ftc.teamcode.riptideUtil.VERT_KP;
+import static org.firstinspires.ftc.teamcode.riptideUtil.FORWARD_KD;
+import static org.firstinspires.ftc.teamcode.riptideUtil.FORWARD_KP;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -166,7 +166,7 @@ public class LateralTuning extends LinearOpMode {
         p.put("exp y", expY);
 
         turnPid.setPID(TURN_KP, riptideUtil.TURN_KI, riptideUtil.TURN_KD);
-        vertPid.setPID(VERT_KP, riptideUtil.VERT_KI, VERT_KD);
+        vertPid.setPID(FORWARD_KP, riptideUtil.FORWARD_KI, FORWARD_KD);
         latPid.setPID(LAT_KP, LAT_KI, LAT_KD);
 
         double turnPower = turnPid.calculate(0, turnError);
