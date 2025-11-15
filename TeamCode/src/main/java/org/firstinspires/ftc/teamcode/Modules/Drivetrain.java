@@ -103,6 +103,11 @@ public class Drivetrain {
         imu.resetYaw();
     }
 
+    public void PIDToPoint() {
+        throw new UnsupportedOperationException("PIDToPoint not supported!");
+
+    }
+
     // ------------ SETTERS ------------ //
 
 
