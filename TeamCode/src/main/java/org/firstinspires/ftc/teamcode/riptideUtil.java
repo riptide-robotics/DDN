@@ -11,7 +11,7 @@ public class riptideUtil {
     /**
      * Table of contents:
      * 1. General constants (things that are used gneerally, not specific locations)
-     * 3. Autonomous Constants
+     * 2. Autonomous Constants
      */
 
     /** General constants */
@@ -35,6 +35,15 @@ public class riptideUtil {
 
     public static double TOP_FLYWHEEL_KP = 0.001;
     public static double BOTTOM_FLYWHEEL_KP = 0.001;
+
+    // Turntable
+    public static final double TICKS_TO_DEGREES = 360/751.8;
+    public static final double DEGREES_TO_TICKS = 751.8/360;
+    public static final double DEADZONE = 3;
+
+    public static final double TURNTABLE_KP = 0.002;
+    public static final double TURNTABLE_KI = 0.003;
+    public static final double TURNTABLE_KD = 0.00005;
 
     /** Autonomous Constants */
     public static final double POINT_TOLERANCE = 2; // UNDETERMINED

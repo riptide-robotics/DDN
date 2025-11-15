@@ -73,6 +73,8 @@ public class Camera extends OpenCvPipeline {
     String goalTag;
     CameraName cameraname;
 
+    AprilTagDetection redGoal, blueGoal;
+
     public Camera(double v, double v1, double v2, double v3, double v4) {
     }
 
@@ -237,6 +239,16 @@ public class Camera extends OpenCvPipeline {
                 Math.pow(tag.robotPose.getPosition().y, 2) *
                 Math.pow(tag.robotPose.getPosition().z, 2);
     }
+    public double getDistanceToRedGoal() {
+        return Math.pow(redGoal.robotPose.getPosition().x, 2) *
+                Math.pow(redGoal.robotPose.getPosition().y, 2) *
+                Math.pow(redGoal.robotPose.getPosition().z, 2);
+    }
+    public double getDistanceToBlueGoal() {
+        return Math.pow(blueGoal.robotPose.getPosition().x, 2) *
+                Math.pow(blueGoal.robotPose.getPosition().y, 2) *
+                Math.pow(blueGoal.robotPose.getPosition().z, 2);
+    }
 
     public double getTagHorizontalAngle(AprilTagDetection tag) {
         /*
@@ -250,6 +262,16 @@ public class Camera extends OpenCvPipeline {
         double horizontal_angle = delta_x * riptideUtil.CAM_FOV / riptideUtil.CAMERA_WIDTH;
 
         //the angle of the april tag relative to the camera
+        return horizontal_angle;
+    }
+    public double getAngleToRedGoal() {
+        double delta_x = (double) riptideUtil.CAMERA_WIDTH / 2 - redGoal.center.x;
+        double horizontal_angle = delta_x * riptideUtil.CAM_FOV / riptideUtil.CAMERA_WIDTH;
+        return horizontal_angle;
+    }
+    public double getAngleToBlueGoal() {
+        double delta_x = (double) riptideUtil.CAMERA_WIDTH / 2 - blueGoal.center.x;
+        double horizontal_angle = delta_x * riptideUtil.CAM_FOV / riptideUtil.CAMERA_WIDTH;
         return horizontal_angle;
     }
 

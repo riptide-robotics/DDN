@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.Robot;
 
 @Config
 @TeleOp(name = "Meet 2 FSM Automatic")
-public class Meet2FSM extends LinearOpMode {
+public class  Meet2FSM extends LinearOpMode {
     //HardwareMap hardwareMap;
     Robot robot;
     AutonomousRobot autoRobot;

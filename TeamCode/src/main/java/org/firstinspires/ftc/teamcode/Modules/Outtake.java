@@ -1,28 +1,26 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad1;
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+import static org.firstinspires.ftc.teamcode.riptideUtil.DEADZONE;
+import static org.firstinspires.ftc.teamcode.riptideUtil.DEGREES_TO_TICKS;
 import static org.firstinspires.ftc.teamcode.riptideUtil.KPBottom;
 import static org.firstinspires.ftc.teamcode.riptideUtil.KPTop;
+import static org.firstinspires.ftc.teamcode.riptideUtil.TICKS_TO_DEGREES;
 import static org.firstinspires.ftc.teamcode.riptideUtil.TOP_FLYWHEEL_KP;
 import static org.firstinspires.ftc.teamcode.riptideUtil.BOTTOM_FLYWHEEL_KP;
+import static org.firstinspires.ftc.teamcode.riptideUtil.TURNTABLE_KD;
+import static org.firstinspires.ftc.teamcode.riptideUtil.TURNTABLE_KI;
+import static org.firstinspires.ftc.teamcode.riptideUtil.TURNTABLE_KP;
 import static org.firstinspires.ftc.teamcode.riptideUtil.angularVelocity;
 import static org.firstinspires.ftc.teamcode.riptideUtil.econserved;
 import static org.firstinspires.ftc.teamcode.riptideUtil.tolerance;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Modules.PIDController;
-import org.firstinspires.ftc.teamcode.Tuning.OuttakePIDTuner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class Outtake {
@@ -34,7 +32,15 @@ public class Outtake {
 
     private boolean updatePID = false;
 
+    // turntable vars
+    private final DcMotor turntable;
 
+    private final PIDController turntablePid = new PIDController(TURNTABLE_KP, TURNTABLE_KI, TURNTABLE_KD);
+
+    private double turntableAbsoluteAngle;
+    private double turntableGoalAngle;
+    private double turntablePrevGoalAngle;
+    private double turntableGoalTicks;
 
     // OUTTAKE TUNER THINGS
     LinkedList<Double> topRecords = new LinkedList<>();
@@ -144,6 +150,13 @@ public class Outtake {
 
         topFlywheel.setDirection(DcMotorSimple.Direction.REVERSE);
         bottomFlywheel.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        turntable = hardwareMap.dcMotor.get("turntable");
+        turntable.setDirection(DcMotor.Direction.FORWARD);
+        turntable.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        turntable.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        turntable.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        turntablePid.setDeadZone(DEADZONE);
     }
 
     public void start(double speed){
@@ -216,4 +229,30 @@ public class Outtake {
 
     public void setOuttakeRPM (double rpmTop, double rpmBottom){rpmTopGoal = rpmTop; rpmBottomGoal = rpmBottom;}
     public void runOuttakePID(Telemetry tele){pidtunedmotor(rpmTopGoal, rpmBottomGoal, tele);}
+
+    // turntable stuff
+    public void setTurntableGoalAngle (double goalAngle) {
+        turntableGoalAngle = goalAngle;
+    }
+
+    public void setGoalWithError (double error) {
+        double turntableAngle = turntable.getCurrentPosition() * TICKS_TO_DEGREES;
+        if (error + turntableAngle < 0) {
+            turntableAbsoluteAngle = error + turntableAngle + 360;
+        }
+    }
+
+    public ElapsedTime turntableTime= new ElapsedTime();
+    public void turntableGoToAngle() {
+        if(turntablePrevGoalAngle != (turntableGoalAngle * 3)) {
+            turntableTime.reset();
+            turntablePrevGoalAngle = (turntableGoalAngle * 3);
+        }
+        turntablePid.setPID(TURNTABLE_KP, TURNTABLE_KI, TURNTABLE_KD);
+
+        turntableGoalTicks = (turntableGoalAngle * 3) * DEGREES_TO_TICKS;
+
+        double currPosTicks = turntable.getCurrentPosition();
+        turntable.setPower(turntablePid.calculate(currPosTicks, turntableGoalTicks));
+    }
 }
