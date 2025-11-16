@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.Modules.Camera;
 import org.firstinspires.ftc.teamcode.Modules.PIDController;
 import org.firstinspires.ftc.teamcode.Robot;
 
@@ -40,6 +41,9 @@ public class HeadingPIDTuner extends LinearOpMode {
          */
         robot = new Robot(hardwareMap);
 
+        Camera.processors_enabled processor = Camera.processors_enabled.ALL;
+        robot.getCamera().setPipeline(processor);
+
         telemetry.addData("Robot status", "successfully initiated");
         telemetry.update();
 
@@ -67,7 +71,7 @@ public class HeadingPIDTuner extends LinearOpMode {
     public double getTurnValue() {
         double currAngle = getCurrentAngle();
 
-        double error =prevGoal - currAngle;
+        double error =robot.getCamera().getGoalAngleError();
 
         if (Math.abs(error) > 180) {error += Math.signum(error) * 360;}
 

@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
-import java.util.Queue;
 
 @Config
 @TeleOp(name = "OuttakeTuner",group = "Tuning")
@@ -75,7 +74,6 @@ public class OuttakePIDTuner extends LinearOpMode {
                 rpmBottomPrev = rpmBottom;
                 RPMControllerBottom = new PIDController(KPBottom, 0, 0);
             }
-            robot.getIntake().transfer(-1);
             robot.getIntake().spin(-1);
         }
     }
