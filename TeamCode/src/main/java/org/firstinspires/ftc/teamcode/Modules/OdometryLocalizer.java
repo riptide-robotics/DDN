@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Modules;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
 import org.firstinspires.ftc.teamcode.Modules.Utils.GoBildaPinpointDriver;
 
@@ -33,6 +34,7 @@ public class OdometryLocalizer implements Runnable {
 
     public void start(){
         pinpoint.resetPosAndIMU();
+        pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 90));
         currTime = System.nanoTime()/1e6;
     }
 

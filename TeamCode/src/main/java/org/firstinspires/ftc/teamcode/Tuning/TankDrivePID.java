@@ -8,7 +8,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Modules.PIDController;
+import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
 import org.firstinspires.ftc.teamcode.Robot;
 
 
@@ -54,6 +56,7 @@ public class TankDrivePID extends LinearOpMode {
             if (goal != VerticalDistanceInInches) {
                 goal = VerticalDistanceInInches;
                 vertController.setPID(kp, ki, kd);
+                vertController.reset();
             }
 
             t.update();
@@ -61,16 +64,18 @@ public class TankDrivePID extends LinearOpMode {
             double power = setWheelPower(t);
 
             robot.getDrivetrain().setWheelPowers(power, power, power, power);
-
-
         }
 
 
     }
 
     private double setWheelPower(Telemetry t) {
-        
-        return 1;
+        EditablePose2D currPos = robot.getDrivetrain().getCurrPos();
+        //find y position
+        double currY = currPos.getY(DistanceUnit.INCH);
+        t.addData("Goal", goal);
+        t.addData("Current Y", currY);
+        return vertController.calculate(currY, goal);
 
     }
 }
