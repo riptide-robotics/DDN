@@ -5,6 +5,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
 import org.firstinspires.ftc.teamcode.Modules.Utils.GoBildaPinpointDriver;
+import org.firstinspires.ftc.teamcode.riptideUtil;
 
 /**
  * For three-wheel code, refer back to the Meet2 repo for the Into the Deep Season
@@ -34,7 +35,7 @@ public class OdometryLocalizer implements Runnable {
 
     public void start(){
         pinpoint.resetPosAndIMU();
-        pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 90));
+        pinpoint.setPosition(riptideUtil.START_POSITION);
         currTime = System.nanoTime()/1e6;
     }
 
