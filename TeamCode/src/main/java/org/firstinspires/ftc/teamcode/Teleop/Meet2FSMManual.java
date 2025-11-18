@@ -1,263 +1,266 @@
-package org.firstinspires.ftc.teamcode.Teleop;
+    package org.firstinspires.ftc.teamcode.Teleop;
 
-import static org.firstinspires.ftc.teamcode.riptideUtil.LONG_DIST_BOT;
-import static org.firstinspires.ftc.teamcode.riptideUtil.LONG_DIST_TOP;
-import static org.firstinspires.ftc.teamcode.riptideUtil.MID_DIST_BOT;
-import static org.firstinspires.ftc.teamcode.riptideUtil.MID_DIST_TOP;
-import static org.firstinspires.ftc.teamcode.riptideUtil.SHORT_DIST_BOT;
-import static org.firstinspires.ftc.teamcode.riptideUtil.SHORT_DIST_TOP;
-import static org.firstinspires.ftc.teamcode.riptideUtil.SPINDEX_ARM_UP;
+    import static org.firstinspires.ftc.teamcode.riptideUtil.MID_DIST_BOT;
+    import static org.firstinspires.ftc.teamcode.riptideUtil.MID_DIST_TOP;
+    import static org.firstinspires.ftc.teamcode.riptideUtil.SLOT_ONE_PIKCUP_POS;
+    import static org.firstinspires.ftc.teamcode.riptideUtil.SLOT_ONE_SHOOT_POS;
+    import static org.firstinspires.ftc.teamcode.riptideUtil.SLOT_THREE_PIKCUP_POS;
+    import static org.firstinspires.ftc.teamcode.riptideUtil.SLOT_THREE_SHOOT_POS;
+    import static org.firstinspires.ftc.teamcode.riptideUtil.SLOT_TWO_PIKCUP_POS;
+    import static org.firstinspires.ftc.teamcode.riptideUtil.SLOT_TWO_SHOOT_POS;
+    import static org.firstinspires.ftc.teamcode.riptideUtil.SPINDEX_ARM_RESTING;
+    import static org.firstinspires.ftc.teamcode.riptideUtil.SPINDEX_ARM_UP;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.ElapsedTime;
+    import com.acmerobotics.dashboard.FtcDashboard;
+    import com.acmerobotics.dashboard.config.Config;
+    import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+    import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+    import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+    import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.Autonomous.AutonomousRobot;
-import org.firstinspires.ftc.teamcode.Robot;
-
-
-@Config
-@TeleOp(name = "Meet 2 FSM Manual")
-public class Meet2FSMManual extends LinearOpMode {
-    //HardwareMap hardwareMap;
-    Robot robot;
-    AutonomousRobot autoRobot;
-
-    boolean hasrun = false;
-    boolean updateTime = false;
-    boolean reset = false;
-    boolean align = false;
-
-    ElapsedTime endTimer = new ElapsedTime();
-
-    boolean runOuttake = false;
-
-    public static double currentTopRPMGoal;
-    public static double currentBottomRPMGoal;
-
-    boolean didRumble = false;
+    import org.firstinspires.ftc.robotcore.external.Telemetry;
+    import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+    import org.firstinspires.ftc.teamcode.Robot;
 
 
-    // DEBOUNCE
-    boolean rightBumperPressedG2 = false;
-    boolean backPressedG2 = false;
-    boolean leftBumperPressedG2 = false;
-    boolean leftTriggerPressedG2 = false;
-    boolean xPressedG2 = false;
-    boolean rightPressedG2 = false;
+    @Config
+    @TeleOp(name = "Meet 2 FSM Manual")
+    public class Meet2FSMManual extends LinearOpMode {
+        //HardwareMap hardwareMap;
+        Robot robot;
 
-    Telemetry tele = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        boolean hasrun = false;
+        boolean updateTime = false;
+        boolean reset = false;
+        boolean align = false;
 
-    public enum states{
-        TELEOP,
-        ENDGAME
-    }
+        ElapsedTime endTimer = new ElapsedTime();
 
-    public states currentState = states.TELEOP;
+        boolean runOuttake = false;
 
-    @Override
-    public void runOpMode() throws InterruptedException {
+        public static double currentTopRPMGoal;
+        public static double currentBottomRPMGoal;
 
-        hasrun = false;
+        public static double spindexPosIntake = 1;
+        public static double spindexPosOuttake = -1;
 
-        robot = new Robot(hardwareMap);
+        public static double delay = 750; // IN MS
 
-        telemetry.addData("Robot status:", "succesfully initiated");
-        telemetry.update();
+        ElapsedTime timer;
 
-        currentTopRPMGoal = 0;
-        currentBottomRPMGoal = 0;
+        boolean didRumble = false;
 
-        waitForStart();
-        if (isStopRequested()) return;
-        endTimer.reset();
-        endTimer.startTime();
-        telemetry.clear();
-        telemetry.addData("Robot status", "Started!");
-        telemetry.update();
 
-        robot.getOuttake().startFlywheel();
+        // DEBOUNCE
+        boolean rightBumperPressedG2 = false;
+        boolean backPressedG2 = false;
+        boolean leftBumperPressedG2 = false;
+        boolean leftTriggerPressedG2 = false;
+        boolean xPressedG2 = false;
+        boolean rightPressedG2 = false;
+        boolean yPressedG2 = false;
 
-        while(opModeIsActive()){
+        Telemetry tele = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-            FSM();
-            tankDrive();
+        public enum states{
+            TELEOP,
+            ENDGAME
+        }
 
-            //telemetry.addData("Angle: ", robot.getDrivetrain().getRobotHeading(AngleUnit.DEGREES));
-//
-//            if (updateTime){
-//                robot.getOuttake().startFlywheel();
-//            }
-            robot.getOuttake().runOuttakePID(currentTopRPMGoal, currentBottomRPMGoal, tele);
+        public static double spindexPos = 0;
+        public states currentState = states.TELEOP;
 
-            double currTime = endTimer.seconds();
+        @Override
+        public void runOpMode() throws InterruptedException {
 
-            if (currTime >= 80 && !didRumble){gamepad1.rumble(1, 1, 500); gamepad2.rumble(1, 1, 500);}
-            if (currTime >= 82) {didRumble = true;}
-            telemetry.addData("Current State:", currentState);
+            hasrun = false;
+
+            robot = new Robot(hardwareMap);
+
+            telemetry.addData("Robot status:", "succesfully initiated");
             telemetry.update();
+
+            robot.getIntake().slotOneOuttake();
+
+            currentTopRPMGoal = 0;
+            currentBottomRPMGoal = 0;
+            spindexPos = 0;
+            timer = new ElapsedTime();
+
+            waitForStart();
+            if (isStopRequested()) return;
+            endTimer.reset();
+            endTimer.startTime();
+            telemetry.clear();
+            telemetry.addData("Robot status", "Started!");
+            telemetry.update();
+
+            robot.getOuttake().startFlywheel();
+
+            while(opModeIsActive()){
+
+                FSM();
+                tankDrive();
+                //cycleSlots();
+
+                //telemetry.addData("Angle: ", robot.getDrivetrain().getRobotHeading(AngleUnit.DEGREES));
+    //
+    //            if (updateTime){
+    //                robot.getOuttake().startFlywheel();
+    //            }
+                robot.getOuttake().runOuttakePID(currentTopRPMGoal, currentBottomRPMGoal, tele);
+
+                double currTime = endTimer.seconds();
+
+                if (currTime >= 80 && !didRumble){gamepad1.rumble(1, 1, 500); gamepad2.rumble(1, 1, 500);}
+                if (currTime >= 82) {didRumble = true;}
+                tele.update();
+            }
+        }
+
+
+        private void FSM(){
+            switch(currentState) {
+                case TELEOP:
+                    if (!hasrun) {
+                        // do teleop setup
+                    }
+
+                    // INTAKE
+                    if (gamepad2.right_trigger >= 0.1) {
+                        robot.getIntake().spin(0.6);
+                    } else if (gamepad2.back) {
+                        robot.getIntake().spin(-0.6);
+                    } else {
+                        robot.getIntake().spin(0);
+                    }
+
+                    cycleSlots();
+                    activateBootKicker();
+
+                    // ENDGAME
+    //                if (gamepad2.dpad_up){
+    //                    currentState = states.ENDGAME;
+    //                    hasrun = false;
+    //                }
+
+                    break;
+                case ENDGAME:
+                    if (!hasrun){
+                        robot.getEndgameServos().lift();
+                        hasrun = true;
+                    }
+
+                    if (gamepad2.dpad_down){
+                        robot.getEndgameServos().lower();
+                    }
+
+                    if (gamepad2.dpad_up){
+                        hasrun = false;
+                    }
+
+                    if (gamepad2.b){
+                        currentState = states.TELEOP;
+                        robot.getEndgameServos().lower();
+                        hasrun = false;
+                    }
+
+                    break;
+            }
+            if (!gamepad2.dpad_right){rightPressedG2 = false;}
+            if (!gamepad2.right_bumper){rightBumperPressedG2 = false;}
+            if (!gamepad2.left_bumper){leftBumperPressedG2 = false;}
+            if (!(gamepad2.left_trigger > 0.1)){leftTriggerPressedG2 = false;}
+            if (!gamepad2.x){xPressedG2 = false;}
+            if (!gamepad2.y){yPressedG2 = false;}
+            if (!gamepad2.back){backPressedG2 = false;}
+        }
+
+        private void fieldCentricDrive() {
+            double slowdown = gamepad1.right_trigger > 0 ? 0.25 : 1;
+            double y = -gamepad1.left_stick_y * slowdown;
+            double x = gamepad1.left_stick_x * 1.1 * slowdown;
+            double rx = gamepad1.right_stick_x * slowdown;
+
+            double heading = robot.getDrivetrain().getRobotHeading(AngleUnit.RADIANS);
+
+            double rotX = x * Math.cos(-heading) - y * Math.sin(-heading);
+            double rotY = x * Math.sin(-heading) + y * Math.cos(-heading);
+
+            double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
+            double frWheelPower = (rotY - rotX - rx) / denominator;
+            double flWheelPower = (rotY + rotX + rx) / denominator;
+            double brWheelPower = (rotY + rotX - rx) / denominator;
+            double blWheelPower = (rotY - rotX + rx) / denominator;
+
+            robot.getDrivetrain().setWheelPowers(flWheelPower, frWheelPower, brWheelPower, blWheelPower);
+
+            if (gamepad1.y) {
+                robot.getDrivetrain().resetImu();
+            }
+        }
+
+        public void tankDrive() {
+            double slowdown = gamepad1.right_trigger > 0 ? 0.25 : 1;
+            robot.getDrivetrain().setWheelPowers(
+                    -gamepad1.left_stick_y * slowdown,
+                    -gamepad1.right_stick_y * slowdown,
+                    -gamepad1.right_stick_y * slowdown,
+                    -gamepad1.left_stick_y * slowdown
+            );
+        }
+
+        public void cycleSlots(){
+            // cycle when button pressed
+            if (gamepad2.y && !yPressedG2){
+                if (spindexPosIntake == -1) {spindexPosIntake = 1;}
+                else if (spindexPosIntake == 1) {spindexPosIntake = 2;}
+                else if (spindexPosIntake == 2) {spindexPosIntake = 3;}
+                else if (spindexPosIntake == 3) {spindexPosIntake = 1;}
+                currentTopRPMGoal = 0;
+                currentBottomRPMGoal = 0;
+                spindexPosOuttake = -1;
+                yPressedG2 = true;
+            }
+
+            if (gamepad2.x && !xPressedG2){
+                if (spindexPosOuttake == -1) {spindexPosOuttake = 1;}
+                else if (spindexPosOuttake == 1) {spindexPosOuttake = 2;}
+                else if (spindexPosOuttake == 2) {spindexPosOuttake = 3;}
+                else if (spindexPosOuttake == 3) {spindexPosOuttake = 1;}
+                currentTopRPMGoal = MID_DIST_TOP;
+                currentBottomRPMGoal = MID_DIST_BOT;
+                spindexPosIntake = -1;
+                xPressedG2 = true;
+            }
+
+            // set positions based on cycle
+            if (spindexPosIntake != -1) {
+                if (spindexPosIntake == 1) {spindexPos = SLOT_ONE_PIKCUP_POS;}
+                else if (spindexPosIntake == 2) {spindexPos = SLOT_TWO_PIKCUP_POS;}
+                else if (spindexPosIntake == 3) {spindexPos = SLOT_THREE_PIKCUP_POS;}
+
+            } else if (spindexPosOuttake != -1) {
+                if (spindexPosOuttake == 1) {spindexPos = SLOT_ONE_SHOOT_POS;}
+                else if (spindexPosOuttake == 2) {spindexPos = SLOT_TWO_SHOOT_POS;}
+                else if (spindexPosOuttake == 3) {spindexPos = SLOT_THREE_SHOOT_POS;}
+            }
+
+            robot.getIntake().spindexPos2to1Gear(spindexPos);
+        }
+
+        public void activateBootKicker(){
+            if (robot.getIntake().spindexCurrentPosition() == SLOT_ONE_SHOOT_POS || robot.getIntake().spindexCurrentPosition() == SLOT_TWO_SHOOT_POS || robot.getIntake().spindexCurrentPosition() == SLOT_THREE_SHOOT_POS) {
+                if (gamepad2.a && robot.getOuttake().isAtGoalSpeed()) {
+                    robot.getIntake().BootKick(SPINDEX_ARM_UP);
+                    tele.addLine("Boot Kicker Up");
+                    timer.reset();
+                    timer.startTime();
+                }
+            }
+
+            if (robot.getIntake().bootKickCurrPos() == SPINDEX_ARM_UP) {
+                if (timer.milliseconds() >= delay) {robot.getIntake().BootKick(SPINDEX_ARM_RESTING);}
+            }
         }
     }
-
-
-    private void FSM(){
-        switch(currentState){
-            case TELEOP:
-                if (!hasrun){
-                    // do teleop setup
-                    robot.getIntake().spin(0);
-                    robot.getIntake().rotateSpindexOnce();
-                }
-
-//                if (gamepad1.x && !xPressedG2){/* align */ align = true; xPressedG2 = true;}
-//                 else if (gamepad1.x && !xPressedG2){align = false; xPressedG2 = true;}
-
-                // INTAKE
-                if (gamepad2.right_trigger >= 0.1){
-                    robot.getIntake().spin(-1);
-                } else if (gamepad2.back){robot.getIntake().spin(1);}
-                else {robot.getIntake().spin(0);}
-
-
-                // INTAKE TRANSFER
-                if (gamepad2.dpad_up && robot.getOuttake().isAtGoalSpeed()){robot.getIntake().rotateSpindexOnce(); robot.getIntake().openTransfer(SPINDEX_ARM_UP);}
-                else if (gamepad2.dpad_down){robot.getIntake().rotateSpindexOnce();}
-                else if (gamepad2.dpad_up && gamepad2.y){robot.getIntake().rotateSpindexOnce(); robot.getIntake().openTransfer(SPINDEX_ARM_UP);}
-                else {robot.getIntake().rotateSpindexOnce(); robot.getIntake().ResetBootKick(0);}
-
-
-//                if (gamepad2.dpad_right && !rightPressedG2 && !runOuttake){
-//                    currentTopRPMGoal = -1;
-//                    currentBottomRPMGoal = -1;
-//                    updateTime = true;
-//                    runOuttake = true;
-//                    rightPressedG2 = true;
-//                }
-
-                // OUTTAKE
-                if (gamepad2.left_trigger > 0.1 && !runOuttake && !leftTriggerPressedG2){
-                    //robot.getOuttake().setFlywheelSpeed(LONG_DIST_TOP, LONG_DIST_BOT /* Long Distance needs to be tuned*/);
-                    currentTopRPMGoal = LONG_DIST_TOP;
-                    currentBottomRPMGoal = LONG_DIST_BOT;
-                    updateTime = true;
-                    runOuttake = true;
-                    leftTriggerPressedG2 = true;
-                    telemetry.addData("Outtake Mode: ", "LONG");
-                } else if (gamepad2.left_bumper && !runOuttake && !leftBumperPressedG2) {
-                    //robot.getOuttake().setFlywheelSpeed(MID_DIST_TOP, MID_DIST_BOT /* Short Distance needs to be tuned*/);
-                    currentTopRPMGoal = MID_DIST_TOP;
-                    currentBottomRPMGoal = MID_DIST_BOT;
-                    updateTime = true;
-                    runOuttake = true;
-                    leftBumperPressedG2 = true;
-                    telemetry.addData("Outtake Mode: ", "MID");
-                } else if (gamepad2.x && !runOuttake && !xPressedG2) {
-                    //robot.getOuttake().setFlywheelSpeed(SHORT_DIST_TOP, SHORT_DIST_BOT /* Short Distance needs to be tuned*/);
-                    currentTopRPMGoal = SHORT_DIST_TOP;
-                    currentBottomRPMGoal = SHORT_DIST_BOT;
-                    updateTime = true;
-                    runOuttake = true;
-                    xPressedG2 = true;
-                    telemetry.addData("Outtake Mode: ", "SHORT");
-                }
-
-                if (gamepad2.left_trigger > 0.1 && runOuttake && !leftTriggerPressedG2){
-                    currentTopRPMGoal = 0;
-                    currentBottomRPMGoal = 0;
-                    updateTime = false;
-                    runOuttake = false;
-                    leftTriggerPressedG2 = true;
-                } else if (gamepad2.left_bumper && runOuttake && !leftBumperPressedG2) {
-                    currentTopRPMGoal = 0;
-                    currentBottomRPMGoal = 0;
-                    updateTime = false;
-                    runOuttake = false;
-                    leftBumperPressedG2 = true;
-                } else if (gamepad2.x && runOuttake && !xPressedG2) {
-                    currentTopRPMGoal = 0;
-                    currentBottomRPMGoal = 0;
-                    updateTime = false;
-                    runOuttake = false;
-                    xPressedG2 = true;
-                } // else if (gamepad2.dpad_right && runOuttake && !rightPressedG2) {currentTopRPMGoal = 0;
-////                    currentBottomRPMGoal = 0;
-//                    updateTime = false;
-//                    runOuttake = false;
-//                    rightPressedG2 = true;}
-
-                // ENDGAME
-//                if (gamepad2.dpad_up){
-//                    currentState = states.ENDGAME;
-//                    hasrun = false;
-//                }
-
-                break;
-            case ENDGAME:
-                if (!hasrun){
-                    robot.getEndgameServos().lift();
-                    hasrun = true;
-                }
-
-                if (gamepad2.dpad_down){
-                    robot.getEndgameServos().lower();
-                }
-
-                if (gamepad2.dpad_up){
-                    hasrun = false;
-                }
-
-                if (gamepad2.b){
-                    currentState = states.TELEOP;
-                    robot.getEndgameServos().lower();
-                    hasrun = false;
-                }
-
-
-        }
-        if (!gamepad2.dpad_right){rightPressedG2 = false;}
-        if (!gamepad2.right_bumper){rightBumperPressedG2 = false;}
-        if (!gamepad2.left_bumper){leftBumperPressedG2 = false;}
-        if (!(gamepad2.left_trigger > 0.1)){leftTriggerPressedG2 = false;}
-        if (!gamepad1.x){xPressedG2 = false;}
-        if (!gamepad2.back){backPressedG2 = false;}
-    }
-
-    private void fieldCentricDrive() {
-        double slowdown = gamepad1.right_trigger > 0 ? 0.25 : 1;
-        double y = -gamepad1.left_stick_y * slowdown;
-        double x = gamepad1.left_stick_x * 1.1 * slowdown;
-        double rx = gamepad1.right_stick_x * slowdown;
-
-        double heading = robot.getDrivetrain().getRobotHeading(AngleUnit.RADIANS);
-
-        double rotX = x * Math.cos(-heading) - y * Math.sin(-heading);
-        double rotY = x * Math.sin(-heading) + y * Math.cos(-heading);
-
-        double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
-        double frWheelPower = (rotY - rotX - rx) / denominator;
-        double flWheelPower = (rotY + rotX + rx) / denominator;
-        double brWheelPower = (rotY + rotX - rx) / denominator;
-        double blWheelPower = (rotY - rotX + rx) / denominator;
-
-        robot.getDrivetrain().setWheelPowers(flWheelPower, frWheelPower, brWheelPower, blWheelPower);
-
-        if (gamepad1.y) {
-            robot.getDrivetrain().resetImu();
-        }
-    }
-
-    public void tankDrive() {
-        double slowdown = gamepad1.right_trigger > 0 ? 0.25 : 1;
-        robot.getDrivetrain().setWheelPowers(
-                -gamepad1.left_stick_y * slowdown,
-                -gamepad1.right_stick_y * slowdown,
-                -gamepad1.right_stick_y * slowdown,
-                -gamepad1.left_stick_y * slowdown
-        );
-    }
-}

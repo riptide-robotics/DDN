@@ -13,6 +13,13 @@ import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_G_STDEV;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R_STDEV;
 import static org.firstinspires.ftc.teamcode.riptideUtil.ROTATE_SPINDEX_ONCE;
+import static org.firstinspires.ftc.teamcode.riptideUtil.SLOT_ONE_PIKCUP_POS;
+import static org.firstinspires.ftc.teamcode.riptideUtil.SLOT_ONE_SHOOT_POS;
+import static org.firstinspires.ftc.teamcode.riptideUtil.SLOT_THREE_PIKCUP_POS;
+import static org.firstinspires.ftc.teamcode.riptideUtil.SLOT_THREE_SHOOT_POS;
+import static org.firstinspires.ftc.teamcode.riptideUtil.SLOT_TWO_PIKCUP_POS;
+import static org.firstinspires.ftc.teamcode.riptideUtil.SLOT_TWO_SHOOT_POS;
+import static org.firstinspires.ftc.teamcode.riptideUtil.SPINDEX_ARM_RESTING;
 
 // Imports to sync
 
@@ -22,6 +29,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Intake{
     String[] order = new String[3];
@@ -159,14 +167,48 @@ public class Intake{
         order[0] = color;
     }
 
+    boolean moveSlotOneToPickup = false;
+    boolean moveSlotTwoToPickup = false;
+    boolean moveSlotThreeToPickup = true;
+
     public void BootKick(double pos){
         spindexArm.setPosition(pos);
+
     }
 
     public void ResetBootKick(double pos){
         spindexArm.setPosition(pos);
     }
 
+    public void slotOnePickup(){
+        spindexPos2to1Gear(SLOT_ONE_PIKCUP_POS);
+    }
+
+    public void slotTwoPickup(){
+        spindexPos2to1Gear(SLOT_TWO_PIKCUP_POS);
+    }
+
+    public void slotThreePickup(){
+        spindexPos2to1Gear(SLOT_THREE_PIKCUP_POS);
+    }
+
+    public void slotOneOuttake(){
+        spindexPos2to1Gear(SLOT_ONE_SHOOT_POS);
+    }
+    public void slotTwoOuttake(){
+        spindexPos2to1Gear(SLOT_TWO_SHOOT_POS);
+    }
+    public void slotThreeOuttake(){
+        spindexPos2to1Gear(SLOT_THREE_SHOOT_POS);
+    }
+
+    public double spindexCurrentPosition(){
+        return spindexServo.getPosition() * 810;
+    }
+
+    public double bootKickCurrPos(){
+        return spindexArm.getPosition();
+    }
 
     public void ejectArtifact(char colorReq){ // colorReq should b 'p' (purple) or 'g' (green)
         String tmp;
@@ -265,10 +307,12 @@ public class Intake{
     }
 
     // THIS IS PURELY FOR TUNING DELETE AFTER
-    public void spindexPos(double pos){
+    public void spindexPos2to1Gear(double pos){
         spindexServo.setPosition(fiveTurnToServo(pos));
     }
-
+    public void spindexPos(double pos){
+        spindexServo.setPosition(pos);
+    }
 //    public void transferToggle() {
 //        if (spindexServo.getPower() > 0) {
 //            spinSpindex(0);
@@ -294,8 +338,10 @@ public class Intake{
         return t;
     }
 
+
+
     public double fiveTurnToServo(double angle){
         //900 instead of 1800 because we using 2:1 gear ratio (180*5)
-        return angle <= 900 && angle >= 0 ? angle / 900 : angle > 900 ? 1 : 0;
+        return angle <= 810 && angle >= 0 ? angle / 810 : angle > 810 ? 1 : 0;
     }
 }

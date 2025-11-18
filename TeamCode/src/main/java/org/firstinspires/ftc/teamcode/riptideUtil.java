@@ -58,7 +58,7 @@ public class riptideUtil {
     public static double MAX_A = 72;                 // UNDETERMINED
     public static double MAX_V = 96;                 // UNDETERMINED
 
-<<<<<<< HEAD
+
     public static double LONG_DIST_TOP = 3250; // UNDETERMINED
     public static double LONG_DIST_BOT = 3730; // UNDETERMINED
 
@@ -68,10 +68,6 @@ public class riptideUtil {
     public static double SHORT_DIST_TOP = 2950; // UNDETERMINED
     public static double SHORT_DIST_BOT = 3480;// UNDETERMINED
 
-
-
-=======
->>>>>>> 4dce6e63ce4704642c0c94309bb3786bb3f9a8d2
     public static double KPTop = 0.0032; //0.004
     public static double KPBottom = 0.004; // 0.0045
 
@@ -80,8 +76,30 @@ public class riptideUtil {
     // Spindex
     public static double SPINDEX_ARM_UP = 0; // UNDETERMINED
     public static double SPINDEX_ARM_RESTING = 0.8; // UNDETERMINED
-    public static double ROTATE_SPINDEX_ONCE = 0;
+    public static double ROTATE_SPINDEX_ONCE = 60;
 
+    // POS 1
+    // 0 shoot
+    // 180 pickup
+
+    // POS 2
+    // 120shoot
+    // 300 pickup
+
+    // POS 3
+    // 240 shoot
+    // 60 pickup
+
+    public static double SLOT_ONE_SHOOT_POS = 0; // 200
+    public static double SLOT_ONE_PIKCUP_POS = 180; // 60
+
+    public static double SLOT_TWO_SHOOT_POS = 120; // 135
+    public static double SLOT_TWO_PIKCUP_POS = 300; // 310
+
+    public static double SLOT_THREE_SHOOT_POS = 240; // 255
+    public static double SLOT_THREE_PIKCUP_POS = 60; // 75
+
+    public static double SPINDEX_SPEED = 0.03;
 
     // Vision
     public static int CAMERA_WIDTH = 640;
