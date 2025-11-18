@@ -58,23 +58,14 @@ public class TankDrivePID extends LinearOpMode {
                 vertController.setPID(kp, ki, kd);
                 vertController.reset();
             }
-
-<<<<<<< HEAD
             //double power = setWheelPower(t);
 
             t.update();
-=======
->>>>>>> 3ed0a5a6b520f466e00f148bf9c019bc2e9c321c
             t.update();
 
             double power = setWheelPower(t);
 
             robot.getDrivetrain().setWheelPowers(power, power, power, power);
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 3ed0a5a6b520f466e00f148bf9c019bc2e9c321c
         }
 
 

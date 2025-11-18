@@ -352,7 +352,7 @@ public class Intake{
 
     public double fiveTurnToServo(double angle){
         //900 instead of 1800 because we using 2:1 gear ratio (180*5)
-        return angle <= 810 && angle >= 0 ? angle / 810 : angle > 810 ? 1 : 0;
+        return angle <= 900 && angle >= 0 ? angle / 900 : angle > 900 ? 1 : 0;
     }
     public void setMotifOrder(char[] order) {
         if (order.length != 3) throw new RuntimeException("you put a bad order into an unsupported system. Congratulations.");

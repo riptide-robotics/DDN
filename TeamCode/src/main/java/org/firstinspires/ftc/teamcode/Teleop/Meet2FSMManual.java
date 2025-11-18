@@ -123,7 +123,8 @@
             switch(currentState) {
                 case TELEOP:
                     if (!hasrun) {
-                        // do teleop setup
+                        currentTopRPMGoal = 0;
+                        currentBottomRPMGoal = 0;
                     }
 
                     // INTAKE
