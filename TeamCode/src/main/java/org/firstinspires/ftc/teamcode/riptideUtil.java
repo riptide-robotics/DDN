@@ -2,7 +2,10 @@ package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.config.Config;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
 import org.firstinspires.ftc.vision.apriltag.AprilTagLibrary;
 
 @Config
@@ -36,12 +39,15 @@ public class riptideUtil {
     public static double BOTTOM_FLYWHEEL_KP = 0.001;
 
     /** Autonomous Constants */
+
+    public static final Pose2D START_POSITION = new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 90);
+
     public static final double POINT_TOLERANCE = 2; // UNDETERMINED
     // Maximums
+    public static double MAX_V_TURN = 90;   // deg/s //UNDETERMINED
+
     public static double MAX_A_VERT = 72;            // UNDETERMINED
     public static double MAX_V_VERT = 96;            // UNDETERMINED
-    public static double MAX_A_LAT = 0;             // UNDETERMINED
-    public static double MAX_V_LAT = 0;             // UNDETERMINED
 
     public static double MAX_WHEEL_POWER = 1;       // Probably always going to be 1
 
@@ -58,6 +64,7 @@ public class riptideUtil {
     public static double MAX_A = 72;                 // UNDETERMINED
     public static double MAX_V = 96;                 // UNDETERMINED
 
+<<<<<<< HEAD
 
     public static double LONG_DIST_TOP = 3250; // UNDETERMINED
     public static double LONG_DIST_BOT = 3730; // UNDETERMINED
@@ -68,6 +75,8 @@ public class riptideUtil {
     public static double SHORT_DIST_TOP = 2950; // UNDETERMINED
     public static double SHORT_DIST_BOT = 3480;// UNDETERMINED
 
+=======
+>>>>>>> 3ed0a5a6b520f466e00f148bf9c019bc2e9c321c
     public static double KPTop = 0.0032; //0.004
     public static double KPBottom = 0.004; // 0.0045
 

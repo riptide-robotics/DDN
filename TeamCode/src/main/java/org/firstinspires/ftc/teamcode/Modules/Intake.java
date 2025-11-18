@@ -41,6 +41,16 @@ public class Intake{
     Servo spindexServo;
     Servo spindexArm;
     float gain = 2; // ...... ANYWAY
+    public enum positions {
+        POS_1_SHOOT,
+        POS_1_RECEIVE,
+        POS_2_SHOOT,
+        POS_2_RECEIVE,
+        POS_3_SHOOT,
+        POS_3_RECEIVE;
+
+    }
+
     /**
      * A Rev Color Match object is used to register and detect known colors. This can
      * be calibrated ahead of time or during operation.
@@ -344,4 +354,35 @@ public class Intake{
         //900 instead of 1800 because we using 2:1 gear ratio (180*5)
         return angle <= 810 && angle >= 0 ? angle / 810 : angle > 810 ? 1 : 0;
     }
+    public void setMotifOrder(char[] order) {
+        if (order.length != 3) throw new RuntimeException("you put a bad order into an unsupported system. Congratulations.");
+        throw new UnsupportedOperationException("This does not work!");
+    }
+    public void rotateToPositionShoot(int pos) {
+        throw new UnsupportedOperationException("This does not work!");
+    }
+    public void rotateToPositionRecieve(int pos) {
+        throw new UnsupportedOperationException("This does not work!");
+    }
+    public void setIntakerPower(double power) {
+        throw new UnsupportedOperationException("This does not work!");
+    }
+    public void Shoot(int position){
+        // dunno why we decided that this would not be camel case, guess its that important
+        // ...
+        // ANYWAYS this does not work
+        throw new UnsupportedOperationException("This does not work!");
+    }
+    public positions getCurrentState(){
+        //just like everything else
+        throw new UnsupportedOperationException("This does not work!");
+    }
+    /**Does not actually get anything, just moves spindexer. Eventually. Right now, its only purpose is to throw an exception.*/
+    public void hasReceivedArtifact(positions pos){
+        //use colorsensor,
+        //if colorsensor sees color
+        //Sets the receiving position to indicate that an artifact of the colorsensor's output is in that position
+        throw new UnsupportedOperationException("This does not work!");
+    }
+
 }

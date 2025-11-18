@@ -2,8 +2,6 @@ package org.firstinspires.ftc.teamcode.Modules;
 
 // --- CONSTANTS & OTHER STUFF --- //
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
-import static org.firstinspires.ftc.teamcode.Modules.Camera.processors_enabled.ALL;
-import static org.firstinspires.ftc.teamcode.Modules.Camera.processors_enabled.COLOR;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -423,5 +421,8 @@ public class Camera {
                 setPipeline(processor);
                 break;
         }
+    }
+    public char[] scanMotifOrder() {
+        throw new UnsupportedOperationException("scanMotifOrder not yet supported!");
     }
 }

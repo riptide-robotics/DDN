@@ -24,7 +24,7 @@ import org.firstinspires.ftc.teamcode.Modules.Utils.GoBildaPinpointDriver;
 
 public class Drivetrain {
 
-    ///////////////////////////////////////////////
+    //////////////////////////////////////////////
     ////                                     /////
     ////              VARIABLES              /////
     ////                                     /////
@@ -103,6 +103,11 @@ public class Drivetrain {
         imu.resetYaw();
     }
 
+    public void PIDToPoint() {
+        throw new UnsupportedOperationException("PIDToPoint not supported!");
+
+    }
+
     // ------------ SETTERS ------------ //
 
 
@@ -111,6 +116,10 @@ public class Drivetrain {
         flWheel.setPower(flWheelPower);
         brWheel.setPower(brWheelPower);
         blWheel.setPower(blWheelPower);
+    }
+
+    public void goToPosPID(EditablePose2D p){
+
     }
 
     // ------------ GETTERS ------------ //

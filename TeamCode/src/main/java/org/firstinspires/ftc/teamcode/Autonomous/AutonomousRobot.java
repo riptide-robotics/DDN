@@ -26,16 +26,20 @@
 //public class AutonomousRobot extends Robot {
 //    Drivetrain drivetrain;
 //    Robot robot;
+<<<<<<< HEAD
 //
 //    public AutonomousRobot(HardwareMap hardwareMap) {
 //        super(hardwareMap);
 //    }
 //}
+=======
+>>>>>>> 3ed0a5a6b520f466e00f148bf9c019bc2e9c321c
 //    /**
 //     * @param curr, robot current heading in degrees
 //     * @param goal, robot goal heading, global, in degrees
 //     * @return an angle within 180 and -180
 //     */
+<<<<<<< HEAD
 //<<<<<<< HEAD
 ////    private double normalizeAngleError(double curr, double goal) {
 ////        double error = goal - curr;
@@ -337,6 +341,8 @@
 ////
 ////}
 //=======
+=======
+>>>>>>> 3ed0a5a6b520f466e00f148bf9c019bc2e9c321c
 //    private double normalizeAngleError(double curr, double goal) {
 //        double error = goal - curr;
 //        error = ((error + 180) % 360 + 360) % 360 - 180;
@@ -636,4 +642,7 @@
 //
 //
 //}
+<<<<<<< HEAD
 //>>>>>>> 4dce6e63ce4704642c0c94309bb3786bb3f9a8d2
+=======
+>>>>>>> 3ed0a5a6b520f466e00f148bf9c019bc2e9c321c
