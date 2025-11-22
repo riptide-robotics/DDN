@@ -228,4 +228,14 @@ public class Outtake {
     public void setOuttakeRPM (double rpmTop, double rpmBottom){rpmTopGoal = rpmTop; rpmBottomGoal = rpmBottom;}
     public void runOuttakePID(Telemetry tele){pidtunedmotor(rpmTopGoal, rpmBottomGoal, tele);}
 
+    public void setFlywheelPowerBasedOnCam(Double dist) {throw new UnsupportedOperationException("Not working just yet!");}
+    public void SetFlyWheelTopGoal(double angle) {throw new UnsupportedOperationException("This is (hopefully) temporary!");}
+    public void setFlywheelbottomGoal(double power) {throw new UnsupportedOperationException("This is a placeholder!");}
+    /**sets some internal variable that has an angle MAKE SURE THAT ANGLES ARE BOUNDED. Also not working just yet.*/
+    public void SetTurretGoalAngle(double angle) {throw new UnsupportedOperationException("Use something else. Or wait.");}
+    public void SetTurretAnglePID() {throw new UnsupportedOperationException("This may or may not have been predictable.");}
+    public void SetTurretPowerPID() {throw new UnsupportedOperationException("Yeahh...");}// PID to Angle
+
+
+
 }
