@@ -48,22 +48,27 @@ public class Trajectory {
 
 
     public PathSample getExpectedPosition(double time) {
+        if (path == null || path.isEmpty()) {
+            throw new IllegalStateException("Trajectory has no samples");
+        }
 
-        PathSample s;
-        int big = path.size() - 1;
+        if (path.size() == 1) {
+            return path.get(0);
+        }
+
+        if (time <= path.get(0).time) {
+            return path.get(0);
+        }
+        if (time >= path.get(path.size() - 1).time) {
+            return path.get(path.size() - 1);
+        }
+
         int small = 0;
+        int big = path.size() - 1;
 
         while (big - small > 1) {
-            if (time <= path.get(0).time) {
-                return path.get(0);
-            }
-            if (time >= path.get(path.size() - 1).time) {
-                return path.get(path.size() - 1);
-            }
-
             int mid = (big + small) / 2;
-
-            s = path.get(mid);
+            PathSample s = path.get(mid);
 
             if (s.time < time) {
                 small = mid;
@@ -90,7 +95,7 @@ public class Trajectory {
         return (1 - percent) * a + percent * b;
     }
 
-    // chooses the shortest direction to lerp
+    // chooses the shortest direction to lerp angles are always between 0 and 360.
     public double lerpAngle(double a, double b, double percent) {
         double diff = b - a;
 
