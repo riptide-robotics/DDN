@@ -39,7 +39,7 @@ public class AutonomousRobot extends Robot {
      * @param goal, robot goal heading, global, in degrees
      * @return an angle within 180 and -180
      */
-<<<<<<< HEAD
+//<<<<<<< HEAD
 //    private double normalizeAngleError(double curr, double goal) {
 //        double error = goal - curr;
 //        error = ((error + 180) % 360 + 360) % 360 - 180;
@@ -339,7 +339,7 @@ public class AutonomousRobot extends Robot {
 //
 //
 //}
-=======
+//=======
     private double normalizeAngleError(double curr, double goal) {
         double error = goal - curr;
         error = ((error + 180) % 360 + 360) % 360 - 180;
@@ -348,7 +348,7 @@ public class AutonomousRobot extends Robot {
 
     /**
      * @param robotPos Pose2D of the robot
-     * @param point    Pose2D of our goal point (note that we don't need the heading).
+     * @param point    Pose2D of our goal point ( note that we don't need the heading).
      * @return True if the robot is within the determined boundaries of a point
      */
     public boolean atPoint(EditablePose2D robotPos, EditablePose2D point) {
