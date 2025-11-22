@@ -46,7 +46,6 @@ public class LinearTrajectoryBuilder {
 
         double totalTime = 0;
 
-
         return new Trajectory(new ArrayList<Trajectory.PathSample>());
     }
 
