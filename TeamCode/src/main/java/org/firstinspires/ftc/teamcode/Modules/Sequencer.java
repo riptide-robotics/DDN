@@ -8,7 +8,7 @@ public class Sequencer {
 
     public Sequencer(){};
 
-    private interface Action{
+    public interface Action{
         void action();
     }
 
@@ -31,8 +31,8 @@ public class Sequencer {
         actions.add(a);
     }
 
-    public void addAction(Action a, double delay){
-        addAction(new TimedAction(a,delay));
+    public void addAction(Action a, double delayINSECONDS){
+        addAction(new TimedAction(a,delay/1000));
     }
     /**Haven't figured out how to run loop automatically*/
     public void loop() {
