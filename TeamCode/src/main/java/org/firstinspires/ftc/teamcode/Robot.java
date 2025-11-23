@@ -24,11 +24,12 @@ public class Robot {
 
     Camera camera;
 
-    Sequencer s;
+    public Sequencer s;
 
     public Robot (HardwareMap map){
         hardwareMap = map;
 
+        s = new Sequencer();
         drivetrain = new Drivetrain(hardwareMap);
         intake = new Intake(hardwareMap);
         endgameServos = new EndgameServos(hardwareMap);
