@@ -1,38 +1,25 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad1;
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 import static org.firstinspires.ftc.teamcode.riptideUtil.KPBottom;
 import static org.firstinspires.ftc.teamcode.riptideUtil.KPTop;
-import static org.firstinspires.ftc.teamcode.riptideUtil.TOP_FLYWHEEL_KP;
-import static org.firstinspires.ftc.teamcode.riptideUtil.BOTTOM_FLYWHEEL_KP;
 import static org.firstinspires.ftc.teamcode.riptideUtil.angularVelocity;
 import static org.firstinspires.ftc.teamcode.riptideUtil.econserved;
 import static org.firstinspires.ftc.teamcode.riptideUtil.tolerance;
 
 import android.annotation.SuppressLint;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Modules.PIDController;
-import org.firstinspires.ftc.teamcode.Tuning.OuttakePIDTuner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class Outtake {
     private final DcMotor topFlywheel;
     private final DcMotor bottomFlywheel;
-    private final PIDController flywheelVelocityControllerBottom = new PIDController(TOP_FLYWHEEL_KP, 0, 0);
-    private final PIDController flywheelVelocityControllerTop = new PIDController(BOTTOM_FLYWHEEL_KP, 0, 0);
-    private boolean updatePID = false;
+
     // OUTTAKE TUNER THINGS
     LinkedList<Double> topRecords = new LinkedList<>();
     LinkedList<Double> bottomRecords = new LinkedList<>();
@@ -237,12 +224,10 @@ public class Outtake {
 
 
     /**Completely skip tuning and set motor voltages individually. As fundamental as you get.
-     * @param speedR Old way of saying bottom flywheel
-     * @param speedL Old way of saying top flywheel
      * */
-    public void setFlyWheelPower(double speedL, double speedR) {
-        bottomFlywheel.setPower(speedR);
-        topFlywheel.setPower(speedL);
+    public void setFlyWheelPower(double speedT, double speedB) {
+        bottomFlywheel.setPower(speedB);
+        topFlywheel.setPower(speedT);
     }
 
 
@@ -279,38 +264,32 @@ public class Outtake {
     }
 
 
-    /**Sets the power based upon distance to the goal. Recommended in the future, but for now...
-     * Placeholder, do not use except in other placeholders.
-     **/
-    public void setFlywheelPowerBasedOnCam(double dist) {throw new UnsupportedOperationException("Not working just yet!");}
-
-
     /**Sets the the goal for the top motor to reach in its PID. For the future.
      * Placeholder, do not use except in other placeholders.
      **/
-    public void SetFlyWheelTopGoal(double angle) {throw new UnsupportedOperationException("This is (hopefully) temporary!");}
+    public void SetFlyWheelTopGoal(double rpm) {rpmTopGoal = rpm;}
 
 
     /** Sets the the goal for the bottom motor to reach in its PID. For the future.
      * Placeholder, do not use except in other placeholders.
      **/
-    public void setFlywheelbottomGoal(double power) {throw new UnsupportedOperationException("This is a placeholder!");}
+    public void setFlywheelBottomGoal(double rpm) {rpmBottomGoal = rpm;}
 
 
     /**
      * sets some internal variable that has an angle MAKE SURE THAT ANGLES ARE BOUNDED. Also not working just yet.
      **/
-    public void SetTurretGoalAngle(double angle) {throw new UnsupportedOperationException("Use something else. Or wait.");}
+    public void SetTurretGoalAngle(double angle) {throw new UnsupportedOperationException("Not working just yet!");}
 
 
     /** Attempt to set the turret to a specific angle, using a future PID.
      * Placeholder, do not use except in other placeholders.
      **/
-    public void SetTurretAnglePID() {throw new UnsupportedOperationException("This may or may not have been predictable.");}
+    public void SetTurretAnglePID() {throw new UnsupportedOperationException("Not working just yet!");}
 
 
     /**Fire the turret.
      * Placeholder, do not use except in other placeholders.
      **/
-    public void SetTurretPowerPID() {throw new UnsupportedOperationException("Yeahh...");}// PID to Angle
+    public void SetTurretPowerPID() {throw new UnsupportedOperationException("Not working just yet!");}// PID to Angle
 }

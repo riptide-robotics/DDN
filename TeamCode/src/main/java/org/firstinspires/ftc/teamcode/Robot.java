@@ -49,10 +49,12 @@ public class Robot {
 
     public Camera getCamera() {return camera;}
 
+    /**TODO: This is going to run into a NPE if the camera doesn't see the goal*/
     public void setFlyWheelPowerOnDistance(boolean run, Telemetry tele){
         double distance = camera.getGoalDistance();
         outtake.setPowerOnDist(distance, run, tele);
     }
+
 
     public void shootbasedoncolor() {
         if (true) /*shut up IDE*/ throw new UnsupportedOperationException("Can't do this yet!");
