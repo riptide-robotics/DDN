@@ -5,15 +5,23 @@ import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.har
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.matrices.MatrixF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
 import org.firstinspires.ftc.teamcode.riptideUtil;
 
 // --- CAMERA --- //
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
+import org.firstinspires.ftc.vision.apriltag.AprilTagMetadata;
+import org.firstinspires.ftc.vision.apriltag.AprilTagPoseFtc;
+import org.firstinspires.ftc.vision.apriltag.AprilTagPoseRaw;
 import org.firstinspires.ftc.vision.opencv.ImageRegion;
 import org.opencv.core.Mat;
+import org.opencv.core.Point;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
@@ -73,7 +81,8 @@ public class Camera extends OpenCvPipeline {
     String goalTag;
     CameraName cameraname;
 
-    AprilTagDetection redGoal, blueGoal;
+    int blueGoalID = 20;
+    int redGoalID = 24;
 
     public Camera(double v, double v1, double v2, double v3, double v4) {
     }
@@ -246,16 +255,28 @@ public class Camera extends OpenCvPipeline {
         return Math.sqrt(x * x + y * y + z * z);
     }
     public double getDistanceToRedGoal() {
-        double x = redGoal.robotPose.getPosition().x;
-        double y = redGoal.robotPose.getPosition().y;
-        double z = redGoal.robotPose.getPosition().z;
-        return Math.sqrt(x * x + y * y + z * z);
+        detections = getTagDetections();
+        for (AprilTagDetection detection : detections) {
+            if (detection.id == redGoalID) {
+                double x = detection.robotPose.getPosition().x;
+                double y = detection.robotPose.getPosition().y;
+                double z = detection.robotPose.getPosition().z;
+                return Math.sqrt(x * x + y * y + z * z);
+            }
+        }
+        return -1;
     }
     public double getDistanceToBlueGoal() {
-        double x = blueGoal.robotPose.getPosition().x;
-        double y = blueGoal.robotPose.getPosition().y;
-        double z = blueGoal.robotPose.getPosition().z;
-        return Math.sqrt(x * x + y * y + z * z);
+        detections = getTagDetections();
+        for (AprilTagDetection detection : detections) {
+            if (detection.id == blueGoalID) {
+                double x = detection.robotPose.getPosition().x;
+                double y = detection.robotPose.getPosition().y;
+                double z = detection.robotPose.getPosition().z;
+                return Math.sqrt(x * x + y * y + z * z);
+            }
+        }
+        return -1;
     }
 
     public double getTagHorizontalAngle(AprilTagDetection tag) {
@@ -273,14 +294,26 @@ public class Camera extends OpenCvPipeline {
         return horizontal_angle;
     }
     public double getAngleToRedGoal() {
-        double delta_x = (double) riptideUtil.CAMERA_WIDTH / 2 - redGoal.center.x;
-        double horizontal_angle = delta_x * riptideUtil.CAM_FOV / riptideUtil.CAMERA_WIDTH;
-        return horizontal_angle;
+        detections = getTagDetections();
+        for (AprilTagDetection detection : detections) {
+            if (detection.id == redGoalID) {
+                double delta_x = (double) riptideUtil.CAMERA_WIDTH / 2 - detection.center.x;
+                double horizontal_angle = delta_x * riptideUtil.CAM_FOV / riptideUtil.CAMERA_WIDTH;
+                return horizontal_angle;
+            }
+        }
+        return -1;
     }
     public double getAngleToBlueGoal() {
-        double delta_x = (double) riptideUtil.CAMERA_WIDTH / 2 - blueGoal.center.x;
-        double horizontal_angle = delta_x * riptideUtil.CAM_FOV / riptideUtil.CAMERA_WIDTH;
-        return horizontal_angle;
+        detections = getTagDetections();
+        for (AprilTagDetection detection : detections) {
+            if (detection.id == blueGoalID) {
+                double delta_x = (double) riptideUtil.CAMERA_WIDTH / 2 - detection.center.x;
+                double horizontal_angle = delta_x * riptideUtil.CAM_FOV / riptideUtil.CAMERA_WIDTH;
+                return horizontal_angle;
+            }
+        }
+        return -1;
     }
 
     public EditablePose2D findNearestArtifact() {
@@ -461,6 +494,21 @@ public class Camera extends OpenCvPipeline {
         }
     }
     public char[] scanMotifOrder() {
-        throw new UnsupportedOperationException("scanMotifOrder not yet supported!");
+        detections = getTagDetections();
+        char[] motifOrder = new char[3];
+        for(AprilTagDetection detection : detections) {
+            if (detection.id == 21) {
+                motifOrder[0] = 'g'; motifOrder[1] = 'p'; motifOrder[2] = 'p';
+                return motifOrder;
+            } else if (detection.id == 22) {
+                motifOrder[0] = 'p'; motifOrder[1] = 'g'; motifOrder[2] = 'p';
+                return motifOrder;
+            } else if (detection.id == 23) {
+                motifOrder[0] = 'p'; motifOrder[1] = 'p'; motifOrder[2] = 'g';
+                return motifOrder;
+            }
+        }
+        motifOrder[0] = 'b'; motifOrder[1] = 'b'; motifOrder[2] = 'b';
+        return motifOrder;
     }
 }
