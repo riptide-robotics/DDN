@@ -32,10 +32,7 @@ public class Outtake {
     private final DcMotor bottomFlywheel;
     private final PIDController flywheelVelocityControllerBottom = new PIDController(TOP_FLYWHEEL_KP, 0, 0);
     private final PIDController flywheelVelocityControllerTop = new PIDController(BOTTOM_FLYWHEEL_KP, 0, 0);
-
     private boolean updatePID = false;
-
-
     // OUTTAKE TUNER THINGS
     LinkedList<Double> topRecords = new LinkedList<>();
     LinkedList<Double> bottomRecords = new LinkedList<>();
@@ -52,8 +49,9 @@ public class Outtake {
     private boolean atGoalSpeed = false;
     private double rpmTopGoal;
     private double rpmBottomGoal;
-    public Outtake(HardwareMap hardwareMap){
 
+
+    public Outtake(HardwareMap hardwareMap){
         topFlywheel = hardwareMap.dcMotor.get("topFlywheel");
         bottomFlywheel = hardwareMap.dcMotor.get("bottomFlywheel");
 
@@ -79,6 +77,7 @@ public class Outtake {
 
         tele.addData("goalRPMTop", rpmTop);
         tele.addData("goalRPMBottom", rpmBottom);
+
         if (rpmTopPrev != rpmTop) {
             rpmTopPrev = rpmTop;
             RPMControllerTop = new PIDController(KPTop, 0, 0);
@@ -108,6 +107,7 @@ public class Outtake {
         currPosTop = currPosL();
         currPosBottom = currPosR();
 
+
         double dThetaTop = (currPosTop - prevPosTop)/28;
         double dThetaBottom = (currPosBottom - prevPosBottom)/28;
 
@@ -117,6 +117,7 @@ public class Outtake {
         double currRPMTop = dThetaTop / (dt / 60);
         double currRPMBottom = dThetaBottom / (dt / 60);
 
+
         topRecords.add(currRPMTop);
         while (topRecords.size() > queueSize)
             topRecords.remove(0);
@@ -125,21 +126,30 @@ public class Outtake {
         while (bottomRecords.size() > queueSize)
             bottomRecords.remove(0);
 
+
         double undividedAverageBottom = 0;
         double undividedAverageTop = 0;
+
 
         for (int i = 0; i < topRecords.size(); i++) {
             undividedAverageTop += topRecords.get(i);
             undividedAverageBottom += bottomRecords.get(i);
         }
+
         double averageTop;
         double averageBottom;
+
+
         if (topRecords.size() == queueSize) {
+
             averageTop = undividedAverageTop / queueSize;
             averageBottom = undividedAverageBottom / queueSize;
+
         } else {
+
             averageTop = currRPMTop;
             averageBottom = currRPMBottom;
+
         }
 
 //        averageTop = topRecords.size() >= queueSize ? (topRecords.get(0)+topRecords.get(1)+topRecords.get(2)+topRecords.get(3)+topRecords.get(4))/5 : currRPMTop;
@@ -149,18 +159,22 @@ public class Outtake {
         telemetry.addData("top", averageTop);
         telemetry.addData("bottom", averageBottom);
 
+
         double wantedWheelPowerTopAverage = RPMControllerTop.calculate(averageTop - 200, rpmTop);
         double wantedWheelPowerBottomAverage = RPMControllerBottom.calculate(averageBottom - 200, rpmBottom);
 
 
         setFlyWheelPower(rpmTop != 0 ? wantedWheelPowerTopAverage:0,rpmBottom != 0 ? wantedWheelPowerBottomAverage:0);
 
+
         telemetry.addData("ready", bottomRecords.size() >= queueSize);
         telemetry.addData("top", averageTop);
         telemetry.addData("bottom", averageBottom);
 
+
         boolean atTopRPM = Math.abs(averageTop - rpmTop) <= tolerance;
         boolean atBotRPM = Math.abs(averageBottom - rpmBottom) <= tolerance;
+
         atGoalSpeed = atTopRPM && atBotRPM;
     }
 
@@ -170,7 +184,6 @@ public class Outtake {
      **/
     @SuppressLint("DefaultLocale")
     public void setPowerOnDist(Double dist /* INCHES */, boolean run, Telemetry tele) {
-
 
         double rBottom = 1.41732; // INCHES
         double rTop = 1.41732; // INCHES
@@ -199,7 +212,9 @@ public class Outtake {
             rpmTop = 0;
             rpmBottom = 0;
         }
+
         pidtunedmotor(rpmTop, rpmBottom, tele);
+
         tele.addLine(String.format("Calculated rpm top: %f", rpmTop));
         tele.addLine(String.format("Calculated rpm bottom: %f", rpmBottom));
     }
@@ -207,7 +222,7 @@ public class Outtake {
 
     /**
      * Places goals instead of directly commanding motors. <br>
-     * "Now it's some other poor soul's job!"
+     * "Now it's some other poor soul's job!" - this method
      **/
     public void setOuttakeRPM(double rpmTop, double rpmBottom){rpmTopGoal = rpmTop; rpmBottomGoal = rpmBottom;}
 
