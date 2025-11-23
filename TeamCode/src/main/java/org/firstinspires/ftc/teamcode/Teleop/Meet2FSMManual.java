@@ -125,6 +125,7 @@
                     if (!hasrun) {
                         currentTopRPMGoal = 0;
                         currentBottomRPMGoal = 0;
+                        hasrun = true;
                     }
 
                     // INTAKE
@@ -137,7 +138,7 @@
                     }
 
                     cycleSlots();
-                    activateBootKicker();
+                    toggleBootKicker();
 
                     // ENDGAME
     //                if (gamepad2.dpad_up){
@@ -250,7 +251,7 @@
             robot.getIntake().spindexPos2to1Gear(spindexPos);
         }
 
-        public void activateBootKicker(){
+        public void toggleBootKicker(){
             if (robot.getIntake().spindexCurrentPosition() == SLOT_ONE_SHOOT_POS || robot.getIntake().spindexCurrentPosition() == SLOT_TWO_SHOOT_POS || robot.getIntake().spindexCurrentPosition() == SLOT_THREE_SHOOT_POS) {
                 if (gamepad2.a && robot.getOuttake().isAtGoalSpeed()) {
                     robot.getIntake().BootKick(SPINDEX_ARM_UP);
