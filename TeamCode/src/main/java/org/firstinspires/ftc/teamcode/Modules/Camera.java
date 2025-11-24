@@ -83,6 +83,7 @@ public class Camera extends OpenCvPipeline {
 
     int blueGoalID = 20;
     int redGoalID = 24;
+    boolean isRed = true;
 
     public Camera(double v, double v1, double v2, double v3, double v4) {
     }
@@ -105,7 +106,8 @@ public class Camera extends OpenCvPipeline {
     ////                                     /////
     //////////////////////////////////////////////
 
-    public Camera(HardwareMap hardwareMap) {
+    public Camera(HardwareMap hardwareMap, riptideUtil.TEAM_COLOR teamColor) {
+        isRed = teamColor == riptideUtil.TEAM_COLOR.RED;
         cameraname = hardwareMap.get(WebcamName.class, "Webcam 1");
         tag_processor = new AprilTagProcessor.Builder()
                 .setTagLibrary(riptideUtil.getLibrary())
@@ -222,7 +224,7 @@ public class Camera extends OpenCvPipeline {
 
     public boolean isGoalTag(AprilTagDetection detection) {
         // For red alliance goal
-        return detection.id == 24;
+        return isRed ? detection.id == 24 : detection.id == 20;
     }
 
     public AprilTagDetection getGoalApriltag() {
@@ -251,8 +253,8 @@ public class Camera extends OpenCvPipeline {
     public double getAprilTagDistance(AprilTagDetection tag) {
         double x = tag.robotPose.getPosition().x;
         double y = tag.robotPose.getPosition().y;
-        double z = tag.robotPose.getPosition().z;
-        return Math.sqrt(x * x + y * y + z * z);
+        //double z = tag.robotPose.getPosition().z;
+        return Math.sqrt(x * x + y * y/* + z * z*/);
     }
     public double getDistanceToRedGoal() {
         detections = getTagDetections();
@@ -260,8 +262,8 @@ public class Camera extends OpenCvPipeline {
             if (detection.id == redGoalID) {
                 double x = detection.robotPose.getPosition().x;
                 double y = detection.robotPose.getPosition().y;
-                double z = detection.robotPose.getPosition().z;
-                return Math.sqrt(x * x + y * y + z * z);
+                //double z = detection.robotPose.getPosition().z;
+                return Math.sqrt(x * x + y * y/* + z * z*/);
             }
         }
         return -1;
@@ -272,8 +274,8 @@ public class Camera extends OpenCvPipeline {
             if (detection.id == blueGoalID) {
                 double x = detection.robotPose.getPosition().x;
                 double y = detection.robotPose.getPosition().y;
-                double z = detection.robotPose.getPosition().z;
-                return Math.sqrt(x * x + y * y + z * z);
+                //double z = detection.robotPose.getPosition().z;
+                return Math.sqrt(x * x + y * y/* + z * z*/);
             }
         }
         return -1;
@@ -451,10 +453,6 @@ public class Camera extends OpenCvPipeline {
         }
     }
 
-    public void tagAngle(double angle){
-
-    }
-
     public Double getGoalDistance() {
         AprilTagDetection goalDetection = getGoalApriltag();
         if (goalDetection == null) {
@@ -463,9 +461,9 @@ public class Camera extends OpenCvPipeline {
 
         double x = goalDetection.robotPose.getPosition().x;
         double y = goalDetection.robotPose.getPosition().y;
-        double z = goalDetection.robotPose.getPosition().z;
+        //double z = goalDetection.robotPose.getPosition().z;
 
-        return Math.sqrt(x * x + y * y + z * z) * 0.03937008 /* convert from mm to inches*/;
+        return Math.sqrt(x * x + y * y/* + z * z*/) * 0.03937008 /* convert from mm to inches*/;
     }
 
     public Double getGoalAngleError() {
@@ -475,6 +473,16 @@ public class Camera extends OpenCvPipeline {
         }
 
         return getTagHorizontalAngle(goalDetection);
+    }
+
+    public double getAbsoluteAngleError(double currAngle, double error) {
+        if (currAngle + error < 0) {
+            return error + 360;
+        } else if (currAngle + error > 360) {
+            return error - 360;
+        } else {
+            return error;
+        }
     }
 
     public void runCamera(processors_enabled processor){

@@ -24,6 +24,8 @@ public class Robot {
 
     Camera camera;
 
+    riptideUtil.TEAM_COLOR alliance = riptideUtil.TEAM_COLOR.RED; // change based on alliance
+
     public Sequencer s;
 
     public Robot (HardwareMap map){
@@ -34,7 +36,7 @@ public class Robot {
         intake = new Intake(hardwareMap);
         endgameServos = new EndgameServos(hardwareMap);
         outtake = new Outtake(hardwareMap);
-        camera = new Camera(hardwareMap);
+        camera = new Camera(hardwareMap, alliance);
     }
 
     public Drivetrain getDrivetrain(){
@@ -103,5 +105,7 @@ public class Robot {
         throw new UnsupportedOperationException("Light not set up");
     }
 
-
+    public void setTeamColor(riptideUtil.TEAM_COLOR color) {
+        alliance = color;
+    }
 }

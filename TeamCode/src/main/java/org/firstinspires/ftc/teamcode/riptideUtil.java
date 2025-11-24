@@ -98,6 +98,11 @@ public class riptideUtil {
 
     public static double MOTOR_POS_CONST = 1; // needs tuning
 
+    public static enum TEAM_COLOR {
+        RED,
+        BLUE
+    }
+
     public static AprilTagLibrary getLibrary() {
         return new AprilTagLibrary.Builder()
                 .addTag(
