@@ -6,13 +6,24 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.DummyClasses.EndgameServos;
 import org.firstinspires.ftc.teamcode.Modules.Camera;
 import org.firstinspires.ftc.teamcode.Modules.Drivetrain;
+import org.firstinspires.ftc.teamcode.Modules.Indicator;
 import org.firstinspires.ftc.teamcode.Modules.Intake;
 import org.firstinspires.ftc.teamcode.Modules.Outtake;
 import org.firstinspires.ftc.teamcode.Modules.Sequencer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+
+import javax.annotation.processing.AbstractProcessor;
 
 public class Robot {
 
+    private static final Logger log = LoggerFactory.getLogger(Robot.class);
     HardwareMap hardwareMap;
+
+    Indicator indicator;
 
     Drivetrain drivetrain;
 
@@ -30,6 +41,7 @@ public class Robot {
         hardwareMap = map;
 
         s = new Sequencer();
+        indicator = new Indicator(hardwareMap);
         drivetrain = new Drivetrain(hardwareMap);
         intake = new Intake(hardwareMap);
         endgameServos = new EndgameServos(hardwareMap);
@@ -100,9 +112,36 @@ public class Robot {
          * based on which section we fall into.
          */
     }
-    public void setStatus() {
-        //set currently nonexistent status lights
-        throw new UnsupportedOperationException("Light not set up");
+    /**
+     * Set indicator light based upon current spindexer. Put this in a loop.
+     * <br><br>
+     * I hate this thing.
+     * */
+    public void setStatus(char color) throws NoSuchFieldException, IllegalAccessException {
+        // i -really- don't want to touch intake with someone else works on it. This will do until it can be set to public or something
+        //ABSOLUTELY DO NOT TOUCH THIS until it can be replaced
+        Field infield = Intake.class.getDeclaredField("order");
+        infield.setAccessible(true);
+        final char[] order = (char[]) infield.get(intake);
+        infield.setAccessible(false);
+
+        boolean contains =
+                order[0] == color ||
+                order[1] == color ||
+                order[2] == color ;
+
+        byte amount = (byte) (
+                (order[0] != ' ' ? 1:0) +
+                (order[1] != ' ' ? 1:0) +
+                (order[2] != ' ' ? 1:0) );
+
+        if (amount == 0) indicator.setIndicatorLights(Indicator.statusLights.EMPTY);
+
+        if ((amount == 1 || amount == 2) && contains) indicator.setIndicatorLights(Indicator.statusLights.SEMI_OPEN);
+        if ((amount == 1 || amount == 2) && !contains) indicator.setIndicatorLights(Indicator.statusLights.SEMI_OPEN_AND_NONE_REQUESTED);
+
+        if (amount == 3 && contains) indicator.setIndicatorLights(Indicator.statusLights.FULL_SPINDEXER);
+        if (amount == 3 && !contains) indicator.setIndicatorLights(Indicator.statusLights.FULL_SPINDEXER_AND_NONE_REQUESTED);
     }
 
 
