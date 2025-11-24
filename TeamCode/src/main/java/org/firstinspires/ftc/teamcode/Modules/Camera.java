@@ -12,6 +12,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
+import org.firstinspires.ftc.teamcode.Placeholder;
 import org.firstinspires.ftc.teamcode.riptideUtil;
 
 // --- CAMERA --- //
@@ -501,6 +502,7 @@ public class Camera extends OpenCvPipeline {
                 break;
         }
     }
+    @Placeholder
     public char[] scanMotifOrder() {
         detections = getTagDetections();
         char[] motifOrder = new char[3];

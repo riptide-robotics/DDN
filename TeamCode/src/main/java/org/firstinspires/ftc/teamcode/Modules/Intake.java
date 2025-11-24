@@ -345,5 +345,7 @@ public class Intake{
         //Sets the receiving position to indicate that an artifact of the colorsensor's output is in that position
         throw new UnsupportedOperationException("This does not work!");
     }
-
+    public boolean hasRecievedArtifact(String color) {
+        return false;
+    }
 }
