@@ -12,15 +12,17 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+//import org.firstinspires.ftc.teamcode.Autonomous.AutonomousRobot;
 import org.firstinspires.ftc.teamcode.Modules.Camera;
 import org.firstinspires.ftc.teamcode.Robot;
 
 
 @Config
-//@TeleOp(name = "Meet 2 FSM Automatic")
+@TeleOp(name = "Meet 2 FSM Automatic")
 public class Meet2FSMAutomatic extends LinearOpMode {
     //HardwareMap hardwareMap;
     Robot robot;
+//    AutonomousRobot autoRobot;
 
     boolean hasrun = false;
     boolean updateTime = false;
