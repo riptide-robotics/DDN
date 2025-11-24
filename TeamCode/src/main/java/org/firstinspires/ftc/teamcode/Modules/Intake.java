@@ -28,7 +28,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
+import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Intake{
@@ -38,7 +40,7 @@ public class Intake{
 
     NormalizedColorSensor colorSensor;
     DcMotor intakeMotor;
-    Servo spindexServo;
+    ServoImplEx spindexServo;
     Servo spindexArm;
     float gain = 2; // ...... ANYWAY
     public enum positions {
@@ -67,7 +69,8 @@ public class Intake{
     public Intake(HardwareMap hardwareMap){
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "REVcolorSensor");
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
-        spindexServo = hardwareMap.get(Servo.class, "spindexServo");
+        spindexServo = hardwareMap.get(ServoImplEx.class, "spindexServo");
+        spindexServo.setPwmRange(new PwmControl.PwmRange(500, 2500));
         spindexArm = hardwareMap.get(Servo.class, "spindexArm");
         spindexServo.setDirection(Servo.Direction.FORWARD);
     }
@@ -213,7 +216,7 @@ public class Intake{
     }
 
     public double spindexCurrentPosition(){
-        return spindexServo.getPosition() * 810;
+        return spindexServo.getPosition() * 900;
     }
 
     public double bootKickCurrPos(){

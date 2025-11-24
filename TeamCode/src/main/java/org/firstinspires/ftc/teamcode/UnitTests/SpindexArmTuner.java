@@ -10,7 +10,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Robot;
 
 @Config
-@TeleOp(name = "spindex tuner")
+@TeleOp(name = "spindex arm tuner")
 public class SpindexArmTuner extends LinearOpMode {
     Robot robot;
 
