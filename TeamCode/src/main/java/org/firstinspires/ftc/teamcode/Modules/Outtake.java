@@ -1,42 +1,25 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad1;
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 import static org.firstinspires.ftc.teamcode.riptideUtil.KPBottom;
 import static org.firstinspires.ftc.teamcode.riptideUtil.KPTop;
-import static org.firstinspires.ftc.teamcode.riptideUtil.TOP_FLYWHEEL_KP;
-import static org.firstinspires.ftc.teamcode.riptideUtil.BOTTOM_FLYWHEEL_KP;
 import static org.firstinspires.ftc.teamcode.riptideUtil.angularVelocity;
 import static org.firstinspires.ftc.teamcode.riptideUtil.econserved;
 import static org.firstinspires.ftc.teamcode.riptideUtil.tolerance;
 
 import android.annotation.SuppressLint;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Modules.PIDController;
-import org.firstinspires.ftc.teamcode.Tuning.OuttakePIDTuner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.firstinspires.ftc.teamcode.Placeholder;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class Outtake {
     private final DcMotor topFlywheel;
     private final DcMotor bottomFlywheel;
-
-    private final PIDController flywheelVelocityControllerBottom = new PIDController(TOP_FLYWHEEL_KP, 0, 0);
-    private final PIDController flywheelVelocityControllerTop = new PIDController(BOTTOM_FLYWHEEL_KP, 0, 0);
-
-    private boolean updatePID = false;
-
-
 
     // OUTTAKE TUNER THINGS
     LinkedList<Double> topRecords = new LinkedList<>();
@@ -44,7 +27,6 @@ public class Outtake {
     public static int queueSize = 3;
     private static double rpmTopPrev = 360;
     private static double rpmBottomPrev = 360;
-
     private double currPosTop;
     private double currPosBottom;
     private double startTime = System.nanoTime() / 1e9;
@@ -52,12 +34,38 @@ public class Outtake {
     private PIDController RPMControllerBottom = new PIDController(KPBottom, 0, 0);
     private double prevPosTop = 0;
     private  double prevPosBottom = 0;
+    private boolean atGoalSpeed = false;
+    private double rpmTopGoal;
+    private double rpmBottomGoal;
+
+
+    public Outtake(HardwareMap hardwareMap){
+        topFlywheel = hardwareMap.dcMotor.get("topFlywheel");
+        bottomFlywheel = hardwareMap.dcMotor.get("bottomFlywheel");
+
+        topFlywheel.setDirection(DcMotorSimple.Direction.REVERSE);
+        bottomFlywheel.setDirection(DcMotorSimple.Direction.REVERSE);
+    }
+
+
+    /**
+     * Prepares timer. Run this just before using anything else.
+     **/
+    public void startFlywheel(){
+        this.startTime = System.nanoTime() / 1e9;  // Current Time in Seconds
+    }
+
+
+    /**
+     * Recommended method of setting the outtake. Sets it moving.
+     **/
     public void runOuttakePID(double rpmTop, double rpmBottom, Telemetry tele){
 
         pidtunedmotor(rpmTop, rpmBottom, tele);
 
         tele.addData("goalRPMTop", rpmTop);
         tele.addData("goalRPMBottom", rpmBottom);
+
         if (rpmTopPrev != rpmTop) {
             rpmTopPrev = rpmTop;
             RPMControllerTop = new PIDController(KPTop, 0, 0);
@@ -69,9 +77,16 @@ public class Outtake {
         }
     }
 
-    private boolean atGoalSpeed = false;
+
+    /**
+     * Runs based on stored goal instead of target RPMs given by the user.
+     **/
+    public void runOuttakePID(Telemetry tele){pidtunedmotor(rpmTopGoal, rpmBottomGoal, tele);}
 
 
+    /**
+     * Similar to runOuttakePID, but doesn't handle change as well. Not recommended.
+     **/
     public void pidtunedmotor(double rpmTop, double rpmBottom, Telemetry telemetry) {
 
         prevPosTop = currPosTop;
@@ -79,6 +94,7 @@ public class Outtake {
 
         currPosTop = currPosL();
         currPosBottom = currPosR();
+
 
         double dThetaTop = (currPosTop - prevPosTop)/28;
         double dThetaBottom = (currPosBottom - prevPosBottom)/28;
@@ -89,6 +105,7 @@ public class Outtake {
         double currRPMTop = dThetaTop / (dt / 60);
         double currRPMBottom = dThetaBottom / (dt / 60);
 
+
         topRecords.add(currRPMTop);
         while (topRecords.size() > queueSize)
             topRecords.remove(0);
@@ -97,21 +114,30 @@ public class Outtake {
         while (bottomRecords.size() > queueSize)
             bottomRecords.remove(0);
 
+
         double undividedAverageBottom = 0;
         double undividedAverageTop = 0;
+
 
         for (int i = 0; i < topRecords.size(); i++) {
             undividedAverageTop += topRecords.get(i);
             undividedAverageBottom += bottomRecords.get(i);
         }
+
         double averageTop;
         double averageBottom;
+
+
         if (topRecords.size() == queueSize) {
+
             averageTop = undividedAverageTop / queueSize;
             averageBottom = undividedAverageBottom / queueSize;
+
         } else {
+
             averageTop = currRPMTop;
             averageBottom = currRPMBottom;
+
         }
 
 //        averageTop = topRecords.size() >= queueSize ? (topRecords.get(0)+topRecords.get(1)+topRecords.get(2)+topRecords.get(3)+topRecords.get(4))/5 : currRPMTop;
@@ -121,74 +147,31 @@ public class Outtake {
         telemetry.addData("top", averageTop);
         telemetry.addData("bottom", averageBottom);
 
+
         double wantedWheelPowerTopAverage = RPMControllerTop.calculate(averageTop - 200, rpmTop);
         double wantedWheelPowerBottomAverage = RPMControllerBottom.calculate(averageBottom - 200, rpmBottom);
 
 
         setFlyWheelPower(rpmTop != 0 ? wantedWheelPowerTopAverage:0,rpmBottom != 0 ? wantedWheelPowerBottomAverage:0);
 
+
         telemetry.addData("ready", bottomRecords.size() >= queueSize);
         telemetry.addData("top", averageTop);
         telemetry.addData("bottom", averageBottom);
 
+
         boolean atTopRPM = Math.abs(averageTop - rpmTop) <= tolerance;
         boolean atBotRPM = Math.abs(averageBottom - rpmBottom) <= tolerance;
+
         atGoalSpeed = atTopRPM && atBotRPM;
     }
 
-    public Outtake(HardwareMap hardwareMap){
 
-        topFlywheel = hardwareMap.dcMotor.get("topFlywheel");
-        bottomFlywheel = hardwareMap.dcMotor.get("bottomFlywheel");
-
-        topFlywheel.setDirection(DcMotorSimple.Direction.REVERSE);
-        bottomFlywheel.setDirection(DcMotorSimple.Direction.REVERSE);
-    }
-
-    public void start(double speed){
-        bottomFlywheel.setPower(speed);
-        topFlywheel.setPower(speed);
-    }
-
-    //This one method is only to set motors individually
-    public void setFlyWheelPower(double speedL, double speedR) {
-        bottomFlywheel.setPower(speedR);
-        topFlywheel.setPower(speedL);
-
-    }
-
-    public void stop(){
-        bottomFlywheel.setPower(0);
-        topFlywheel.setPower(0);
-    }
-
-
-    public boolean isAtGoalSpeed(){
-        return atGoalSpeed;
-    }
-
-
-    public void startFlywheel(){
-        this.startTime = System.nanoTime() / 1e9;  // Current Time in Seconds
-    }
-
-    public double currPos(){
-        double currPos = (double) (bottomFlywheel.getCurrentPosition() + topFlywheel.getCurrentPosition()) / 2;
-        return currPos;
-    }
-
-    //Created to allow OuttakePIDTuner to access individual positions
-    public double currPosL(){
-        return topFlywheel.getCurrentPosition();
-    }
-    public double currPosR(){
-        return bottomFlywheel.getCurrentPosition();
-    }
-
-
+    /**
+     * Sets the motors based upon distance from the goal.
+     **/
     @SuppressLint("DefaultLocale")
     public void setPowerOnDist(Double dist /* INCHES */, boolean run, Telemetry tele) {
-
 
         double rBottom = 1.41732; // INCHES
         double rTop = 1.41732; // INCHES
@@ -217,15 +200,102 @@ public class Outtake {
             rpmTop = 0;
             rpmBottom = 0;
         }
+
         pidtunedmotor(rpmTop, rpmBottom, tele);
+
         tele.addLine(String.format("Calculated rpm top: %f", rpmTop));
         tele.addLine(String.format("Calculated rpm bottom: %f", rpmBottom));
     }
 
-    private double rpmTopGoal;
-    private double rpmBottomGoal;
 
-    public void setOuttakeRPM (double rpmTop, double rpmBottom){rpmTopGoal = rpmTop; rpmBottomGoal = rpmBottom;}
-    public void runOuttakePID(Telemetry tele){pidtunedmotor(rpmTopGoal, rpmBottomGoal, tele);}
+    /**
+     * Places goals instead of directly commanding motors. <br>
+     * "Now it's some other poor soul's job!" - this method
+     **/
+    public void setOuttakeRPM(double rpmTop, double rpmBottom){rpmTopGoal = rpmTop; rpmBottomGoal = rpmBottom;}
 
+
+    /**
+     * Completely skip tuning and run both motors at the same voltage.
+     **/
+    public void start(double speed){
+        bottomFlywheel.setPower(speed);
+        topFlywheel.setPower(speed);
+    }
+
+
+    /**Completely skip tuning and set motor voltages individually. As fundamental as you get.
+     * */
+    public void setFlyWheelPower(double speedT, double speedB) {
+        bottomFlywheel.setPower(speedB);
+        topFlywheel.setPower(speedT);
+    }
+
+
+    /**
+     * Directly stop power to both motors. Works surprisingly well, although not really used.
+     **/
+    public void stop(){
+        bottomFlywheel.setPower(0);
+        topFlywheel.setPower(0);
+    }
+
+
+    /**
+     * Checks if it is within acceptable ranges.
+     **/
+    public boolean isAtGoalSpeed(){
+        return atGoalSpeed;
+    }
+
+
+    /**
+     *Gets the current position, in ticks, of the top flywheel.
+     **/
+    public double currPosL(){
+        return topFlywheel.getCurrentPosition();
+    }
+
+
+    /**
+     * Gets the current position, in ticks, of the bottom flywheel.
+     **/
+    public double currPosR(){
+        return bottomFlywheel.getCurrentPosition();
+    }
+
+
+    /**Sets the the goal for the top motor to reach in its PID. For the future.
+     * Placeholder, do not use except in other placeholders.
+     **/
+    @Placeholder
+    public void SetFlyWheelTopGoal(double rpm) {rpmTopGoal = rpm;}
+
+
+    /** Sets the the goal for the bottom motor to reach in its PID. For the future.
+     * Placeholder, do not use except in other placeholders.
+     **/
+    @Placeholder
+    public void setFlywheelBottomGoal(double rpm) {rpmBottomGoal = rpm;}
+
+
+    /**
+     * sets some internal variable that has an angle MAKE SURE THAT ANGLES ARE BOUNDED. Also not working just yet.
+     **/
+    @Placeholder
+    public void SetTurretGoalAngle(double angle) {throw new UnsupportedOperationException("Not working just yet!");}
+
+
+    /** Attempt to set the turret to a specific angle, using a future PID.
+     * Placeholder, do not use except in other placeholders.
+     **/
+    @Placeholder
+    public void SetTurretAnglePID() {throw new UnsupportedOperationException("Not working just yet!");}
+
+
+    /**Fire the turret.
+     * Placeholder, do not use except in other placeholders.
+     **/
+    @Placeholder
+    public void SetTurretPowerPID() {throw new UnsupportedOperationException("Not working just yet!");}// PID to Angle
 }

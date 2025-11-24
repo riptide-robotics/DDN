@@ -7,6 +7,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
+import org.firstinspires.ftc.teamcode.Placeholder;
 import org.firstinspires.ftc.teamcode.riptideUtil;
 
 // --- CAMERA --- //
@@ -422,6 +423,7 @@ public class Camera {
                 break;
         }
     }
+    @Placeholder
     public char[] scanMotifOrder() {
         throw new UnsupportedOperationException("scanMotifOrder not yet supported!");
     }
