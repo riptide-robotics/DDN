@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Placeholder;
 
 import java.util.LinkedList;
 
@@ -267,29 +268,34 @@ public class Outtake {
     /**Sets the the goal for the top motor to reach in its PID. For the future.
      * Placeholder, do not use except in other placeholders.
      **/
+    @Placeholder
     public void SetFlyWheelTopGoal(double rpm) {rpmTopGoal = rpm;}
 
 
     /** Sets the the goal for the bottom motor to reach in its PID. For the future.
      * Placeholder, do not use except in other placeholders.
      **/
+    @Placeholder
     public void setFlywheelBottomGoal(double rpm) {rpmBottomGoal = rpm;}
 
 
     /**
      * sets some internal variable that has an angle MAKE SURE THAT ANGLES ARE BOUNDED. Also not working just yet.
      **/
+    @Placeholder
     public void SetTurretGoalAngle(double angle) {throw new UnsupportedOperationException("Not working just yet!");}
 
 
     /** Attempt to set the turret to a specific angle, using a future PID.
      * Placeholder, do not use except in other placeholders.
      **/
+    @Placeholder
     public void SetTurretAnglePID() {throw new UnsupportedOperationException("Not working just yet!");}
 
 
     /**Fire the turret.
      * Placeholder, do not use except in other placeholders.
      **/
+    @Placeholder
     public void SetTurretPowerPID() {throw new UnsupportedOperationException("Not working just yet!");}// PID to Angle
 }

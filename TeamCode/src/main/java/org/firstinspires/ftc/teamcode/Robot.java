@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.Modules.Indicator;
 import org.firstinspires.ftc.teamcode.Modules.Intake;
 import org.firstinspires.ftc.teamcode.Modules.Outtake;
 import org.firstinspires.ftc.teamcode.Modules.Sequencer;
+import org.firstinspires.ftc.teamcode.Tuning.HeadingPIDTuner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +68,7 @@ public class Robot {
         outtake.setPowerOnDist(distance, run, tele);
     }
 
-
+    @Placeholder(note = "atomic amount of framework here")
     public void shootbasedoncolor() {
         if (true) /*shut up IDE*/ throw new UnsupportedOperationException("Can't do this yet!");
         rotateToColor();
@@ -83,20 +84,29 @@ public class Robot {
             }, 0.5);
         }
     }
+    @Placeholder
     public void /*figure out what we are returning later*/ rotateToColor() {
         throw new UnsupportedOperationException("Can't rotate just yet");
     }
-    public void alignTurretToRedGoal() {
-        double error = 0; //getAngleToRedGoal(); TODO set this up somewhere?
-        //outtake.setGoalAngle(outtake.getCurrentAngle() + error) TODO too
-        throw new UnsupportedOperationException("Can't align just yet");
-    }
 
+    @Placeholder
+    public void alignTurretToRedGoal() {
+        //getAngleToRedGoal(); TODO set this up somewhere?
+        //outtake.setGoalAngle(outtake.getCurrentAngle() + error) TODO too
+
+        //shut up ide im trying to do work that wont run yet
+        if (1+1==2) throw new UnsupportedOperationException("Can't align just yet");
+
+        double error = camera.getGoalAngleError();
+        //TODO this has to be added to the FSM directly or maybe to a system that can.
+    }
+    @Placeholder
     public void alignTurretToBlueGoal() {
         double error = 0; //getAngleToBlueGoal(); TODO set this up somewhere?
         //outtake.setGoalAngle(outtake.getCurrentAngle() + error) TODO too
         throw new UnsupportedOperationException("Can't align just yet");
     }
+    @Placeholder
     public void aimToRedGoal(){ // copy for blue
         double dist = 0; //camera.getdisttoredgoal(); yeah TODO too
         /**
@@ -104,7 +114,7 @@ public class Robot {
          * based on which section we fall into.
          */
     }
-
+    @Placeholder
     public void aimToBlueGoal(){ // copy for blue
         double dist = 0; //camera.getdisttobluegoal(); yeah TODO too
         /**
