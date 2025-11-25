@@ -26,7 +26,6 @@ import org.firstinspires.ftc.teamcode.Robot;
 public class Meet2FSMManual extends LinearOpMode {
     //HardwareMap hardwareMap;
     Robot robot;
-    AutonomousRobot autoRobot;
 
     boolean hasrun = false;
     boolean updateTime = false;

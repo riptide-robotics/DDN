@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.Teleop;
 
 import static org.firstinspires.ftc.teamcode.riptideUtil.SPINDEX_ARM_RESTING;
 import static org.firstinspires.ftc.teamcode.riptideUtil.SPINDEX_ARM_UP;
+import static org.firstinspires.ftc.teamcode.riptideUtil.TEAM_COLOR.RED;
+import static org.firstinspires.ftc.teamcode.riptideUtil.TEAM_COLOR.BLUE;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -15,6 +17,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 //import org.firstinspires.ftc.teamcode.Autonomous.AutonomousRobot;
 import org.firstinspires.ftc.teamcode.Modules.Camera;
 import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.riptideUtil;
 
 
 @Config
@@ -69,6 +72,7 @@ public class Meet2FSMAutomatic extends LinearOpMode {
         hasrun = false;
 
         robot = new Robot(hardwareMap);
+        robot.setTeamColor(RED);
 
         telemetry.addData("Robot status:", "succesfully initiated");
         telemetry.update();

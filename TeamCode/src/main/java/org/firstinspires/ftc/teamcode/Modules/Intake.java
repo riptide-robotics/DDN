@@ -24,7 +24,7 @@ import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class Intake{
-    String[] order = new String[3];
+    char[] order = new char[3];
     TelemetryPacket t = new TelemetryPacket();
     int[] pgratio = new int[2];
 
@@ -100,11 +100,11 @@ public class Intake{
 
     public void uptakeTarget() {
         int toSet;
-        if (order[0] == null) { // EMPTY INTAKE
+        if (order[0] == 'b') { // EMPTY INTAKE
             toSet = 0;
-        } else if (order[1] == null) {
+        } else if (order[1] == 'b') {
             toSet = 1;
-        } else if (order[2] == null) {
+        } else if (order[2] == 'b') {
             toSet = 2;
         } else { // FULL INTAKE
             toSet = -1;
@@ -119,8 +119,10 @@ public class Intake{
             pgratio[0]++;
         } else if (color.equals("Green")) {
             pgratio[1]++;
+        } else if (color.equals("Blank")) {
+            t.addLine("Congrats: you found no color to uptake idiot.");
         }
-        order[toSet] = color;
+        order[toSet] = color.toLowerCase().charAt(0);
         t.addLine("Uptake Result: Success - " + color + " artifact uptaked into position " + toSet);
     }
 
@@ -131,7 +133,7 @@ public class Intake{
     public void movetoEmptySlot() {
         int emptySlot = -1;
         for (int i = 0; i < order.length; i++) {
-            if (order[i] == null) {
+            if (order[i] == 'b') {
                 emptySlot = i;
                 break;
             }
@@ -164,9 +166,11 @@ public class Intake{
             pgratio[0]++;
         } else if (color.equals("Green")) {
             pgratio[1]++;
+        } else if (color.equals("Blank")) {
+            t.addLine("Congrats: There's no ball there.");
         }
 
-        order[0] = color;
+        order[0] = color.toLowerCase().charAt(0);
     }
 
     public void BootKick(double pos){
@@ -179,18 +183,18 @@ public class Intake{
 
 
     public void ejectArtifact(char colorReq){ // colorReq should b 'p' (purple) or 'g' (green)
-        String tmp;
-        if (order[0] == null || order[0].toLowerCase().charAt(0) != colorReq) {
-            if (order[1] == null || order[1].toLowerCase().charAt(0) != colorReq) {
-                if (order[2] == null || order[2].toLowerCase().charAt(0) != colorReq) {
+        char tmp;
+        if (order[0] == 'b' || order[0] != colorReq) {
+            if (order[1] == 'b' || order[1] != colorReq) {
+                if (order[2] == 'b' || order[2] != colorReq) {
                     t.addLine("Eject result: Failed search");
                     t.addLine("Action: Ejecting artifact");
                     tmp = order[0];
-                    order[0] = null;
-                    if (tmp == null) {
+                    order[0] = 'b';
+                    if (tmp == 'b') {
                         pgratio[0]++;
                         pgratio[0]--;
-                    } else if (tmp.toLowerCase().charAt(0) == 'p') {
+                    } else if (tmp == 'p') {
                         pgratio[0]--;
                     } else {
                         pgratio[1]--;
@@ -203,8 +207,8 @@ public class Intake{
                     t.addLine("Action: Ejecting artifact");
                     // EJECT FUNCTION
                     tmp = order[0];
-                    order[0] = null;
-                    if (tmp.toLowerCase().charAt(0) == 'p') {
+                    order[0] = 'b';
+                    if (tmp == 'p') {
                         pgratio[0]--;
                     } else {
                         pgratio[1]--;
@@ -218,8 +222,8 @@ public class Intake{
                 t.addLine("Action: Ejecting artifact");
                 // EJECT FUNCTION
                 tmp = order[0];
-                order[0] = null;
-                if (tmp.toLowerCase().charAt(0) == 'p') {
+                order[0] = 'b';
+                if (tmp == 'p') {
                     pgratio[0]--;
                 } else {
                     pgratio[1]--;
@@ -231,8 +235,8 @@ public class Intake{
             t.addLine("Action: Ejecting artifact");
             // EJECT FUNCTION
             tmp = order[0];
-            order[0] = null;
-            if (tmp.toLowerCase().charAt(0) == 'p') {
+            order[0] = 'b';
+            if (tmp == 'p') {
                 pgratio[0]--;
             } else {
                 pgratio[1]--;
@@ -244,7 +248,7 @@ public class Intake{
     }
 
     public void rotateOne(boolean forwards) { // HAVE ROTATOR FUNCTIONALITY W/IN THIS FUNCTION
-        String tmp = order[0];
+        char tmp = order[0];
         if (forwards) {
             rotateSpindexOnce();
             order[0] = order[1];
@@ -310,8 +314,11 @@ public class Intake{
     }
     public void setMotifOrder(char[] order) {
         if (order.length != 3) throw new RuntimeException("you put a bad order into an unsupported system. Congratulations.");
-        throw new UnsupportedOperationException("This does not work!");
-    }
+        this.order[0] = order[0]; this.order[1] = order[1]; this.order[2] = order[2]; //return;
+        //throw new UnsupportedOperationException("This does not work!");
+    } // Honestly just run the camera's scanMotifOrder in here and be done with it
+      // Otherwise remember to run scanMotifOrder in robot or whatever to set
+      // order to the correct obelisk value.
     public void rotateToPositionShoot(int pos) {
         throw new UnsupportedOperationException("This does not work!");
     }

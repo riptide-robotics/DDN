@@ -1,18 +1,29 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
 // --- CONSTANTS & OTHER STUFF --- //
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.matrices.MatrixF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
 import org.firstinspires.ftc.teamcode.Placeholder;
 import org.firstinspires.ftc.teamcode.riptideUtil;
 
 // --- CAMERA --- //
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
+import org.firstinspires.ftc.vision.apriltag.AprilTagMetadata;
+import org.firstinspires.ftc.vision.apriltag.AprilTagPoseFtc;
+import org.firstinspires.ftc.vision.apriltag.AprilTagPoseRaw;
 import org.firstinspires.ftc.vision.opencv.ImageRegion;
+import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
 // --- PORTALS & PROCESSORS & SIMILAR STUFF --- //
@@ -51,7 +62,7 @@ import com.qualcomm.robotcore.util.SortOrder;
  *
  */
 
-public class Camera {
+public class Camera extends OpenCvPipeline {
 
     ///////////////////////////////////////////////
     ////                                     /////
@@ -70,6 +81,19 @@ public class Camera {
     ArrayList<ArrayList<Double>> blobs = new ArrayList<>();
     String goalTag;
     CameraName cameraname;
+
+    int blueGoalID = 20;
+    int redGoalID = 24;
+    boolean isRed = true;
+
+    public Camera(double v, double v1, double v2, double v3, double v4) {
+    }
+
+    @Override
+    public Mat processFrame(Mat input) {
+        return null;
+    }
+
     public enum processors_enabled {
         NONE,
         TAG,
@@ -83,7 +107,8 @@ public class Camera {
     ////                                     /////
     //////////////////////////////////////////////
 
-    public Camera(HardwareMap hardwareMap) {
+    public Camera(HardwareMap hardwareMap, riptideUtil.TEAM_COLOR teamColor) {
+        isRed = teamColor == riptideUtil.TEAM_COLOR.RED;
         cameraname = hardwareMap.get(WebcamName.class, "Webcam 1");
         tag_processor = new AprilTagProcessor.Builder()
                 .setTagLibrary(riptideUtil.getLibrary())
@@ -200,7 +225,7 @@ public class Camera {
 
     public boolean isGoalTag(AprilTagDetection detection) {
         // For red alliance goal
-        return detection.id == 24;
+        return isRed ? detection.id == 24 : detection.id == 20;
     }
 
     public AprilTagDetection getGoalApriltag() {
@@ -229,8 +254,32 @@ public class Camera {
     public double getAprilTagDistance(AprilTagDetection tag) {
         double x = tag.robotPose.getPosition().x;
         double y = tag.robotPose.getPosition().y;
-        double z = tag.robotPose.getPosition().z;
-        return Math.sqrt(x * x + y * y + z * z);
+        //double z = tag.robotPose.getPosition().z;
+        return Math.sqrt(x * x + y * y/* + z * z*/);
+    }
+    public double getDistanceToRedGoal() {
+        detections = getTagDetections();
+        for (AprilTagDetection detection : detections) {
+            if (detection.id == redGoalID) {
+                double x = detection.robotPose.getPosition().x;
+                double y = detection.robotPose.getPosition().y;
+                //double z = detection.robotPose.getPosition().z;
+                return Math.sqrt(x * x + y * y/* + z * z*/);
+            }
+        }
+        return -1;
+    }
+    public double getDistanceToBlueGoal() {
+        detections = getTagDetections();
+        for (AprilTagDetection detection : detections) {
+            if (detection.id == blueGoalID) {
+                double x = detection.robotPose.getPosition().x;
+                double y = detection.robotPose.getPosition().y;
+                //double z = detection.robotPose.getPosition().z;
+                return Math.sqrt(x * x + y * y/* + z * z*/);
+            }
+        }
+        return -1;
     }
 
     public double getTagHorizontalAngle(AprilTagDetection tag) {
@@ -246,6 +295,28 @@ public class Camera {
 
         //the angle of the april tag relative to the camera
         return horizontal_angle;
+    }
+    public double getAngleToRedGoal() {
+        detections = getTagDetections();
+        for (AprilTagDetection detection : detections) {
+            if (detection.id == redGoalID) {
+                double delta_x = (double) riptideUtil.CAMERA_WIDTH / 2 - detection.center.x;
+                double horizontal_angle = delta_x * riptideUtil.CAM_FOV / riptideUtil.CAMERA_WIDTH;
+                return horizontal_angle;
+            }
+        }
+        return -1;
+    }
+    public double getAngleToBlueGoal() {
+        detections = getTagDetections();
+        for (AprilTagDetection detection : detections) {
+            if (detection.id == blueGoalID) {
+                double delta_x = (double) riptideUtil.CAMERA_WIDTH / 2 - detection.center.x;
+                double horizontal_angle = delta_x * riptideUtil.CAM_FOV / riptideUtil.CAMERA_WIDTH;
+                return horizontal_angle;
+            }
+        }
+        return -1;
     }
 
     public EditablePose2D findNearestArtifact() {
@@ -357,6 +428,10 @@ public class Camera {
                             detection.robotPose.getPosition().z));
                     telemetry.addLine(String.format("Distance %f (inch)",
                             getAprilTagDistance(detection)));
+                    telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)",
+                            detection.robotPose.getOrientation().getPitch(AngleUnit.DEGREES),
+                            detection.robotPose.getOrientation().getRoll(AngleUnit.DEGREES),
+                            detection.robotPose.getOrientation().getYaw(AngleUnit.DEGREES)));
                 }
             } else {
                 telemetry.addLine(String.format("Unknown Name (ID %d)", detection.id));
@@ -379,10 +454,6 @@ public class Camera {
         }
     }
 
-    public void tagAngle(double angle){
-
-    }
-
     public Double getGoalDistance() {
         AprilTagDetection goalDetection = getGoalApriltag();
         if (goalDetection == null) {
@@ -391,11 +462,9 @@ public class Camera {
 
         double x = goalDetection.robotPose.getPosition().x;
         double y = goalDetection.robotPose.getPosition().y;
-        double z = goalDetection.robotPose.getPosition().z;
+        //double z = goalDetection.robotPose.getPosition().z;
 
-
-
-        return Math.sqrt(x * x + y * y + z * z);
+        return Math.sqrt(x * x + y * y/* + z * z*/) * 0.03937008 /* convert from mm to inches*/;
     }
 
     public Double getGoalAngleError() {
@@ -405,6 +474,16 @@ public class Camera {
         }
 
         return getTagHorizontalAngle(goalDetection);
+    }
+
+    public double getAbsoluteAngleError(double currAngle, double error) {
+        if (currAngle + error < 0) {
+            return error + 360;
+        } else if (currAngle + error > 360) {
+            return error - 360;
+        } else {
+            return error;
+        }
     }
 
     public void runCamera(processors_enabled processor){
@@ -425,6 +504,21 @@ public class Camera {
     }
     @Placeholder
     public char[] scanMotifOrder() {
-        throw new UnsupportedOperationException("scanMotifOrder not yet supported!");
+        detections = getTagDetections();
+        char[] motifOrder = new char[3];
+        for(AprilTagDetection detection : detections) {
+            if (detection.id == 21) {
+                motifOrder[0] = 'g'; motifOrder[1] = 'p'; motifOrder[2] = 'p';
+                return motifOrder;
+            } else if (detection.id == 22) {
+                motifOrder[0] = 'p'; motifOrder[1] = 'g'; motifOrder[2] = 'p';
+                return motifOrder;
+            } else if (detection.id == 23) {
+                motifOrder[0] = 'p'; motifOrder[1] = 'p'; motifOrder[2] = 'g';
+                return motifOrder;
+            }
+        }
+        motifOrder[0] = 'b'; motifOrder[1] = 'b'; motifOrder[2] = 'b';
+        return motifOrder;
     }
 }
