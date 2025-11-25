@@ -35,7 +35,7 @@ public class SpindexArmTuner extends LinearOpMode {
 
         waitForStart();
         while (opModeIsActive()){
-            if (gamepad1.x){
+            if (gamepad2.x){
                 robot.getIntake().BootKick(up);
             } else {
                 robot.getIntake().closeTransfer(resting);
