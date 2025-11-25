@@ -92,6 +92,7 @@ public class LinearTrajectoryBuilder {
             double totalTime = 2 * accelTime + cruiseTime;
 
             double heading = Math.atan2(dy, dx); // Radians
+
             // sampling
             for (int s = 1; s <= samples; s++) {
                 Trajectory.PathSample p;
