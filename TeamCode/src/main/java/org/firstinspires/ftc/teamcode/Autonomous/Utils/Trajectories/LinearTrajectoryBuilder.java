@@ -48,9 +48,15 @@ public class LinearTrajectoryBuilder {
         if (controlPoints.size() <= 1) {
             throw new IllegalArgumentException("Your path size must be greater than 1");
         }
+
+        double startTime = 0;
+        int samples = 100;
+        ArrayList<Trajectory.PathSample> pathSamples = new ArrayList<>();
+
         for (int i = 0; i < controlPoints.size() - 1; i++) {
             // create profile, sample 100 times.
-            //trapezoidal
+
+            //trapezoidal profile
             Pose2D startPoint = controlPoints.get(i);
             Pose2D endPoint = controlPoints.get(i + 1);
 
@@ -72,10 +78,30 @@ public class LinearTrajectoryBuilder {
             }
 
             double accelTime = effMaxV / MAX_A_VERT;
+            double accelDist = 0.5 * MAX_A_VERT * Math.pow(accelTime, 2);
+
+            if (accelDist > absDist/2){
+               accelTime = Math.sqrt(2 * (absDist/2) / MAX_A_VERT);
+               accelDist =  absDist / 2;
+            }
+
+            double cruiseDist = absDist - 2 * accelDist;
+            double cruiseTime = cruiseDist / MAX_V_VERT;
+            double decelTime = accelTime + cruiseTime;
+
+            double totalTime = 2 * accelTime + cruiseTime;
+
+            double heading = Math.atan2(dy, dx); // Radians
+
+//            // sampling
+//            for (int s = 1; s <= samples; s++){
+//               double time = (double)( s / samples) * totalTime;
+//
+//            }
         }
         double totalTime = 0;
 
-        return new Trajectory(new ArrayList<Trajectory.PathSample>());
+        return new Trajectory(pathSamples);
     }
 
 }
