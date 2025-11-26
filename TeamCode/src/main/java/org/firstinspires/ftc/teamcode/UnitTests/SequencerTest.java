@@ -39,28 +39,39 @@ public class SequencerTest extends LinearOpMode {
             sequencerTest();
         }
     }
-    public static boolean hasRun = false;
+    public boolean hasARun = false;
+    public boolean hasBARun = false;
+    public boolean hasBBRun = false;
+    public int numberXRun = 0;
+
     private void sequencerTest() {
 
-        robot.s.teleloop(telemetry);
-        telemetry.addData("action","Working!");
+        robot.s.loop();
+        telemetry.addData("actionA",hasARun);
         if (gamepad1.aWasPressed() && robot.s.actions.isEmpty())
             robot.s.addAction(() -> {
-                hasRun = true;
+                hasARun = true;
             },1);
 
 
 
-//        if (gamepad1.b) {
-//
-//            robot.s.addAction(() -> {
-//                robot.getOuttake().runOuttakePID(BTop,BBottom,telemetry);
-//            },1);
-//
-//            robot.s.addAction(() -> {
-//                robot.getOuttake().runOuttakePID(BTop,BBottomSecondary,telemetry);
-//            },1);
-//        }
+        telemetry.addData("actionBA",hasBARun);
+        telemetry.addData("actionBB",hasBBRun);
+
+        if (gamepad1.bWasPressed() && robot.s.actions.isEmpty()) {
+            robot.s.addAction(() -> {
+                hasBARun = true;
+            }, 1);
+            robot.s.addAction(() -> {
+                hasBBRun = true;
+            },1);
+        }
+        telemetry.addData("actionXCount",numberXRun);
+        if (gamepad1.x) {
+            robot.s.addAction(() -> {
+                numberXRun++;
+            }, 3);
+        }
 //
 //
 //        if (gamepad1.xWasPressed()) {

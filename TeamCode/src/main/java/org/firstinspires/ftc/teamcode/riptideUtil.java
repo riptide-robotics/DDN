@@ -10,17 +10,6 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagLibrary;
 
 @Config
 public class riptideUtil {
-    //TEMPORARY (hopefully, i have no clue what these are supposed to be)
-    //get rid of these at the first possible opportunity please
-    public static final float SHORT_DIST_TOP = 0;
-    public static final float SHORT_DIST_BOT = 0;
-    public static final float LONG_DIST_TOP = 0;
-    public static final float LONG_DIST_BOT = 0;
-    public static final float MID_DIST_TOP = 0;
-    public static final float MID_DIST_BOT = 0;
-    public static final float LAT_KD = 0;
-    public static final float LAT_KI = 0;
-    public static final float LAT_KP = 0;
 
 
 
