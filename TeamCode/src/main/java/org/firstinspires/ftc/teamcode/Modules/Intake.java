@@ -33,6 +33,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.UnitTests.SpindexPositions;
+
 public class Intake{
     String[] order = new String[3];
     TelemetryPacket t = new TelemetryPacket();
@@ -184,14 +186,6 @@ public class Intake{
     boolean moveSlotTwoToPickup = false;
     boolean moveSlotThreeToPickup = true;
 
-    public void BootKick(double pos){
-        spindexArm.setPosition(pos);
-
-    }
-
-    public void ResetBootKick(double pos){
-        spindexArm.setPosition(pos);
-    }
 
     public void slotOnePickup(){
         spindexPos2to1Gear(SLOT_ONE_PIKCUP_POS);
@@ -213,14 +207,6 @@ public class Intake{
     }
     public void slotThreeOuttake(){
         spindexPos2to1Gear(SLOT_THREE_SHOOT_POS);
-    }
-
-    public double spindexCurrentPosition(){
-        return spindexServo.getPosition() * 900;
-    }
-
-    public double bootKickCurrPos(){
-        return spindexArm.getPosition();
     }
 
     public void ejectArtifact(char colorReq){ // colorReq should b 'p' (purple) or 'g' (green)
@@ -306,26 +292,7 @@ public class Intake{
     public void spin(double p) {
         intakeMotor.setPower(p);
     }
-    public void rotateSpindexOnce() {
-        double currPos = spindexServo.getPosition() * 900;
-        if (900 > currPos + ROTATE_SPINDEX_ONCE){
-            spindexServo.setPosition(fiveTurnToServo(currPos - ROTATE_SPINDEX_ONCE));
-            t.addLine("Rotating Spindex to " + fiveTurnToServo(currPos - ROTATE_SPINDEX_ONCE) + "(deg)");
-        }
-        if (-900 < currPos - ROTATE_SPINDEX_ONCE){
-            spindexServo.setPosition(fiveTurnToServo(currPos + ROTATE_SPINDEX_ONCE));
-            t.addLine("Rotating Spindex " + fiveTurnToServo(currPos + ROTATE_SPINDEX_ONCE) + "(deg)");
-        }
 
-    }
-
-    // THIS IS PURELY FOR TUNING DELETE AFTER
-    public void spindexPos2to1Gear(double pos){
-        spindexServo.setPosition(fiveTurnToServo(pos));
-    }
-    public void spindexPos(double pos){
-        spindexServo.setPosition(pos);
-    }
 //    public void transferToggle() {
 //        if (spindexServo.getPower() > 0) {
 //            spinSpindex(0);
@@ -355,7 +322,7 @@ public class Intake{
 
     public double fiveTurnToServo(double angle){
         //900 instead of 1800 because we using 2:1 gear ratio (180*5)
-        return angle <= 900 && angle >= 0 ? angle / 900 : angle > 900 ? 1 : 0;
+        return angle <= 890 && angle >= 0 ? angle / 890 : angle > 890 ? 1 : 0;
     }
     public void setMotifOrder(char[] order) {
         if (order.length != 3) throw new RuntimeException("you put a bad order into an unsupported system. Congratulations.");
@@ -390,4 +357,110 @@ public class Intake{
     public boolean hasRecievedArtifact(String color) {
         return false;
     }
+
+
+    // ******************************************
+    //                SPINDEX
+    // ******************************************
+    public static SpindexPositions.slotStatus SLOT_0 = SpindexPositions.slotStatus.BLANK;
+    public static SpindexPositions.slotStatus SLOT_1 = SpindexPositions.slotStatus.BLANK;
+    public static SpindexPositions.slotStatus SLOT_2 = SpindexPositions.slotStatus.BLANK;
+
+    public static int diff;
+    public  int currAngle;
+
+    public UnshiftedPositions currentState = UnshiftedPositions.SLOT_0_SHOOT;
+
+
+    public enum slotStatus {
+        BLANK, GREEN, PURPLE
+    }
+
+    public enum UnshiftedPositions {
+        SLOT_0_SHOOT(180),
+        SLOT_1_SHOOT(60),
+        SLOT_2_SHOOT(-60),
+        SLOT_0_RECEIVE(0),
+        SLOT_1_RECEIVE(120),
+        SLOT_2_RECEIVE(-120);
+
+
+        public final int posUnshifted;
+        UnshiftedPositions(int pos) {this.posUnshifted = pos;}
+    }
+
+    public void goTo(UnshiftedPositions goal) {
+        diff = goal.posUnshifted - currentState.posUnshifted;
+        if (diff < -180) {
+            diff += 360;
+        }
+        if (diff > 180) {
+            diff -= 360;
+        }
+
+        int newAngle = currAngle + diff;
+        if (newAngle < 0) {newAngle += 360;}
+        if (newAngle > 890) {newAngle -= 360;}
+        currAngle = newAngle;
+        spindexPos2to1Gear(newAngle);
+        currentState = goal;
+    }
+
+    public void initSpindex(){
+        currAngle = 450;
+        spindexPos2to1Gear(currAngle);
+        currentState = UnshiftedPositions.SLOT_0_RECEIVE;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    public void rotateSpindexOnce() {
+        double currPos = spindexServo.getPosition() * 900;
+        if (900 > currPos + ROTATE_SPINDEX_ONCE){
+            spindexServo.setPosition(fiveTurnToServo(currPos - ROTATE_SPINDEX_ONCE));
+            t.addLine("Rotating Spindex to " + fiveTurnToServo(currPos - ROTATE_SPINDEX_ONCE) + "(deg)");
+        }
+        if (-900 < currPos - ROTATE_SPINDEX_ONCE){
+            spindexServo.setPosition(fiveTurnToServo(currPos + ROTATE_SPINDEX_ONCE));
+            t.addLine("Rotating Spindex " + fiveTurnToServo(currPos + ROTATE_SPINDEX_ONCE) + "(deg)");
+        }
+
+    }
+
+    // THIS IS PURELY FOR TUNING DELETE AFTER
+    public void spindexPos2to1Gear(double pos){
+        spindexServo.setPosition(fiveTurnToServo(pos));
+    }
+    public void spindexPos(double pos){
+        spindexServo.setPosition(pos);
+    }
+
+
+    public double spindexCurrentPosition(){
+        return spindexServo.getPosition() * 890;
+    }
+
+    public double bootKickCurrPos(){
+        return spindexArm.getPosition();
+    }
+
+
+    public void BootKick(double pos){
+        spindexArm.setPosition(pos);
+
+    }
+
+    public void ResetBootKick(double pos){
+        spindexArm.setPosition(pos);
+    }
+
 }
