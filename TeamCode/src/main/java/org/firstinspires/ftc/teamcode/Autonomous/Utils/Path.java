@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+//<<<<<<< HEAD
 package org.firstinspires.ftc.teamcode.Autonomous.Utils;
 
 import java.util.ArrayList;
@@ -95,7 +95,7 @@ public class Path {
 
     }
 }
-=======
+//=======
 //package org.firstinspires.ftc.teamcode.Autonomous.Utils;
 //
 //import java.util.ArrayList;
@@ -192,4 +192,4 @@ public class Path {
 //
 //    }
 //}
->>>>>>> 4dce6e63ce4704642c0c94309bb3786bb3f9a8d2
+//>>>>>>> 4dce6e63ce4704642c0c94309bb3786bb3f9a8d2

@@ -39,43 +39,46 @@ public class SequencerTest extends LinearOpMode {
             sequencerTest();
         }
     }
+    public static boolean hasRun = false;
     private void sequencerTest() {
 
-        robot.s.loop();
-
-        if (gamepad1.aWasPressed())
+        robot.s.teleloop(telemetry);
+        telemetry.addData("action","Working!");
+        if (gamepad1.aWasPressed() && robot.s.actions.isEmpty())
             robot.s.addAction(() -> {
-                telemetry.addData("action A","Working!");
+                hasRun = true;
             },1);
 
 
-        if (gamepad1.b) {
 
-            robot.s.addAction(() -> {
-                robot.getOuttake().runOuttakePID(BTop,BBottom,telemetry);
-            },1);
-
-            robot.s.addAction(() -> {
-                robot.getOuttake().runOuttakePID(BTop,BBottomSecondary,telemetry);
-            },1);
-        }
-
-
-        if (gamepad1.xWasPressed()) {
-            robot.s.addAction(() -> {
-                robot.getOuttake().runOuttakePID(XTop,XBottom,telemetry);
-            },1);
-            robot.s.addAction(() -> {
-                robot.getOuttake().runOuttakePID(XTop,XBottom,telemetry);
-            },1.5);
-        }
-        if (gamepad1.yWasPressed()) {
-            robot.s.addAction(() -> {
-                robot.getOuttake().runOuttakePID(YTop,YBottom,telemetry);
-            },1);
-            robot.s.addAction(() -> {
-                robot.getIntake().spin(0.5); //james says keep this low to be safe. This has the side effect of removing control from the driver.
-            },1);
-        }
+//        if (gamepad1.b) {
+//
+//            robot.s.addAction(() -> {
+//                robot.getOuttake().runOuttakePID(BTop,BBottom,telemetry);
+//            },1);
+//
+//            robot.s.addAction(() -> {
+//                robot.getOuttake().runOuttakePID(BTop,BBottomSecondary,telemetry);
+//            },1);
+//        }
+//
+//
+//        if (gamepad1.xWasPressed()) {
+//            robot.s.addAction(() -> {
+//                robot.getOuttake().runOuttakePID(XTop,XBottom,telemetry);
+//            },1);
+//            robot.s.addAction(() -> {
+//                robot.getOuttake().runOuttakePID(XTop,XBottom,telemetry);
+//            },1.5);
+//        }
+//        if (gamepad1.yWasPressed()) {
+//            robot.s.addAction(() -> {
+//                robot.getOuttake().runOuttakePID(YTop,YBottom,telemetry);
+//            },1);
+//            robot.s.addAction(() -> {
+//                robot.getIntake().spin(0.5); //james says keep this low to be safe. This has the side effect of removing control from the driver.
+//            },1);
+//        }
+        telemetry.update();
     }
 }
