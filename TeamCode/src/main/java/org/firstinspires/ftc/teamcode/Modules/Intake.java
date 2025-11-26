@@ -33,8 +33,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.UnitTests.SpindexPositions;
-
 public class Intake{
     char[] order = new char[3];
     TelemetryPacket t = new TelemetryPacket();
@@ -326,7 +324,7 @@ public class Intake{
 
     public double fiveTurnToServo(double angle){
         //900 instead of 1800 because we using 2:1 gear ratio (180*5)
-        return angle <= 890 && angle >= 0 ? angle / 890 : angle > 890 ? 1 : 0;
+        return angle <= 887 && angle >= 0 ? angle / 887 : angle > 887 ? 1 : 0;
     }
     public void setMotifOrder(char[] order) {
         if (order.length != 3) throw new RuntimeException("you put a bad order into an unsupported system. Congratulations.");
@@ -369,12 +367,12 @@ public class Intake{
     // ******************************************
     //                SPINDEX
     // ******************************************
-    public static SpindexPositions.slotStatus SLOT_0 = SpindexPositions.slotStatus.BLANK;
-    public static SpindexPositions.slotStatus SLOT_1 = SpindexPositions.slotStatus.BLANK;
-    public static SpindexPositions.slotStatus SLOT_2 = SpindexPositions.slotStatus.BLANK;
+    public slotStatus SLOT_0 = slotStatus.BLANK;
+    public slotStatus SLOT_1 = slotStatus.BLANK;
+    public slotStatus SLOT_2 = slotStatus.BLANK;
 
-    public static int diff;
-    public  int currAngle;
+    public int diff;
+    public int currAngle;
 
     public UnshiftedPositions currentState = UnshiftedPositions.SLOT_0_SHOOT;
 
@@ -391,7 +389,6 @@ public class Intake{
         SLOT_1_RECEIVE(120),
         SLOT_2_RECEIVE(-120);
 
-
         public final int posUnshifted;
         UnshiftedPositions(int pos) {this.posUnshifted = pos;}
     }
@@ -407,7 +404,7 @@ public class Intake{
 
         int newAngle = currAngle + diff;
         if (newAngle < 0) {newAngle += 360;}
-        if (newAngle > 890) {newAngle -= 360;}
+        if (newAngle > 887) {newAngle -= 360;}
         currAngle = newAngle;
         spindexPos2to1Gear(newAngle);
         currentState = goal;
@@ -420,7 +417,19 @@ public class Intake{
     }
 
 
+    public double getNextIntakeSlot() {
+        if (SLOT_0 == slotStatus.BLANK) return 0;
+        if (SLOT_1 == slotStatus.BLANK) return 1;
+        if (SLOT_2 == slotStatus.BLANK) return 2;
+        return -1;
+    }
 
+    public int getNextOuttakeSlot() {
+        if (SLOT_0 != slotStatus.BLANK) return 0;
+        if (SLOT_1 != slotStatus.BLANK) return 1;
+        if (SLOT_2 != slotStatus.BLANK) return 2;
+        return -1;
+    }
 
 
 
@@ -443,7 +452,6 @@ public class Intake{
 
     }
 
-    // THIS IS PURELY FOR TUNING DELETE AFTER
     public void spindexPos2to1Gear(double pos){
         spindexServo.setPosition(fiveTurnToServo(pos));
     }
@@ -453,7 +461,7 @@ public class Intake{
 
 
     public double spindexCurrentPosition(){
-        return spindexServo.getPosition() * 890;
+        return spindexServo.getPosition() * 887;
     }
 
     public double bootKickCurrPos(){

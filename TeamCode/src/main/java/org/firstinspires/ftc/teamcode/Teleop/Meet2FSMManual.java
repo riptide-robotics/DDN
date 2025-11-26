@@ -20,7 +20,9 @@
 
     import org.firstinspires.ftc.robotcore.external.Telemetry;
     import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+    import org.firstinspires.ftc.teamcode.Modules.Intake;
     import org.firstinspires.ftc.teamcode.Robot;
+    import org.firstinspires.ftc.teamcode.UnitTests.SpindexPositions;
 
 
     @Config
@@ -43,7 +45,7 @@
         public static double spindexPosIntake = 1;
         public static double spindexPosOuttake = -1;
 
-        public static double delay = 750; // IN MS
+        public static double delay = 500; // IN MS
 
         ElapsedTime timer;
 
@@ -71,16 +73,17 @@
 
         @Override
         public void runOpMode() throws InterruptedException {
-
             hasrun = false;
-
             robot = new Robot(hardwareMap);
+            timer = new ElapsedTime();
+
+            robot.getIntake().initSpindex();
 
             telemetry.addData("Robot status:", "succesfully initiated");
             telemetry.update();
 
-        currentTopRPMGoal = 0;
-        currentBottomRPMGoal = 0;
+            currentTopRPMGoal = 0;
+            currentBottomRPMGoal = 0;
 
             waitForStart();
             if (isStopRequested()) return;
@@ -208,46 +211,69 @@
         }
 
         public void cycleSlots(){
-            // cycle when button pressed
-            if (gamepad2.y && !yPressedG2){
-                if (spindexPosIntake == -1) {spindexPosIntake = 1;}
-                else if (spindexPosIntake == 1) {spindexPosIntake = 2;}
-                else if (spindexPosIntake == 2) {spindexPosIntake = 3;}
-                else if (spindexPosIntake == 3) {spindexPosIntake = 1;}
-                currentTopRPMGoal = 0;
-                currentBottomRPMGoal = 0;
+            if (gamepad2.y && !yPressedG2) {
+//                CYCLE MANUALLY
+//                if (spindexPosIntake == -1) spindexPosIntake = 0;
+//                else if (spindexPosIntake == 0) spindexPosIntake = 1;
+//                else if (spindexPosIntake == 1) spindexPosIntake = 2;
+//                else if (spindexPosIntake == 2) spindexPosIntake = 0;
+
+//              CYCLE AUTOMATIC
+                spindexPosIntake = robot.getIntake().getNextIntakeSlot();
+
                 spindexPosOuttake = -1;
+
+                // REPlACE LATER WITH ACTUAL COLOR AND CHECK WITH COLOR SENSOR TO SEE IF BALL IS ACTUALLY IN SPINDEX
+                if (spindexPosIntake != -1) {
+                    if (spindexPosIntake == 0) robot.getIntake().SLOT_0 = Intake.slotStatus.PURPLE;
+                    else if (spindexPosIntake == 1) robot.getIntake().SLOT_1 = Intake.slotStatus.PURPLE;
+                    else if (spindexPosIntake == 2) robot.getIntake().SLOT_2 = Intake.slotStatus.PURPLE;
+                }
+
+                if (spindexPosIntake == 0) {robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_0_RECEIVE);}
+                else if (spindexPosIntake == 1) {robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_1_RECEIVE);}
+                else if (spindexPosIntake == 2) {robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_2_RECEIVE);}
+
                 yPressedG2 = true;
             }
 
-            if (gamepad2.x && !xPressedG2){
-                if (spindexPosOuttake == -1) {spindexPosOuttake = 1;}
-                else if (spindexPosOuttake == 1) {spindexPosOuttake = 2;}
-                else if (spindexPosOuttake == 2) {spindexPosOuttake = 3;}
-                else if (spindexPosOuttake == 3) {spindexPosOuttake = 1;}
-                currentTopRPMGoal = MID_DIST_TOP;
-                currentBottomRPMGoal = MID_DIST_BOT;
+            if (gamepad2.x && !xPressedG2) {
+//                CYCLE MANUALLY
+//                if (spindexPosOuttake == -1) spindexPosOuttake = 0;
+//                else if (spindexPosOuttake == 0) spindexPosOuttake = 1;
+//                else if (spindexPosOuttake == 1) spindexPosOuttake = 2;
+//                else if (spindexPosOuttake == 2) spindexPosOuttake = 0;
+//            spindexPosOuttake = getNextOuttakeSlot();
+
+//              CYCLE AUTOMATIC
+                spindexPosOuttake = robot.getIntake().getNextOuttakeSlot();
+
+                if (spindexPosOuttake != -1) {
+                    if (spindexPosOuttake == 0) robot.getIntake().SLOT_0 = Intake.slotStatus.BLANK;
+                    else if (spindexPosOuttake == 1) robot.getIntake().SLOT_1 = Intake.slotStatus.BLANK;
+                    else if (spindexPosOuttake == 2) robot.getIntake().SLOT_2 = Intake.slotStatus.BLANK;
+                }
+
+                if (spindexPosOuttake == 0) {robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_0_SHOOT);}
+                else if (spindexPosOuttake == 1) {robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_1_SHOOT);}
+                else if (spindexPosOuttake == 2) {robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_2_SHOOT);}
+
                 spindexPosIntake = -1;
+
+
+
                 xPressedG2 = true;
             }
 
-            // set positions based on cycle
-            if (spindexPosIntake != -1) {
-                if (spindexPosIntake == 1) {spindexPos = SLOT_ONE_PIKCUP_POS;}
-                else if (spindexPosIntake == 2) {spindexPos = SLOT_TWO_PIKCUP_POS;}
-                else if (spindexPosIntake == 3) {spindexPos = SLOT_THREE_PIKCUP_POS;}
-
-            } else if (spindexPosOuttake != -1) {
-                if (spindexPosOuttake == 1) {spindexPos = SLOT_ONE_SHOOT_POS;}
-                else if (spindexPosOuttake == 2) {spindexPos = SLOT_TWO_SHOOT_POS;}
-                else if (spindexPosOuttake == 3) {spindexPos = SLOT_THREE_SHOOT_POS;}
-            }
-
-            robot.getIntake().spindexPos2to1Gear(spindexPos);
+            tele.addData("Intake Slot: ", spindexPosIntake);
+            tele.addData("Outtake Slot: ", spindexPosOuttake);
+            tele.addData("Slot 0: ", robot.getIntake().SLOT_0);
+            tele.addData("Slot 1: ", robot.getIntake().SLOT_1);
+            tele.addData("Slot 2: ", robot.getIntake().SLOT_2);
         }
 
         public void toggleBootKicker(){
-            if (robot.getIntake().spindexCurrentPosition() == SLOT_ONE_SHOOT_POS || robot.getIntake().spindexCurrentPosition() == SLOT_TWO_SHOOT_POS || robot.getIntake().spindexCurrentPosition() == SLOT_THREE_SHOOT_POS) {
+            if (robot.getIntake().spindexCurrentPosition() == Intake.UnshiftedPositions.SLOT_0_SHOOT.posUnshifted || robot.getIntake().spindexCurrentPosition() == Intake.UnshiftedPositions.SLOT_1_SHOOT.posUnshifted || robot.getIntake().spindexCurrentPosition() == Intake.UnshiftedPositions.SLOT_2_SHOOT.posUnshifted) {
                 if (gamepad2.a && robot.getOuttake().isAtGoalSpeed()) {
                     robot.getIntake().BootKick(SPINDEX_ARM_UP);
                     tele.addLine("Boot Kicker Up");
