@@ -36,6 +36,8 @@ public class Robot {
 
     Camera camera;
 
+    riptideUtil.TEAM_COLOR alliance = riptideUtil.TEAM_COLOR.RED; // change based on alliance
+
     public Sequencer s;
 
     public Robot (HardwareMap map){
@@ -47,7 +49,7 @@ public class Robot {
         intake = new Intake(hardwareMap);
         endgameServos = new EndgameServos(hardwareMap);
         outtake = new Outtake(hardwareMap);
-        camera = new Camera(hardwareMap);
+        camera = new Camera(hardwareMap, alliance);
     }
 
     public Drivetrain getDrivetrain(){
@@ -154,5 +156,7 @@ public class Robot {
         if (amount == 3 && !contains) indicator.setIndicatorLights(Indicator.statusLights.FULL_SPINDEXER_AND_NONE_REQUESTED);
     }
 
-
+    public void setTeamColor(riptideUtil.TEAM_COLOR color) {
+        alliance = color;
+    }
 }

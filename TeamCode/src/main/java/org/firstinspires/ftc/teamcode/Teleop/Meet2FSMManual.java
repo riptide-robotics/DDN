@@ -26,7 +26,6 @@
     @Config
     @TeleOp(name = "Meet 2 FSM Manual")
     public class Meet2FSMManual extends LinearOpMode {
-        //HardwareMap hardwareMap;
         Robot robot;
 
         boolean hasrun = false;
@@ -80,12 +79,8 @@
             telemetry.addData("Robot status:", "succesfully initiated");
             telemetry.update();
 
-            robot.getIntake().slotOneOuttake();
-
-            currentTopRPMGoal = 0;
-            currentBottomRPMGoal = 0;
-            spindexPos = 0;
-            timer = new ElapsedTime();
+        currentTopRPMGoal = 0;
+        currentBottomRPMGoal = 0;
 
             waitForStart();
             if (isStopRequested()) return;
