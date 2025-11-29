@@ -75,7 +75,7 @@ public class Intake{
         spindexServo.setDirection(Servo.Direction.FORWARD);
     }
 
-    public String scanColor() {
+    public char scanColor() {
         NormalizedRGBA detectedColor = colorSensor.getNormalizedColors();
 
         //return "Red: " + detectedColor.red * 10 + " - Green: " + detectedColor.green * 10 + " - Blue: " + detectedColor.blue * 10 + " - Alpha: " + detectedColor.alpha;
@@ -91,7 +91,7 @@ public class Intake{
             (detectedColor.blue < PURPLE_B + PURPLE_B_STDEV
                     &&
              detectedColor.blue > PURPLE_B - PURPLE_B_STDEV)) {
-            return "Purple";
+            return 'p';
         } else if ((detectedColor.red < GREEN_R + GREEN_R_STDEV
                             &&
                     detectedColor.red > GREEN_R - GREEN_R_STDEV)
@@ -103,9 +103,9 @@ public class Intake{
                    (detectedColor.blue < GREEN_B + GREEN_B_STDEV
                             &&
                     detectedColor.blue > GREEN_B - GREEN_B_STDEV)) {
-            return "Green";
+            return 'g';
         } else {
-            return "None";
+            return 'n';
         }
     }
 
@@ -125,15 +125,15 @@ public class Intake{
             return;
         }
 
-        String color = scanColor();
-        if (color.equals("Purple")) {
+        char color = scanColor();
+        if (color == 'p') {
             pgratio[0]++;
-        } else if (color.equals("Green")) {
+        } else if (color == 'g') {
             pgratio[1]++;
-        } else if (color.equals("Blank")) {
+        } else if (color == 'n') {
             t.addLine("Congrats: you found no color to uptake idiot.");
         }
-        order[toSet] = color.toLowerCase().charAt(0);
+        order[toSet] = color;
         t.addLine("Uptake Result: Success - " + color + " artifact uptaked into position " + toSet);
     }
 
@@ -172,16 +172,16 @@ public class Intake{
         CanBootKick(true);
         t.addLine("Empty slot aligned at intake");
 
-        String color = scanColor();
-        if (color.equals("Purple")) {
+        char color = scanColor();
+        if (color == 'g') {
             pgratio[0]++;
-        } else if (color.equals("Green")) {
+        } else if (color == 'p') {
             pgratio[1]++;
-        } else if (color.equals("Blank")) {
+        } else if (color == 'n') {
             t.addLine("Congrats: There's no ball there.");
         }
 
-        order[0] = color.toLowerCase().charAt(0);
+        order[0] = color;
     }
 
     boolean moveSlotOneToPickup = false;
@@ -367,14 +367,17 @@ public class Intake{
     // ******************************************
     //                SPINDEX
     // ******************************************
-    public slotStatus SLOT_0 = slotStatus.BLANK;
-    public slotStatus SLOT_1 = slotStatus.BLANK;
-    public slotStatus SLOT_2 = slotStatus.BLANK;
+    public static slotStatus SLOT_0 = slotStatus.BLANK;
+    public static slotStatus SLOT_1 = slotStatus.BLANK;
+    public static slotStatus SLOT_2 = slotStatus.BLANK;
 
-    public int diff;
-    public int currAngle;
+    public static int diff;
+    public static int currAngle;
 
-    public UnshiftedPositions currentState = UnshiftedPositions.SLOT_0_SHOOT;
+    public static UnshiftedPositions currentState = UnshiftedPositions.SLOT_0_SHOOT;
+
+    public static int currentSlot = -1;
+
 
 
     public enum slotStatus {
@@ -430,6 +433,20 @@ public class Intake{
         if (SLOT_2 != slotStatus.BLANK) return 2;
         return -1;
     }
+//
+//    public int currSlot(){
+//        if (spindexCurrentPosition() == UnshiftedPositions.SLOT_0_RECEIVE.posUnshifted || spindexCurrentPosition() == UnshiftedPositions.SLOT_0_SHOOT.posUnshifted){
+//            currentSlot = 0;
+//        }
+//        if (spindexCurrentPosition() == UnshiftedPositions.SLOT_1_RECEIVE.posUnshifted || spindexCurrentPosition() == UnshiftedPositions.SLOT_1_SHOOT.posUnshifted){
+//            currentSlot = 1;
+//        }
+//
+//        if (spindexCurrentPosition() == UnshiftedPositions.SLOT_2_RECEIVE.posUnshifted || spindexCurrentPosition() == UnshiftedPositions.SLOT_2_SHOOT.posUnshifted){
+//            currentSlot = 2;
+//        }
+//        return currentSlot;
+//    }
 
 
 
@@ -473,9 +490,4 @@ public class Intake{
         spindexArm.setPosition(pos);
 
     }
-
-    public void ResetBootKick(double pos){
-        spindexArm.setPosition(pos);
-    }
-
 }

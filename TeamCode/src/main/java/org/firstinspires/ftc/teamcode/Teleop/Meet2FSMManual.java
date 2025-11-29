@@ -51,6 +51,7 @@
 
         boolean didRumble = false;
 
+        public char currColor = 'n';
 
         // DEBOUNCE
         boolean rightBumperPressedG2 = false;
@@ -85,6 +86,8 @@
             currentTopRPMGoal = 0;
             currentBottomRPMGoal = 0;
 
+            currColor = 'n';
+
             waitForStart();
             if (isStopRequested()) return;
             endTimer.reset();
@@ -99,19 +102,16 @@
 
                 FSM();
                 tankDrive();
-                //cycleSlots();
-
-                //telemetry.addData("Angle: ", robot.getDrivetrain().getRobotHeading(AngleUnit.DEGREES));
-    //
-    //            if (updateTime){
-    //                robot.getOuttake().startFlywheel();
-    //            }
                 robot.getOuttake().runOuttakePID(currentTopRPMGoal, currentBottomRPMGoal, tele);
+
+                currColor = robot.getIntake().scanColor();
 
                 double currTime = endTimer.seconds();
 
                 if (currTime >= 80 && !didRumble){gamepad1.rumble(1, 1, 500); gamepad2.rumble(1, 1, 500);}
                 if (currTime >= 82) {didRumble = true;}
+
+                tele.addData("Current color ", currColor);
                 tele.update();
             }
         }
@@ -223,16 +223,20 @@
 
                 spindexPosOuttake = -1;
 
-                // REPlACE LATER WITH ACTUAL COLOR AND CHECK WITH COLOR SENSOR TO SEE IF BALL IS ACTUALLY IN SPINDEX
-                if (spindexPosIntake != -1) {
-                    if (spindexPosIntake == 0) robot.getIntake().SLOT_0 = Intake.slotStatus.PURPLE;
-                    else if (spindexPosIntake == 1) robot.getIntake().SLOT_1 = Intake.slotStatus.PURPLE;
-                    else if (spindexPosIntake == 2) robot.getIntake().SLOT_2 = Intake.slotStatus.PURPLE;
-                }
-
                 if (spindexPosIntake == 0) {robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_0_RECEIVE);}
                 else if (spindexPosIntake == 1) {robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_1_RECEIVE);}
                 else if (spindexPosIntake == 2) {robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_2_RECEIVE);}
+
+                if (spindexPosIntake != -1) {
+                    if (spindexPosIntake == 0 && currColor == 'p') {Intake.SLOT_0 = Intake.slotStatus.PURPLE;}
+                    if (spindexPosIntake == 0 && currColor == 'g') {Intake.SLOT_0 = Intake.slotStatus.GREEN;}
+
+                    if (spindexPosIntake == 1 && currColor == 'p') {Intake.SLOT_1 = Intake.slotStatus.PURPLE;}
+                    if (spindexPosIntake == 1 && currColor == 'g') {Intake.SLOT_1 = Intake.slotStatus.GREEN;}
+
+                    if (spindexPosIntake == 2 && currColor == 'p') {Intake.SLOT_2 = Intake.slotStatus.PURPLE;}
+                    if (spindexPosIntake == 2 && currColor == 'g') {Intake.SLOT_2 = Intake.slotStatus.GREEN;}
+                }
 
                 yPressedG2 = true;
             }
@@ -248,17 +252,17 @@
 //              CYCLE AUTOMATIC
                 spindexPosOuttake = robot.getIntake().getNextOuttakeSlot();
 
+                spindexPosIntake = -1;
+
                 if (spindexPosOuttake != -1) {
-                    if (spindexPosOuttake == 0) robot.getIntake().SLOT_0 = Intake.slotStatus.BLANK;
-                    else if (spindexPosOuttake == 1) robot.getIntake().SLOT_1 = Intake.slotStatus.BLANK;
-                    else if (spindexPosOuttake == 2) robot.getIntake().SLOT_2 = Intake.slotStatus.BLANK;
+                    if (spindexPosOuttake == 0) {Intake.SLOT_0 = Intake.slotStatus.BLANK;}
+                    else if (spindexPosOuttake == 1) {Intake.SLOT_1 = Intake.slotStatus.BLANK;}
+                    else if (spindexPosOuttake == 2) {Intake.SLOT_2 = Intake.slotStatus.BLANK;}
                 }
 
                 if (spindexPosOuttake == 0) {robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_0_SHOOT);}
                 else if (spindexPosOuttake == 1) {robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_1_SHOOT);}
                 else if (spindexPosOuttake == 2) {robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_2_SHOOT);}
-
-                spindexPosIntake = -1;
 
 
 
@@ -267,9 +271,9 @@
 
             tele.addData("Intake Slot: ", spindexPosIntake);
             tele.addData("Outtake Slot: ", spindexPosOuttake);
-            tele.addData("Slot 0: ", robot.getIntake().SLOT_0);
-            tele.addData("Slot 1: ", robot.getIntake().SLOT_1);
-            tele.addData("Slot 2: ", robot.getIntake().SLOT_2);
+            tele.addData("Slot 0: ", Intake.SLOT_0);
+            tele.addData("Slot 1: ", Intake.SLOT_1);
+            tele.addData("Slot 2: ", Intake.SLOT_2);
         }
 
         public void toggleBootKicker(){
