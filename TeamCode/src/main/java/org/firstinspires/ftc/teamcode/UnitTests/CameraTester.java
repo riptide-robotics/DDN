@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.riptideUtil.TEAM_COLOR;
 public class CameraTester extends LinearOpMode {
     Robot robot;
     Telemetry t = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-    double error;
+    Double error;
     double absoluteError;
     Double dist;
 
@@ -27,8 +27,12 @@ public class CameraTester extends LinearOpMode {
         while (opModeIsActive()) {
             error = robot.getCamera().getGoalAngleError();
             t.addData("Calculated error", error);
-            absoluteError = robot.getCamera().getAbsoluteAngleError(robot.getDrivetrain().getRobotHeading(AngleUnit.DEGREES), error);
-            t.addData("Absolute error", absoluteError);
+            if (error == null) {
+                t.addData("Absolute error", "Null");
+            } else {
+                absoluteError = robot.getCamera().getAbsoluteAngleError(robot.getDrivetrain().getRobotHeading(AngleUnit.DEGREES), error);
+                t.addData("Absolute error", absoluteError);
+            }
             int len = robot.getCamera().getTagDetections().size();
             String s = "";
             for (int i = 0; i < len; i++) {
@@ -38,7 +42,8 @@ public class CameraTester extends LinearOpMode {
             dist = robot.getCamera().getGoalDistance();
             t.addData("Distance", dist);
             char[] motifOrder = robot.getCamera().scanMotifOrder();
-            t.addData("Scanned Motif Order", motifOrder[0] + motifOrder[1] + motifOrder[2]);
+            t.addData("Scanned Motif Order", new String(motifOrder));
+            t.update();
         }
     }
 }
