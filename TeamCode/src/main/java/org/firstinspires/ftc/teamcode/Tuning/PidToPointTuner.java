@@ -1,8 +1,5 @@
 package org.firstinspires.ftc.teamcode.Tuning;
 
-import static org.firstinspires.ftc.teamcode.riptideUtil.LAT_KD;
-import static org.firstinspires.ftc.teamcode.riptideUtil.LAT_KI;
-import static org.firstinspires.ftc.teamcode.riptideUtil.LAT_KP;
 import static org.firstinspires.ftc.teamcode.riptideUtil.MAX_A;
 import static org.firstinspires.ftc.teamcode.riptideUtil.MAX_V;
 import static org.firstinspires.ftc.teamcode.riptideUtil.TURN_KD;
@@ -157,7 +154,7 @@ public class PidToPointTuner extends LinearOpMode {
 
         //Set Pids to what they are supposed to be.a
         vertPid.setPID(FORWARD_KP, FORWARD_KI, FORWARD_KD);
-        latPid.setPID(LAT_KP, LAT_KI, LAT_KD);
+        //latPid.setPID(LAT_KP, LAT_KI, LAT_KD);
         turnPid.setPID(TURN_KP, TURN_KI, TURN_KD);
 
         //shift the errors to robot centric errors
