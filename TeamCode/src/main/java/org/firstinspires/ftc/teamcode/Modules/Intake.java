@@ -68,11 +68,16 @@ public class Intake{
 
     public Intake(HardwareMap hardwareMap){
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "REVcolorSensor");
+
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
         spindexServo = hardwareMap.get(ServoImplEx.class, "spindexServo");
         spindexServo.setPwmRange(new PwmControl.PwmRange(500, 2500));
         spindexArm = hardwareMap.get(Servo.class, "spindexArm");
         spindexServo.setDirection(Servo.Direction.FORWARD);
+    }
+
+    public void setGain (float gain){
+        colorSensor.setGain(gain);
     }
 
     public char scanColor() {
@@ -105,7 +110,7 @@ public class Intake{
                     detectedColor.blue > GREEN_B - GREEN_B_STDEV)) {
             return 'g';
         } else {
-            return 'n';
+            return 'b';
         }
     }
 
@@ -130,7 +135,7 @@ public class Intake{
             pgratio[0]++;
         } else if (color == 'g') {
             pgratio[1]++;
-        } else if (color == 'n') {
+        } else if (color == 'b') {
             t.addLine("Congrats: you found no color to uptake idiot.");
         }
         order[toSet] = color;
@@ -177,7 +182,7 @@ public class Intake{
             pgratio[0]++;
         } else if (color == 'p') {
             pgratio[1]++;
-        } else if (color == 'n') {
+        } else if (color == 'b') {
             t.addLine("Congrats: There's no ball there.");
         }
 
@@ -447,13 +452,6 @@ public class Intake{
 //        }
 //        return currentSlot;
 //    }
-
-
-
-
-
-
-
 
 
     public void rotateSpindexOnce() {

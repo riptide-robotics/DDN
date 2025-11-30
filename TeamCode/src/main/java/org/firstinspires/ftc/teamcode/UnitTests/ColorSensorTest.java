@@ -11,10 +11,10 @@ import org.firstinspires.ftc.teamcode.Robot;
 public class ColorSensorTest extends LinearOpMode {
     Robot robot;
     String[] order = new String[3];
+    public static float gain = 2;
     int[] pgratio = new int[2];
 
     NormalizedColorSensor colorSensor;
-    float gain = 2; // ...... ANYWAY
 
     Intake intake;
 
@@ -27,11 +27,13 @@ public class ColorSensorTest extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
+            robot.getIntake().setGain(gain);
             sendColor = robot.getIntake().scanColor();
-            if (!(sendColor == prevString)) {
+            if (sendColor != prevString) {
                 prevString = sendColor;
                 telemetry.addData("Color Detected", sendColor);
             }
+            telemetry.addData("Current color ", sendColor);
             telemetry.update();
         }
     }

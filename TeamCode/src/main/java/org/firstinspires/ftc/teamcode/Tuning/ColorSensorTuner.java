@@ -65,7 +65,7 @@ public class ColorSensorTuner extends LinearOpMode {
              * consistently gives values between 0 and 1, while the values you get
              * from ColorSensor are dependent on the specific sensor you're using.
              */
-            colorSensor = hardwareMap.get(NormalizedColorSensor.class, "sensor_color");
+            colorSensor = hardwareMap.get(NormalizedColorSensor.class, "REVcolorSensor");
 
             /* If possible, turn the light on in the beginning (it might already be
              * on anyway, we just make sure it is if we can).
