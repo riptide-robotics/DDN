@@ -16,15 +16,18 @@ import java.util.UUID;
 
 //practically copy-pasting, don't blame me -
 
-@Placeholder(note = "mostly functioning but not tested")
+@Placeholder(note = "Mostly complete, has not undergone peer review. Change this when peer reviewed.")
 public class Sequencer { // Done by Owen
     public Map<String,ImpulseAction> impulseactions;
+
     public Map<String,LoopedAction> loopactions;
    // public Telemetry t = null;
     public enum SequenceType {
+
         IMPULSE,
         LOOPED
     }
+    /**Creates a sequencer. This class allows you to perform tasks after a set amount of time.*/
     public Sequencer(){
         impulseactions = new HashMap<>();
         loopactions = new HashMap<>();
@@ -40,6 +43,7 @@ public class Sequencer { // Done by Owen
         void action();
     }
 
+    /**One type of action that runs once after a delay, then ends.*/
     public static class ImpulseAction extends SeqAction{
         public ImpulseAction(Action a, double elapsedTime, String actionName) {
             super(a,elapsedTime,actionName);
@@ -48,7 +52,9 @@ public class Sequencer { // Done by Owen
             super(a,elapsedTime, UUID.randomUUID().toString());
         }
     }
+    /**Another type of action that runs forever after a delay, only stopping when killAction is set to true.*/
     public static class LoopedAction extends SeqAction {
+        /**This determines if the action should be terminated. Set this to true and its action will be subsequently eliminated.*/
         public boolean killAction;
         public LoopedAction(Action a, double elapsedTime, String actionName) {
             super(a,elapsedTime,actionName);
@@ -56,15 +62,18 @@ public class Sequencer { // Done by Owen
         }
     }
 
+    /**Retrieves a loop action based upon a name. Throws an exception if none is found.*/
     public LoopedAction getLoopAction(String name) {
         if (!loopactions.containsKey(name)) throw new RuntimeException("No loop action by the name of " + name + "!");
         return loopactions.get(name);
     }
+    /**Retrieves an impulse action based upon a name. Throws an exception if none is found.*/
     public ImpulseAction getImpulseAction(String name) {
-        if (!impulseactions.containsKey(name)) throw new RuntimeException("No impulse action by the name of " + name + "!");
+        if (!impulseactions.containsKey(name))
+            throw new RuntimeException("No impulse action by the name of " + name + "!");
         return impulseactions.get(name);
     }
-
+    /**A way to add actions with type as a parameter. Untested.*/
     public void addAction(Action a, SequenceType type, double elapsedTime, String actionName, Object... params) throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
         switch (type) {
             case LOOPED: {
@@ -80,13 +89,6 @@ public class Sequencer { // Done by Owen
     public void addImpulseAction(Action a, double delayINSECONDS, String name){
         addImpulseAction(new ImpulseAction(a,delayINSECONDS, name));
     }
-
-    //A:one action
-    //B:concurrent events set outtakePID speed to something
-    //C:testing multiple sequences in order
-    //D:test moving multiple things in order
-
-
 
     public void addImpulseAction(ImpulseAction a) {
         impulseactions.put(a.name,a);
@@ -106,18 +108,14 @@ public class Sequencer { // Done by Owen
     public void addLoopAction(Action a,double delayINSECONDS,String name) {
         addLoopAction(new LoopedAction(a,delayINSECONDS,name));
     }
-    /**working on something else right now; dont change this unless you are extremely confident in this working <br>
-    (which you shouldn't be) <br>
-     Currently active, DO NOT USE THE SEQUENCER!
-     */
+    /**Process loop prototype. More untested than the impulse prototype. Mostly for debugging purposes, remove this and its if statement after peer review.*/
     public static final boolean runPrototype = true;
 
-    /**Haven't figured out how to run loop automatically. Also, has extremely untested prototype code.*/
+    //NOTE: dont change this to remove the actions to be killed within the primary loop, that throws a nice ConcurrentModificationException.
     public void loop() {
         List<String> remove = new ArrayList<>();
 
         for (Map.Entry<String,ImpulseAction> entry : impulseactions.entrySet()) {
-          //  if (t != null) t.addData("finalloc",entry.getValue() != null);
             if ((double) System.currentTimeMillis() /1000 - entry.getValue().startTime > entry.getValue().elapsedTime) {
                 entry.getValue().a.action();
                 remove.add(entry.getKey());
@@ -128,23 +126,16 @@ public class Sequencer { // Done by Owen
 
         if (!runPrototype) return;
 
-        //NOTE: dont change this to remove the actions to be killed within the primary loop, that theows a nice ConcurrentModificationException.
 
-        //create list for actions that are to be removed
-        //handle looped actions
         remove.clear();
         for (Map.Entry<String,LoopedAction> act : loopactions.entrySet()) {
             boolean overrideAction = act.getValue().killAction;
 
-            //messy if block
             if (!overrideAction && (double) System.currentTimeMillis()/1000 - act.getValue().startTime > act.getValue().elapsedTime)
-               //run the action
                 act.getValue().a.action();
 
-            //add actions to be removed to the list
             else if (overrideAction) remove.add(act.getKey());
         }
-        //kill actions on the hit list
         for (String s : remove) loopactions.remove(s);
     }
 }
