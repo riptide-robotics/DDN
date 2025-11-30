@@ -1,6 +1,18 @@
 package org.firstinspires.ftc.teamcode.Tuning;
 
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_B;
+import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_B_STDEV;
+import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_G;
+import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_G_STDEV;
+import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_R;
+import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_R_STDEV;
+import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_B;
+import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_B_STDEV;
+import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_G;
+import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_G_STDEV;
+import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R;
+import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R_STDEV;
 
 import android.graphics.Color;
 
@@ -23,9 +35,11 @@ import org.firstinspires.ftc.teamcode.Robot;
 public class ColorSensorTuner extends LinearOpMode {
     Robot robot;
     Telemetry t = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-    public static float gain;
+    public static float gain = 30;
 
     NormalizedColorSensor colorSensor;
+
+
 
     @Override
     public void runOpMode() {
@@ -41,7 +55,6 @@ public class ColorSensorTuner extends LinearOpMode {
              * reason, it's better to err on the side of a lower gain (but always greater
              * than  or equal to 1).
              */
-            gain = 2;
 
             /* Once per loop, we will update this hsvValues array. The first element (0)
              * will contain the hue, the second element (1) will contain the saturation,
@@ -66,7 +79,7 @@ public class ColorSensorTuner extends LinearOpMode {
              * from ColorSensor are dependent on the specific sensor you're using.
              */
             colorSensor = hardwareMap.get(NormalizedColorSensor.class, "REVcolorSensor");
-
+            
             /* If possible, turn the light on in the beginning (it might already be
              * on anyway, we just make sure it is if we can).
              */
@@ -92,6 +105,8 @@ public class ColorSensorTuner extends LinearOpMode {
                     gain -= (float) 0.005;
                 }
 
+                NormalizedRGBA colors = colorSensor.getNormalizedColors();
+
                 /* idk man maybe use the radius of the contour to know what gain to use? */
                 // Show the gain value via telemetry
                 telemetry.addData("Gain", gain);
@@ -112,7 +127,6 @@ public class ColorSensorTuner extends LinearOpMode {
                 /* Your favorite RGBA color sensing bc this girl
                  * has no idea how to use HSV hues
                  */
-                NormalizedRGBA colors = colorSensor.getNormalizedColors();
 
                 /* Use telemetry to display feedback on the driver station.
                  * We show the red, green, and blue normalized values from
@@ -120,8 +134,46 @@ public class ColorSensorTuner extends LinearOpMode {
                  * equivalent HSV (hue, saturation and value) values.
                  */
 
-                Color.colorToHSV(colors.toColor(), hsvValues);
 
+
+                char currColor;
+                if ((colors.red < PURPLE_R + PURPLE_R_STDEV
+                        &&
+                        colors.red > PURPLE_R - PURPLE_R_STDEV)
+                        &&
+                        (colors.green < PURPLE_G + PURPLE_G_STDEV
+                                &&
+                                colors.green > PURPLE_G - PURPLE_G_STDEV)
+                        &&
+                        (colors.blue < PURPLE_B + PURPLE_B_STDEV
+                                &&
+                                colors.blue > PURPLE_B - PURPLE_B_STDEV)) {
+                    currColor = 'p';
+                } else if ((colors.red < GREEN_R + GREEN_R_STDEV
+                        &&
+                        colors.red > GREEN_R - GREEN_R_STDEV)
+                        &&
+                        (colors.green < GREEN_G + GREEN_G_STDEV
+                                &&
+                                colors.green > GREEN_G - GREEN_G_STDEV)
+                        &&
+                        (colors.blue < GREEN_B + GREEN_B_STDEV
+                                &&
+                                colors.blue > GREEN_B - GREEN_B_STDEV)) {
+                    currColor = 'g';
+                } else {
+                    currColor = 'b';
+                }
+
+
+
+
+                
+                
+                Color.colorToHSV(colors.toColor(), hsvValues);
+                
+                telemetry.addLine("Current Color " + currColor);
+                
                 telemetry.addLine()
                         .addData("Red", "%.3f", colors.red)
                         .addData("Green", "%.3f", colors.green)
