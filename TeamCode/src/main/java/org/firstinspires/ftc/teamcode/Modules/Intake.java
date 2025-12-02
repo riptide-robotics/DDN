@@ -1,17 +1,29 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
 import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_B;
+import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_B_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_B_STDEV;
+import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_B_STDEV_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_G;
+import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_G_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_G_STDEV;
+import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_G_STDEV_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_R;
+import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_R_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_R_STDEV;
+import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_R_STDEV_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_B;
+import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_B_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_B_STDEV;
+import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_B_STDEV_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_G;
+import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_G_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_G_STDEV;
+import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_G_STDEV_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R;
+import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R_STDEV;
+import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R_STDEV_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.ROTATE_SPINDEX_ONCE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.SLOT_ONE_PIKCUP_POS;
 import static org.firstinspires.ftc.teamcode.riptideUtil.SLOT_ONE_SHOOT_POS;
@@ -31,6 +43,7 @@ import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
+import com.qualcomm.robotcore.hardware.SwitchableLight;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Intake{
@@ -42,7 +55,6 @@ public class Intake{
     DcMotor intakeMotor;
     ServoImplEx spindexServo;
     Servo spindexArm;
-    float gain = 2; // ...... ANYWAY
     public enum positions {
         POS_1_SHOOT,
         POS_1_RECEIVE,
@@ -369,9 +381,11 @@ public class Intake{
     }
 
 
+
     // ******************************************
     //                SPINDEX
     // ******************************************
+
     public static slotStatus SLOT_0 = slotStatus.BLANK;
     public static slotStatus SLOT_1 = slotStatus.BLANK;
     public static slotStatus SLOT_2 = slotStatus.BLANK;
@@ -383,6 +397,9 @@ public class Intake{
 
     public static int currentSlot = -1;
 
+    public boolean checkClose = false;
+
+    public static float gain = 30;
 
 
     public enum slotStatus {
@@ -399,6 +416,78 @@ public class Intake{
 
         public final int posUnshifted;
         UnshiftedPositions(int pos) {this.posUnshifted = pos;}
+    }
+
+    public void initColorSensor(){
+        colorSensor.setGain(gain);
+        if (colorSensor instanceof SwitchableLight) {
+            ((SwitchableLight) colorSensor).enableLight(true);
+        }
+    }
+
+    public void checkColor(slotStatus currentSlot){
+        NormalizedRGBA colors = colorSensor.getNormalizedColors();
+        if ((colors.red < PURPLE_R + PURPLE_R_STDEV
+                &&
+                colors.red > PURPLE_R - PURPLE_R_STDEV)
+                &&
+                (colors.green < PURPLE_G + PURPLE_G_STDEV
+                        &&
+                        colors.green > PURPLE_G - PURPLE_G_STDEV)
+                &&
+                (colors.blue < PURPLE_B + PURPLE_B_STDEV
+                        &&
+                        colors.blue > PURPLE_B - PURPLE_B_STDEV)) {
+            currentSlot = slotStatus.PURPLE;
+        } else if ((colors.red < GREEN_R + GREEN_R_STDEV
+                &&
+                colors.red > GREEN_R - GREEN_R_STDEV)
+                &&
+                (colors.green < GREEN_G + GREEN_G_STDEV
+                        &&
+                        colors.green > GREEN_G - GREEN_G_STDEV)
+                &&
+                (colors.blue < GREEN_B + GREEN_B_STDEV
+                        &&
+                        colors.blue > GREEN_B - GREEN_B_STDEV)) {
+            currentSlot = slotStatus.GREEN;
+        } else {
+            checkClose = true;
+//                    currColor = 'b';
+        }
+
+        // Since I cant accurately tell what color the ball is when faced with a hole, I just check if there is a ball
+        if (checkClose){
+            if ((colors.red < PURPLE_R_HOLE + PURPLE_R_STDEV_HOLE
+                    &&
+                    colors.red > PURPLE_R_HOLE - PURPLE_R_STDEV_HOLE)
+                    &&
+                    (colors.green < PURPLE_G_HOLE + PURPLE_G_STDEV_HOLE
+                            &&
+                            colors.green > PURPLE_G_HOLE - PURPLE_G_STDEV_HOLE)
+                    &&
+                    (colors.blue < PURPLE_B_HOLE + PURPLE_B_STDEV_HOLE
+                            &&
+                            colors.blue > PURPLE_B_HOLE - PURPLE_B_STDEV_HOLE)) {
+                currentSlot = slotStatus.PURPLE;
+            } else if ((colors.red < GREEN_R_HOLE + GREEN_R_STDEV_HOLE
+                    &&
+                    colors.red > GREEN_R_HOLE - GREEN_R_STDEV_HOLE)
+                    &&
+                    (colors.green < GREEN_G_HOLE + GREEN_G_STDEV_HOLE
+                            &&
+                            colors.green > GREEN_G_HOLE - GREEN_G_STDEV_HOLE)
+                    &&
+                    (colors.blue < GREEN_B_HOLE + GREEN_B_STDEV_HOLE
+                            &&
+                            colors.blue > GREEN_B_HOLE - GREEN_B_STDEV_HOLE)) {
+                currentSlot = slotStatus.GREEN;
+            } else{
+                currentSlot = slotStatus.BLANK;
+            }
+            checkClose = false;
+        }
+
     }
 
     public void goTo(UnshiftedPositions goal) {

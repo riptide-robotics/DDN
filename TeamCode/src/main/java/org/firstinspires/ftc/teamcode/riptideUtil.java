@@ -26,6 +26,14 @@ public class riptideUtil {
     public static final float GREEN_G_STDEV = 0.175f;
     public static final float GREEN_B = 0.45f;
     public static final float GREEN_B_STDEV = 0.127f;
+
+    public static final float GREEN_R_HOLE = 0.019f;
+    public static final float GREEN_R_STDEV_HOLE = 0.0045f;
+    public static final float GREEN_G_HOLE = 0.056f;
+    public static final float GREEN_G_STDEV_HOLE = 0.018f;
+    public static final float GREEN_B_HOLE = 0.045f;
+    public static final float GREEN_B_STDEV_HOLE = 0.011f;
+
     // Purple
     public static final float PURPLE_R = 0.239f;
     public static final float PURPLE_R_STDEV = 0.09f;
@@ -33,6 +41,13 @@ public class riptideUtil {
     public static final float PURPLE_G_STDEV = 0.1f;
     public static final float PURPLE_B = 0.48f;
     public static final float PURPLE_B_STDEV = 0.19f;
+
+    public static final float PURPLE_R_HOLE = 0.034f;
+    public static final float PURPLE_R_STDEV_HOLE = 0.023f;
+    public static final float PURPLE_G_HOLE = 0.053f;
+    public static final float PURPLE_G_STDEV_HOLE = 0.027f;
+    public static final float PURPLE_B_HOLE = 0.089f;
+    public static final float PURPLE_B_STDEV_HOLE = 0.05f;
 
     //flywheel
     public static double TOP_FLYWHEEL_KP = 0.001;
