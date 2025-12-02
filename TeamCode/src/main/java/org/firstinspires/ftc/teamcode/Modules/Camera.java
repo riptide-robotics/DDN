@@ -464,7 +464,7 @@ public class Camera extends OpenCvPipeline {
         double y = goalDetection.robotPose.getPosition().y;
         //double z = goalDetection.robotPose.getPosition().z;
 
-        return Math.sqrt(x * x + y * y/* + z * z*/) * 0.03937008 /* convert from mm to inches*/;
+        return Math.sqrt(x * x + y * y/* + z * z*/) /* 0.03937008*/ /* convert from mm to inches*/; // I think it already returns in inches...?
     }
 
     public Double getGoalAngleError() {

@@ -10,14 +10,10 @@ import org.firstinspires.ftc.teamcode.Modules.Indicator;
 import org.firstinspires.ftc.teamcode.Modules.Intake;
 import org.firstinspires.ftc.teamcode.Modules.Outtake;
 import org.firstinspires.ftc.teamcode.Modules.Sequencer;
-import org.firstinspires.ftc.teamcode.Tuning.HeadingPIDTuner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-
-import javax.annotation.processing.AbstractProcessor;
 
 public class Robot {
 
@@ -80,7 +76,7 @@ public class Robot {
             return;
         }
         else {
-            s.addAction(() -> {
+            s.AddImpulseAction(() -> {
                 intake.BootKick(0 /*TODO no clue what goes here*/);
                 //TODO remove color from position
             }, 0.5);
