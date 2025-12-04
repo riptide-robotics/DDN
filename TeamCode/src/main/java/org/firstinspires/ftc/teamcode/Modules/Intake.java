@@ -425,8 +425,9 @@ public class Intake{
         }
     }
 
-    public void checkColor(slotStatus currentSlot){
+    public char checkColor(){
         NormalizedRGBA colors = colorSensor.getNormalizedColors();
+        char currColor = 'b';
         if ((colors.red < PURPLE_R + PURPLE_R_STDEV
                 &&
                 colors.red > PURPLE_R - PURPLE_R_STDEV)
@@ -438,7 +439,7 @@ public class Intake{
                 (colors.blue < PURPLE_B + PURPLE_B_STDEV
                         &&
                         colors.blue > PURPLE_B - PURPLE_B_STDEV)) {
-            currentSlot = slotStatus.PURPLE;
+            currColor = 'p';
         } else if ((colors.red < GREEN_R + GREEN_R_STDEV
                 &&
                 colors.red > GREEN_R - GREEN_R_STDEV)
@@ -450,7 +451,7 @@ public class Intake{
                 (colors.blue < GREEN_B + GREEN_B_STDEV
                         &&
                         colors.blue > GREEN_B - GREEN_B_STDEV)) {
-            currentSlot = slotStatus.GREEN;
+            currColor = 'g';
         } else {
             checkClose = true;
 //                    currColor = 'b';
@@ -469,7 +470,7 @@ public class Intake{
                     (colors.blue < PURPLE_B_HOLE + PURPLE_B_STDEV_HOLE
                             &&
                             colors.blue > PURPLE_B_HOLE - PURPLE_B_STDEV_HOLE)) {
-                currentSlot = slotStatus.PURPLE;
+                currColor = 'p';
             } else if ((colors.red < GREEN_R_HOLE + GREEN_R_STDEV_HOLE
                     &&
                     colors.red > GREEN_R_HOLE - GREEN_R_STDEV_HOLE)
@@ -481,13 +482,13 @@ public class Intake{
                     (colors.blue < GREEN_B_HOLE + GREEN_B_STDEV_HOLE
                             &&
                             colors.blue > GREEN_B_HOLE - GREEN_B_STDEV_HOLE)) {
-                currentSlot = slotStatus.GREEN;
+                currColor = 'g';
             } else{
-                currentSlot = slotStatus.BLANK;
+                currColor = 'b';
             }
             checkClose = false;
         }
-
+        return currColor;
     }
 
     public void goTo(UnshiftedPositions goal) {
@@ -526,6 +527,73 @@ public class Intake{
         if (SLOT_1 != slotStatus.BLANK) return 1;
         if (SLOT_2 != slotStatus.BLANK) return 2;
         return -1;
+    }
+
+    public slotStatus currColor(){
+        NormalizedRGBA colors = colorSensor.getNormalizedColors();
+        slotStatus status = slotStatus.BLANK;
+        if ((colors.red < PURPLE_R + PURPLE_R_STDEV
+                &&
+                colors.red > PURPLE_R - PURPLE_R_STDEV)
+                &&
+                (colors.green < PURPLE_G + PURPLE_G_STDEV
+                        &&
+                        colors.green > PURPLE_G - PURPLE_G_STDEV)
+                &&
+                (colors.blue < PURPLE_B + PURPLE_B_STDEV
+                        &&
+                        colors.blue > PURPLE_B - PURPLE_B_STDEV)) {
+            status = slotStatus.PURPLE;
+        } else if ((colors.red < GREEN_R + GREEN_R_STDEV
+                &&
+                colors.red > GREEN_R - GREEN_R_STDEV)
+                &&
+                (colors.green < GREEN_G + GREEN_G_STDEV
+                        &&
+                        colors.green > GREEN_G - GREEN_G_STDEV)
+                &&
+                (colors.blue < GREEN_B + GREEN_B_STDEV
+                        &&
+                        colors.blue > GREEN_B - GREEN_B_STDEV)) {
+            status = slotStatus.GREEN;
+        } else {
+            checkClose = true;
+//                    currColor = 'b';
+        }
+
+        // Since I cant accurately tell what color the ball is when faced with a hole, I just check if there is a ball
+        if (checkClose){
+            if ((colors.red < PURPLE_R_HOLE + PURPLE_R_STDEV_HOLE
+                    &&
+                    colors.red > PURPLE_R_HOLE - PURPLE_R_STDEV_HOLE)
+                    &&
+                    (colors.green < PURPLE_G_HOLE + PURPLE_G_STDEV_HOLE
+                            &&
+                            colors.green > PURPLE_G_HOLE - PURPLE_G_STDEV_HOLE)
+                    &&
+                    (colors.blue < PURPLE_B_HOLE + PURPLE_B_STDEV_HOLE
+                            &&
+                            colors.blue > PURPLE_B_HOLE - PURPLE_B_STDEV_HOLE)) {
+                status = slotStatus.PURPLE;
+            } else if ((colors.red < GREEN_R_HOLE + GREEN_R_STDEV_HOLE
+                    &&
+                    colors.red > GREEN_R_HOLE - GREEN_R_STDEV_HOLE)
+                    &&
+                    (colors.green < GREEN_G_HOLE + GREEN_G_STDEV_HOLE
+                            &&
+                            colors.green > GREEN_G_HOLE - GREEN_G_STDEV_HOLE)
+                    &&
+                    (colors.blue < GREEN_B_HOLE + GREEN_B_STDEV_HOLE
+                            &&
+                            colors.blue > GREEN_B_HOLE - GREEN_B_STDEV_HOLE)) {
+                status = slotStatus.GREEN;
+            } else{
+                status = slotStatus.BLANK;
+            }
+            checkClose = false;
+        }
+
+        return status;
     }
 //
 //    public int currSlot(){

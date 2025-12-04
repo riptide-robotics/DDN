@@ -143,13 +143,13 @@ public class Robot {
                 (order[1] != ' ' ? 1:0) +
                 (order[2] != ' ' ? 1:0) );
 
-        if (amount == 0) indicator.setIndicatorLights(Indicator.statusLights.EMPTY);
+        if (amount == 0) indicator.setStatusColor(Indicator.statusLights.EMPTY);
 
-        if ((amount == 1 || amount == 2) && contains) indicator.setIndicatorLights(Indicator.statusLights.SEMI_OPEN);
-        if ((amount == 1 || amount == 2) && !contains) indicator.setIndicatorLights(Indicator.statusLights.SEMI_OPEN_AND_NONE_REQUESTED);
+        if ((amount == 1 || amount == 2) && contains) indicator.setStatusColor(Indicator.statusLights.SEMI_OPEN);
+        if ((amount == 1 || amount == 2) && !contains) indicator.setStatusColor(Indicator.statusLights.SEMI_OPEN_AND_NONE_REQUESTED);
 
-        if (amount == 3 && contains) indicator.setIndicatorLights(Indicator.statusLights.FULL_SPINDEXER);
-        if (amount == 3 && !contains) indicator.setIndicatorLights(Indicator.statusLights.FULL_SPINDEXER_AND_NONE_REQUESTED);
+        if (amount == 3 && contains) indicator.setStatusColor(Indicator.statusLights.FULL_SPINDEXER);
+        if (amount == 3 && !contains) indicator.setStatusColor(Indicator.statusLights.FULL_SPINDEXER_AND_NONE_REQUESTED);
     }
 
     public void setTeamColor(riptideUtil.TEAM_COLOR color) {
