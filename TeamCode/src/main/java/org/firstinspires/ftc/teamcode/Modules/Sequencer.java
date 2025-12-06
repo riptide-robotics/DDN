@@ -1,18 +1,18 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
-import android.provider.ContactsContract;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
 import org.firstinspires.ftc.teamcode.Placeholder;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 //practically copy-pasting, don't blame me -
 
@@ -23,7 +23,6 @@ public class Sequencer { // Done by Owen
     public Map<String,LoopedAction> loopactions;
    // public Telemetry t = null;
     public enum SequenceType {
-
         IMPULSE,
         LOOPED
     }
@@ -31,6 +30,7 @@ public class Sequencer { // Done by Owen
     public Sequencer(){
         impulseactions = new HashMap<>();
         loopactions = new HashMap<>();
+
     }
    // ///only intended for use in SequencerTest. Not recommended.
    // public Sequencer(Telemetry t){
@@ -76,18 +76,19 @@ public class Sequencer { // Done by Owen
     /**A way to add actions with type as a parameter. Untested.*/
     public void addAction(Action a, SequenceType type, double elapsedTime, String actionName, Object... params) throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
         switch (type) {
-            case LOOPED: {
+            case LOOPED:
                 addLoopAction(a,elapsedTime,actionName);
-            }
-            case IMPULSE: {
+            break;
+            case IMPULSE:
                 addImpulseAction(a,elapsedTime,actionName);
-            }
-            default: throw new NullPointerException("Type almost certainly null!");
+            break;
+            default: throw new NullPointerException("Type likely null!");
         }
     }
 
     public void addImpulseAction(Action a, double delayINSECONDS, String name){
         addImpulseAction(new ImpulseAction(a,delayINSECONDS, name));
+
     }
 
     public void addImpulseAction(ImpulseAction a) {
@@ -108,6 +109,16 @@ public class Sequencer { // Done by Owen
     public void addLoopAction(Action a,double delayINSECONDS,String name) {
         addLoopAction(new LoopedAction(a,delayINSECONDS,name));
     }
+    public void killLoopAction(String name, boolean kill) {
+        if (!loopactions.containsKey(name)) throw new RuntimeException("No loop action of name: " + name + "!");
+        loopactions.get("name").killAction = kill;
+    }
+    public void killImpulseAction(String name, boolean kill) {
+        if (!loopactions.containsKey(name)) throw new RuntimeException("No impulse action of name: " + name + "!");
+        loopactions.get("name").killAction = kill;
+    }
+
+
     /**Process loop prototype. More untested than the impulse prototype. Mostly for debugging purposes, remove this and its if statement after peer review.*/
     public static final boolean runPrototype = true;
 
