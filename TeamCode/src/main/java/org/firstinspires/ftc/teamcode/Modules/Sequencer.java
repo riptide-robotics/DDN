@@ -15,6 +15,12 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 //practically copy-pasting, don't blame me -
+/*
+    TODO: (given by Aaron)
+    Create two new actions. When the bot approaches a location given by the user, fire them.
+    One action, TripImpulseAction, fires once when reaching a specific location.
+    The other action, LoopImpulseAction, fires as long as the bot is in the location, and kills itself once the bot leaves.
+*/
 
 @Placeholder(note = "Mostly complete, has not undergone peer review. Change this when peer reviewed.")
 public class Sequencer { // Done by Owen
@@ -82,13 +88,8 @@ public class Sequencer { // Done by Owen
             case IMPULSE:
                 addImpulseAction(a,elapsedTime,actionName);
             break;
-            default: throw new NullPointerException("Type likely null!");
+            default: throw new IllegalArgumentException("Type likely null!");
         }
-    }
-
-    public void addImpulseAction(Action a, double delayINSECONDS, String name){
-        addImpulseAction(new ImpulseAction(a,delayINSECONDS, name));
-
     }
 
     public void addImpulseAction(ImpulseAction a) {
@@ -106,9 +107,14 @@ public class Sequencer { // Done by Owen
         addImpulseAction(new ImpulseAction(a,delayINSECONDS));
     }
 
+    public void addImpulseAction(Action a, double delayINSECONDS, String name){
+        addImpulseAction(new ImpulseAction(a,delayINSECONDS, name));
+
+    }
     public void addLoopAction(Action a,double delayINSECONDS,String name) {
         addLoopAction(new LoopedAction(a,delayINSECONDS,name));
     }
+
     public void killLoopAction(String name, boolean kill) {
         if (!loopactions.containsKey(name)) throw new RuntimeException("No loop action of name: " + name + "!");
         loopactions.get("name").killAction = kill;

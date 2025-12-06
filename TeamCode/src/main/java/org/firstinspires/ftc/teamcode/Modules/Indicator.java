@@ -1,7 +1,8 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
+import com.qualcomm.robotcore.hardware.PwmControl;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Placeholder;
 
@@ -9,29 +10,29 @@ import org.firstinspires.ftc.teamcode.Placeholder;
 @Placeholder(note = "Waiting on an RGB light")
 public class Indicator {
     private final HardwareMap hardwareMap;
-    private final I2cDeviceSynch rgbLight;
+    private final Servo rgbLightServo;
+    private final PwmControl rgbLight;
     public Indicator(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
-        this.rgbLight = hardwareMap.i2cDeviceSynch.get("Indicator");
+        this.rgbLightServo = hardwareMap.servo.get("Indicator");
+        this.rgbLight = (PwmControl) rgbLightServo;
+
+        rgbLight.setPwmRange(new PwmControl.PwmRange(500,2500));
     }
 
     public enum statusLights {
-        EMPTY((byte) 0,(byte) 0,(byte) 0),
-        SEMI_OPEN((byte) 0,(byte) 0,(byte) 0),
-        SEMI_OPEN_AND_NONE_REQUESTED((byte) 0,(byte) 0,(byte) 0),
-        FULL_SPINDEXER((byte) 0,(byte) 0,(byte) 0),
-        FULL_SPINDEXER_AND_NONE_REQUESTED((byte) 0,(byte) 0,(byte) 0);
+        EMPTY(0),
+        SEMI_OPEN(0.5),
+        SEMI_OPEN_AND_NONE_REQUESTED(0.5),
+        FULL_SPINDEXER(0.5),
+        FULL_SPINDEXER_AND_NONE_REQUESTED(0.5);
 
-        final byte r;
-        final byte g;
-        final byte b;
-        statusLights(byte r, byte g, byte b) {
-            this.r = r;
-            this.g = g;
-            this.b = b;
+       final double pos;
+        statusLights(double pos) {
+            this.pos = pos;
         }
     }
-    public void setIndicatorLights(statusLights s) {
-        rgbLight.write(0x00, new byte[] {s.r, s.g, s.b});
+    public void setStatusColor(statusLights lights) {
+        rgbLightServo.setPosition(lights.pos);
     }
 }
