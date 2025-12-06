@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.Modules.Camera;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.riptideUtil.TEAM_COLOR;
 
@@ -15,9 +14,9 @@ import org.firstinspires.ftc.teamcode.riptideUtil.TEAM_COLOR;
 public class CameraTester extends LinearOpMode {
     Robot robot;
     Telemetry t = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-    double error;
+    Double error;
     double absoluteError;
-    double dist;
+    Double dist;
 
     public void runOpMode() {
         robot = new Robot(hardwareMap);
@@ -28,8 +27,12 @@ public class CameraTester extends LinearOpMode {
         while (opModeIsActive()) {
             error = robot.getCamera().getGoalAngleError();
             t.addData("Calculated error", error);
-            absoluteError = robot.getCamera().getAbsoluteAngleError(robot.getDrivetrain().getRobotHeading(AngleUnit.DEGREES), error);
-            t.addData("Absolute error", absoluteError);
+            if (error == null) {
+                t.addData("Absolute error", "Null");
+            } else {
+                absoluteError = robot.getCamera().getAbsoluteAngleError(robot.getDrivetrain().getRobotHeading(AngleUnit.DEGREES), error);
+                t.addData("Absolute error", absoluteError);
+            }
             int len = robot.getCamera().getTagDetections().size();
             String s = "";
             for (int i = 0; i < len; i++) {
@@ -38,12 +41,9 @@ public class CameraTester extends LinearOpMode {
             t.addData("Tag(s) detected", s);
             dist = robot.getCamera().getGoalDistance();
             t.addData("Distance", dist);
-            // scan motif order shit here
-            //
-            //
-            //
-            //
-            //
+            char[] motifOrder = robot.getCamera().scanMotifOrder();
+            t.addData("Scanned Motif Order", new String(motifOrder));
+            t.update();
         }
     }
 }

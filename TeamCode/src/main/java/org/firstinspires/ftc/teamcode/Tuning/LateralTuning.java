@@ -1,8 +1,5 @@
 package org.firstinspires.ftc.teamcode.Tuning;
 
-import static org.firstinspires.ftc.teamcode.riptideUtil.LAT_KD;
-import static org.firstinspires.ftc.teamcode.riptideUtil.LAT_KI;
-import static org.firstinspires.ftc.teamcode.riptideUtil.LAT_KP;
 import static org.firstinspires.ftc.teamcode.riptideUtil.MAX_A;
 import static org.firstinspires.ftc.teamcode.riptideUtil.MAX_V;
 import static org.firstinspires.ftc.teamcode.riptideUtil.TURN_KP;
@@ -167,7 +164,7 @@ public class LateralTuning extends LinearOpMode {
 
         turnPid.setPID(TURN_KP, riptideUtil.TURN_KI, riptideUtil.TURN_KD);
         vertPid.setPID(FORWARD_KP, riptideUtil.FORWARD_KI, FORWARD_KD);
-        latPid.setPID(LAT_KP, LAT_KI, LAT_KD);
+       // latPid.setPID(LAT_KP, LAT_KI, LAT_KD);
 
         double turnPower = turnPid.calculate(0, turnError);
         double xPower = vertPid.calculate(currentX, expX);
