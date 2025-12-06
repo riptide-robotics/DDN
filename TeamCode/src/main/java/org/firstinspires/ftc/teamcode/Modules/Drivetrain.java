@@ -17,6 +17,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
 import org.firstinspires.ftc.teamcode.Modules.Utils.GoBildaPinpointDriver;
 import org.firstinspires.ftc.teamcode.Placeholder;
@@ -25,11 +26,11 @@ import org.firstinspires.ftc.teamcode.Placeholder;
 
 public class Drivetrain {
 
-    //////////////////////////////////////////////
-    ////                                     /////
-    ////              VARIABLES              /////
-    ////                                     /////
-    //////////////////////////////////////////////
+    /// ///////////////////////////////////////////
+    /// /                                     /////
+    /// /              VARIABLES              /////
+    /// /                                     /////
+    /// ///////////////////////////////////////////
 
     // -------- DRIVETRAIN MOTORS -------- //
     private final DcMotor frWheel, flWheel, brWheel, blWheel;
@@ -43,18 +44,17 @@ public class Drivetrain {
 
     // -------- AUTONOMOUS CONTROLLERS -------- //
 
-    private final PIDController headingController = new PIDController(TURN_KP, TURN_KI, TURN_KD);
+    private final PIDController turnController = new PIDController(TURN_KP, TURN_KI, TURN_KD);
     private final PIDController forwardController = new PIDController(FORWARD_KP, FORWARD_KI, FORWARD_KD);
 
 
-    //////////////////////////////////////////////
-    ////                                     /////
-    ////              FUNCTIONS              /////
-    ////                                     /////
-    //////////////////////////////////////////////
+    /// ///////////////////////////////////////////
+    /// /                                     /////
+    /// /              FUNCTIONS              /////
+    /// /                                     /////
+    /// ///////////////////////////////////////////
 
     // --------- INITIALIZATION --------- //
-
     public Drivetrain(HardwareMap hardwareMap) {
 
         frWheel = hardwareMap.dcMotor.get("frWheel");
@@ -81,7 +81,7 @@ public class Drivetrain {
         flWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         blWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class,"odo");
+        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
         pinpoint.setOffsets(xOdoOffsetInInches, yOdoOffsetInInches, DistanceUnit.INCH);
         pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
@@ -104,27 +104,26 @@ public class Drivetrain {
         imu.resetYaw();
     }
 
-    public void PIDToPoint() {
-        throw new UnsupportedOperationException("PIDToPoint not supported!");
-
-    }
-
     // ------------ SETTERS ------------ //
-
-
     public void setWheelPowers(double flWheelPower, double frWheelPower, double brWheelPower, double blWheelPower) {
         frWheel.setPower(frWheelPower);
         flWheel.setPower(flWheelPower);
         brWheel.setPower(brWheelPower);
         blWheel.setPower(blWheelPower);
     }
-    @Placeholder
-    public void goToPosPID(EditablePose2D p){
 
+    public void setForwardController(double kp, double ki, double kd){
+        forwardController.setPID(kp, ki, kd);
+        forwardController.reset();
+    }
+
+    public void setTurnController(double kp, double ki, double kd){
+        turnController.setPID(kp, ki, kd);
+        forwardController.reset();
     }
 
     // ------------ GETTERS ------------ //
-    public EditablePose2D getCurrPos() {
+    public Pose2D getCurrPos() {
         return robotPos.getCurrPos();
     }
 
@@ -139,5 +138,36 @@ public class Drivetrain {
 
     public double getRobotHeading(AngleUnit unit) {
         return imu.getRobotYawPitchRollAngles().getYaw(unit); // heading of bot in radians
+    }
+
+    // -------- Methods --------------- //
+
+   public void followGivenPath(){
+
+   }
+
+    public void goToPosPID(Pose2D goal) {
+        double heading = getCurrPos().getHeading(AngleUnit.RADIANS);
+        double dx = goal.getX(DistanceUnit.INCH) - getCurrPos().getX(DistanceUnit.INCH);
+        double dy = goal.getY(DistanceUnit.INCH) - getCurrPos().getY(DistanceUnit.INCH);
+
+        double forwardError = Math.cos(heading) * dx - Math.sin(heading) * dy;
+        double lateralError = Math.sin(heading) * dx + Math.cos(heading) * dy;
+
+        double forwardPower = forwardController.calculate(0, forwardError);
+        double lateralPower = turnController.calculate(0, lateralError);
+
+        setWheelPowers(
+                forwardPower + lateralPower,
+                forwardPower - lateralPower,
+                forwardPower - lateralPower,
+                forwardPower + lateralPower
+        );
+    }
+
+    public boolean atPoint(Pose2D point) {
+        double dx = point.getX(DistanceUnit.INCH) - getCurrPos().getX(DistanceUnit.INCH);
+        double dy = point.getY(DistanceUnit.INCH) - getCurrPos().getY(DistanceUnit.INCH);
+        return false;
     }
 }
