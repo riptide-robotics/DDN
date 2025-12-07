@@ -39,9 +39,9 @@ public class Robot {
     public Robot (HardwareMap map){
         hardwareMap = map;
 
-        s = new Sequencer();
         indicator = new Indicator(hardwareMap);
         drivetrain = new Drivetrain(hardwareMap);
+        s = new Sequencer(drivetrain);
         intake = new Intake(hardwareMap);
         endgameServos = new EndgameServos(hardwareMap);
         outtake = new Outtake(hardwareMap);

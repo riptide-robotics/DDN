@@ -1,18 +1,17 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
 import org.firstinspires.ftc.teamcode.Placeholder;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 //practically copy-pasting, don't blame me -
 /*
@@ -24,19 +23,28 @@ import java.util.stream.Stream;
 
 @Placeholder(note = "Mostly complete, has not undergone peer review. Change this when peer reviewed.")
 public class Sequencer { // Done by Owen
-    public Map<String,ImpulseAction> impulseactions;
+    public static final DistanceUnit unit = DistanceUnit.INCH;
 
-    public Map<String,LoopedAction> loopactions;
+    public Map<String,ImpulseAction> impulseactions;
+    public Map<String, LoopAction> loopactions;
+    public Map<String,TripImpulseAction> Timpulseactions;
+    public Map<String,TripLoopAction> Tloopactions;
+    private Drivetrain drive;
+
+
    // public Telemetry t = null;
     public enum SequenceType {
         IMPULSE,
         LOOPED
     }
     /**Creates a sequencer. This class allows you to perform tasks after a set amount of time.*/
-    public Sequencer(){
+    public Sequencer(Drivetrain drive){
         impulseactions = new HashMap<>();
         loopactions = new HashMap<>();
+        Timpulseactions = new HashMap<>();
+        Tloopactions = new HashMap<>();
 
+        this.drive = drive;
     }
    // ///only intended for use in SequencerTest. Not recommended.
    // public Sequencer(Telemetry t){
@@ -59,27 +67,75 @@ public class Sequencer { // Done by Owen
         }
     }
     /**Another type of action that runs forever after a delay, only stopping when killAction is set to true.*/
-    public static class LoopedAction extends SeqAction {
+    public static class LoopAction extends SeqAction {
         /**This determines if the action should be terminated. Set this to true and its action will be subsequently eliminated.*/
         public boolean killAction;
-        public LoopedAction(Action a, double elapsedTime, String actionName) {
+
+        public LoopAction(Action a, double elapsedTime, String actionName) {
             super(a,elapsedTime,actionName);
             this.killAction = false;
         }
     }
+    public static class TripImpulseAction extends SeqAction {
+        public Area area;
+        TripImpulseAction(Action a, Area area, String name) {
+            super(a, 0, name);
+            this.area = area;
+        }
+    }
+    public static class TripLoopAction extends SeqAction {
+        public Area area;
+        public boolean killAction = false;
+        TripLoopAction(Action a, Area area, String name) {
+            super(a, 0, name);
+            this.area = area;
+        }
+    }
+    public static class Area {
+        public double xMin;
+        public double yMin;
+        public double xMax;
+        public double yMax;
 
-    /**Retrieves a loop action based upon a name. Throws an exception if none is found.*/
-    public LoopedAction getLoopAction(String name) {
-        if (!loopactions.containsKey(name)) throw new RuntimeException("No loop action by the name of " + name + "!");
-        return loopactions.get(name);
+        public Area(double xMin, double yMin, double xMax, double yMax) {
+            this.xMin = xMin;
+            this.yMin = yMin;
+            this.xMax = xMax;
+            this.yMax = yMax;
+        }
+        public void setMinPos(double x, double y) {
+            this.xMin = x;
+            this.yMin = y;
+        }
+        public void setMaxPos(double x, double y) {
+            this.xMax = x;
+            this.yMax = y;
+        }
+        public void setMinPos(Pose2D pose) {
+            setMinPos(pose.getX(Sequencer.unit),pose.getY(Sequencer.unit));
+        }
+        public void setMaxPos(Pose2D pose) {
+            setMaxPos(pose.getX(Sequencer.unit),pose.getY(Sequencer.unit));
+        }
+        public void setMinPos(EditablePose2D pose) {
+            setMinPos(pose.getX(Sequencer.unit),pose.getY(Sequencer.unit));
+        }
+        public void setMaxPos(EditablePose2D pose) {
+            setMaxPos(pose.getX(Sequencer.unit),pose.getY(Sequencer.unit));
+        }
+        public boolean botWithinArea(Drivetrain drive) {
+            double X = drive.getCurrPos().getX(Sequencer.unit);
+            double Y = drive.getCurrPos().getY(Sequencer.unit);
+
+            if (X > xMax || X < xMin) return false;
+            if (Y > yMax || Y < yMin) return false;
+
+            return true;
+        }
     }
-    /**Retrieves an impulse action based upon a name. Throws an exception if none is found.*/
-    public ImpulseAction getImpulseAction(String name) {
-        if (!impulseactions.containsKey(name))
-            throw new RuntimeException("No impulse action by the name of " + name + "!");
-        return impulseactions.get(name);
-    }
-    /**A way to add actions with type as a parameter. Untested.*/
+
+    /**A way to add actions with type as a parameter. Untested, outdated.*/
+    @Deprecated
     public void addAction(Action a, SequenceType type, double elapsedTime, String actionName, Object... params) throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
         switch (type) {
             case LOOPED:
@@ -91,17 +147,156 @@ public class Sequencer { // Done by Owen
             default: throw new IllegalArgumentException("Type likely null!");
         }
     }
+    
+    //NOTE: don't change this to remove the actions to be killed within the primary loop, that throws a nice ConcurrentModificationException.
+    
+    /*
+    For anyone who wants to add or modify a type of action, the following may be helpful.
 
+    The following example is of ImpulseAction.
+
+        remove = processImpulseActions();
+        for (String s : remove) impulseactions.remove(s);
+    
+    The first line processes all actions. The returned value gives the actions to be removed.
+    The second line removes those actions.
+    
+    The 'remove' is only initialized once so you don't have to see a bunch of different variables with almost identical purposes.
+    */
+
+    /**
+     *  Process all actions queued up. <br>
+     *  This handles all the checks necessary; <br>
+     *  all that is needed is to put this in a loop that can be run.
+     *  */
+    public void loop() {
+        List<String> remove;
+        
+        
+        remove = processImpulseActions();
+        for (String s : remove) impulseactions.remove(s);
+
+        remove = processLoopActions();
+        for (String s : remove) loopactions.remove(s);
+
+        remove = processTImpulseActions();
+        for (String s : remove) Timpulseactions.remove(s);
+        
+        remove = processTLoopActions();
+        for (String s : remove) Tloopactions.remove(s);
+
+    }
+    /**
+     * Internal helper method to process specifically Impulse Actions. <br>
+     * THIS WILL NOT REMOVE THE ACTION ON ITS OWN!
+     * @return The names of all actions that are to be removed. 
+     * */
+    private List<String> processImpulseActions() {
+        List<String> remove = new ArrayList<>();
+        
+        for (Map.Entry<String,ImpulseAction> entry : impulseactions.entrySet()) {
+            if ((double) System.currentTimeMillis() /1000 - entry.getValue().startTime > entry.getValue().elapsedTime) {
+                entry.getValue().a.action();
+                remove.add(entry.getKey());
+            }
+        }
+        return remove;
+    }
+    /**
+     * Internal helper method to process specifically Loop Actions. <br>
+     * THIS WILL NOT REMOVE THE ACTION ON ITS OWN!
+     * @return The names of all actions that are to be removed. 
+     * */
+    private List<String> processLoopActions() {
+        List<String> remove = new ArrayList<>();
+        
+        for (Map.Entry<String, LoopAction> act : loopactions.entrySet()) {
+            boolean overrideAction = act.getValue().killAction;
+
+            if (!overrideAction && (double) System.currentTimeMillis()/1000 - act.getValue().startTime > act.getValue().elapsedTime)
+                act.getValue().a.action();
+
+            else if (overrideAction) remove.add(act.getKey());
+        }
+        return remove;
+    }
+    /**
+     * Internal helper method to process specifically Trip Impulse Actions. <br>
+     * THIS WILL NOT REMOVE THE ACTION ON ITS OWN!
+     * @return The names of all actions that are to be removed. 
+     * */
+    private List<String> processTImpulseActions() {
+        List<String> remove = new ArrayList<>();
+
+        for (Map.Entry<String, TripImpulseAction> act : Timpulseactions.entrySet()) {
+            if (act.getValue().area.botWithinArea(this.drive)) {
+                act.getValue().a.action();
+                remove.add(act.getKey());
+            }
+        }
+        return remove;
+    }
+    /**
+     * Internal helper method to process specifically Trip Loop Actions. <br>
+     * THIS WILL NOT REMOVE THE ACTION ON ITS OWN!
+     * @return The names of all actions that are to be removed. 
+     * */
+    private List<String> processTLoopActions() {
+        List<String> remove = new ArrayList<>();
+
+        for (Map.Entry<String,TripLoopAction> act : Tloopactions.entrySet()) {
+            boolean overrideAction = act.getValue().killAction;
+
+            if (!overrideAction && act.getValue().area.botWithinArea(this.drive))
+                act.getValue().a.action();
+
+            else if (overrideAction) remove.add(act.getKey());
+        }
+        return remove;
+    }
+
+    
+    /**Retrieves an impulse action based upon a name. Throws an exception if none is found.*/
+    public ImpulseAction getImpulseAction(String name) {
+        if (!impulseactions.containsKey(name))
+            throw new RuntimeException("No impulse action by the name of " + name + "!");
+        return impulseactions.get(name);
+    }
+    
+    /**Retrieves a loop action based upon a name. Throws an exception if none is found.*/
+    public LoopAction getLoopAction(String name) {
+        if (!loopactions.containsKey(name)) throw new RuntimeException("No loop action by the name of " + name + "!");
+        return loopactions.get(name);
+    }
+    
+    /**Retrieves a trip impulse action based upon a name. Throws an exception if none is found.*/
+    public TripImpulseAction getTImpulseAction(String name) {
+        if (!Timpulseactions.containsKey(name))
+            throw new RuntimeException("No trip impulse action by the name of " + name + "!");
+        return Timpulseactions.get(name);
+    }
+    
+    /**Retrieves a trip loop action based upon a name. Throws an exception if none is found.*/
+    public TripLoopAction getTLoopAction(String name) {
+        if (!Tloopactions.containsKey(name)) throw new RuntimeException("No trip loop action by the name of " + name + "!");
+        return Tloopactions.get(name);
+    }
+    
     public void addImpulseAction(ImpulseAction a) {
         impulseactions.put(a.name,a);
     }
 
-
-    public void addLoopAction(LoopedAction a) {
-       // if (t != null) t.addData("actionNotNull",a != null);
+    public void addLoopAction(LoopAction a) {
         loopactions.put(a.name,a);
     }
 
+    public void addTImpulseAction(TripImpulseAction a) {
+        Timpulseactions.put(a.name,a);
+    }
+
+    public void addTLoopAction(TripLoopAction a) {
+        Tloopactions.put(a.name,a);
+    }
 
     public void AddImpulseAction(Action a, double delayINSECONDS){
         addImpulseAction(new ImpulseAction(a,delayINSECONDS));
@@ -111,48 +306,25 @@ public class Sequencer { // Done by Owen
         addImpulseAction(new ImpulseAction(a,delayINSECONDS, name));
 
     }
-    public void addLoopAction(Action a,double delayINSECONDS,String name) {
-        addLoopAction(new LoopedAction(a,delayINSECONDS,name));
+    public void addLoopAction(Action a,double delayINSECONDS, String name) {
+        addLoopAction(new LoopAction(a,delayINSECONDS,name));
+    }
+
+    public void addTImpulseAction(Action a, Area area, String name) {
+        addTImpulseAction(new TripImpulseAction(a,area,name));
+    }
+
+    public void addTLoopAction(Action a, Area area, String name) {
+        addTLoopAction(new TripLoopAction(a,area,name));
     }
 
     public void killLoopAction(String name, boolean kill) {
         if (!loopactions.containsKey(name)) throw new RuntimeException("No loop action of name: " + name + "!");
-        loopactions.get("name").killAction = kill;
+        loopactions.get(name).killAction = kill;
     }
-    public void killImpulseAction(String name, boolean kill) {
-        if (!loopactions.containsKey(name)) throw new RuntimeException("No impulse action of name: " + name + "!");
-        loopactions.get("name").killAction = kill;
+    public void killTLoopAction(String name, boolean kill) {
+        if (!Tloopactions.containsKey(name)) throw new RuntimeException("No loop action of name: " + name + "!");
+        Tloopactions.get(name).killAction = kill;
     }
 
-
-    /**Process loop prototype. More untested than the impulse prototype. Mostly for debugging purposes, remove this and its if statement after peer review.*/
-    public static final boolean runPrototype = true;
-
-    //NOTE: dont change this to remove the actions to be killed within the primary loop, that throws a nice ConcurrentModificationException.
-    public void loop() {
-        List<String> remove = new ArrayList<>();
-
-        for (Map.Entry<String,ImpulseAction> entry : impulseactions.entrySet()) {
-            if ((double) System.currentTimeMillis() /1000 - entry.getValue().startTime > entry.getValue().elapsedTime) {
-                entry.getValue().a.action();
-                remove.add(entry.getKey());
-            }
-        }
-        remove.forEach((string) -> impulseactions.remove(string));
-
-
-        if (!runPrototype) return;
-
-
-        remove.clear();
-        for (Map.Entry<String,LoopedAction> act : loopactions.entrySet()) {
-            boolean overrideAction = act.getValue().killAction;
-
-            if (!overrideAction && (double) System.currentTimeMillis()/1000 - act.getValue().startTime > act.getValue().elapsedTime)
-                act.getValue().a.action();
-
-            else if (overrideAction) remove.add(act.getKey());
-        }
-        for (String s : remove) loopactions.remove(s);
-    }
 }
