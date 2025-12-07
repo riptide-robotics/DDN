@@ -18,7 +18,7 @@ public class riptideUtil {
 
     /**
      * Table of contents:
-     * 1. General constants (things that are used gneerally, not specific locations)
+     * 1. General constants (things that are used generally, not specific locations)
      * 2. Autonomous Constants
      */
 

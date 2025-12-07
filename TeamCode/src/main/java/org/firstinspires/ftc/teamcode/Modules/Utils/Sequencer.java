@@ -4,7 +4,6 @@ package org.firstinspires.ftc.teamcode.Modules.Utils;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Modules.Drivetrain;
-import org.firstinspires.ftc.teamcode.Placeholder;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -13,12 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-/*
-    TODO: (given by Aaron)
-    Create two new actions. When the bot approaches a location given by the user, fire them.
-    One action, TripImpulseAction, fires once when reaching a specific location.
-    The other action, LoopImpulseAction, fires as long as the bot is in the location, and kills itself once the bot leaves.
-*/
 
 /** 
  * The Sequencer takes snippets of code and marks them for execution in different ways. <br>
@@ -28,18 +21,19 @@ import java.util.UUID;
  * An impulse action will run once. <br>
  * And finally, a loop action will run repeatedly, or until the action is set to be killed. <br>
  * */
-@Placeholder(note = "Mostly complete, has not undergone peer review. Change this when peer reviewed.")
 public class Sequencer { // Done by Owen
     public static final DistanceUnit unit = DistanceUnit.INCH;
 
+    
     public Map<String,ImpulseAction> impulseactions;
     public Map<String, LoopAction> loopactions;
     public Map<String,TripImpulseAction> Timpulseactions;
     public Map<String,TripLoopAction> Tloopactions;
-    private Drivetrain drive;
+    private final Drivetrain drive;
 
 
    // public Telemetry t = null;
+    /**Outdated.*/
     public enum SequenceType {
         IMPULSE,
         LOOPED
@@ -60,8 +54,106 @@ public class Sequencer { // Done by Owen
   //      this.t = t;
   //  };
 
+    /**Exists as a way to store a snippet and nothing else.*/
     public interface Action{
         void action();
+    }
+    /**
+     * This class exists to check if the bot is within one predetermined area. <br>
+     * It will try to fix areas with impossible specifications. <br>
+     * It will not attempt to fix areas that are out-of-bounds, to avoid this needing to be updated for a later game.
+     * */
+    public static class Area {
+        /**It is recommended to use the setters to change these values - they'll correct some mistakes.*/
+        public double xMin;
+        /**It is recommended to use the setters to change these values - they'll correct some mistakes.*/
+        public double yMin;
+        /**It is recommended to use the setters to change these values - they'll correct some mistakes.*/
+        public double xMax;
+        /**It is recommended to use the setters to change these values - they'll correct some mistakes.*/
+        public double yMax;
+        
+        public Area(double xMin, double yMin, double xMax, double yMax) {
+            this.xMin = xMin;
+            this.yMin = yMin;
+            this.xMax = xMax;
+            this.yMax = yMax;
+            
+            correctPositions();
+        }
+        /**Create a blank Area. This will never fire. */
+        public Area() {
+            this.xMin = -12000; //ensure the bot doesn't just fire off the second it is started by putting it one thousand feet away
+            this.yMin = 0;
+            this.xMax = -12000;
+            this.yMax = 0;
+        }
+        /**This method attempts to fix broken areas with impossible positions, ensuring that they exist somewhere.*/
+        private void correctPositions() {
+            if (xMin > xMax) {
+                double stored = xMin;
+                xMin = xMax;
+                xMax = stored;
+            }
+            if (yMin > yMax) {
+                double stored = yMin;
+                xMin = xMax;
+                xMax = stored;
+            }
+        };
+        /**Similar to setMaxPos, but reliant on the origin.*/
+        public void setSize(double width, double height) {
+            setMaxPos(xMin + width, yMin + height);
+        }
+        /**Identical to setMinPos, but shows which of the two systems are preferred here.*/
+        public void setOrigin(double x, double y) {
+            setMinPos(x,y);
+        }
+        /**Identical to setMinPos, but shows which of the two systems are preferred here.*/
+        public void setOrigin(Pose2D pose) {
+            setOrigin(pose.getX(Sequencer.unit),pose.getY(Sequencer.unit));
+        }
+        /**Identical to setMinPos, but shows which of the two systems are preferred here.*/
+        public void setOrigin(EditablePose2D pose) {
+            setOrigin(pose.getX(Sequencer.unit),pose.getY(Sequencer.unit));
+        }
+        public void setMinPos(double x, double y) {
+            this.xMin = x;
+            this.yMin = y;
+            
+            correctPositions();
+        }
+        public void setMaxPos(double x, double y) {
+            this.xMax = x;
+            this.yMax = y;
+            
+            correctPositions();
+        }
+        public void setMinPos(Pose2D pose) {
+            setMinPos(pose.getX(Sequencer.unit),pose.getY(Sequencer.unit));
+        }
+        public void setMaxPos(Pose2D pose) {
+            setMaxPos(pose.getX(Sequencer.unit),pose.getY(Sequencer.unit));
+        }
+        public void setMinPos(EditablePose2D pose) {
+            setMinPos(pose.getX(Sequencer.unit),pose.getY(Sequencer.unit));
+        }
+        public void setMaxPos(EditablePose2D pose) {
+            setMaxPos(pose.getX(Sequencer.unit),pose.getY(Sequencer.unit));
+        }
+        /**
+         * Check if the bot is within the area defined.
+         * @param drive The drivetrain that is used to check. Looking for a way to remove this.
+         * */
+        public boolean botWithinArea(Drivetrain drive) {
+            double X = drive.getCurrPos().getX(Sequencer.unit);
+            double Y = drive.getCurrPos().getY(Sequencer.unit);
+
+            if (X > xMax || X < xMin) return false;
+            if (Y > yMax || Y < yMin) return false;
+
+            return true;
+        }
     }
 
     /**One type of action that runs once after a delay, then ends.*/
@@ -96,52 +188,6 @@ public class Sequencer { // Done by Owen
         TripLoopAction(Action a, Area area, String name) {
             super(a, 0, name);
             this.area = area;
-        }
-    }
-    public static class Area {
-        public double xMin;
-        public double yMin;
-        public double xMax;
-        public double yMax;
-
-        public Area(double xMin, double yMin, double xMax, double yMax) {
-            this.xMin = xMin;
-            this.yMin = yMin;
-            this.xMax = xMax;
-            this.yMax = yMax;
-        }
-        public void setMinPos(double x, double y) {
-            this.xMin = x;
-            this.yMin = y;
-        }
-        public void setMaxPos(double x, double y) {
-            this.xMax = x;
-            this.yMax = y;
-        }
-        public void setMinPos(Pose2D pose) {
-            setMinPos(pose.getX(Sequencer.unit),pose.getY(Sequencer.unit));
-        }
-        public void setMaxPos(Pose2D pose) {
-            setMaxPos(pose.getX(Sequencer.unit),pose.getY(Sequencer.unit));
-        }
-        public void setMinPos(EditablePose2D pose) {
-            setMinPos(pose.getX(Sequencer.unit),pose.getY(Sequencer.unit));
-        }
-        public void setMaxPos(EditablePose2D pose) {
-            setMaxPos(pose.getX(Sequencer.unit),pose.getY(Sequencer.unit));
-        }
-        /**
-         * Check if the bot is within the area defined.
-         * @param drive The drivetrain that is used to check. Looking for a way to remove this.
-         * */
-        public boolean botWithinArea(Drivetrain drive) {
-            double X = drive.getCurrPos().getX(Sequencer.unit);
-            double Y = drive.getCurrPos().getY(Sequencer.unit);
-
-            if (X > xMax || X < xMin) return false;
-            if (Y > yMax || Y < yMin) return false;
-
-            return true;
         }
     }
 

@@ -19,7 +19,7 @@ public class SequencerTripTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         robot = new Robot(hardwareMap);
 
-        area = new Sequencer.Area(3,0,7,0);
+        area = new Sequencer.Area(3,-1,7,1);
 
         waitForStart();
         if (isStopRequested()) return;
@@ -46,8 +46,11 @@ public class SequencerTripTest extends LinearOpMode {
         }
         if (gamepad1.y) {
             robot.s.addTImpulseAction(() -> {
+                robot.getOuttake().runOuttakePID(3000,3000,telemetry);
                 loopCount++;
             },area,"TLoopTest");
+        } else {
+            robot.getOuttake().runOuttakePID(0,0,telemetry);
         }
 
         if (gamepad1.aWasPressed()) {
