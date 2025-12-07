@@ -26,7 +26,7 @@ import java.util.UUID;
  * Actions that start with T, or Trip, act as a "tripwire." They run when the bot approaches a given location. <br>
  * If it does not, it runs after a given timer. <br>
  * An impulse action will run once. <br>
- * And finally, a loop action will run forever, or until the action is set to be killed. <br>
+ * And finally, a loop action will run repeatedly, or until the action is set to be killed. <br>
  * */
 @Placeholder(note = "Mostly complete, has not undergone peer review. Change this when peer reviewed.")
 public class Sequencer { // Done by Owen
@@ -130,6 +130,10 @@ public class Sequencer { // Done by Owen
         public void setMaxPos(EditablePose2D pose) {
             setMaxPos(pose.getX(Sequencer.unit),pose.getY(Sequencer.unit));
         }
+        /**
+         * Check if the bot is within the area defined.
+         * @param drive The drivetrain that is used to check. Looking for a way to remove this.
+         * */
         public boolean botWithinArea(Drivetrain drive) {
             double X = drive.getCurrPos().getX(Sequencer.unit);
             double Y = drive.getCurrPos().getY(Sequencer.unit);
