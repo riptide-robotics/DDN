@@ -84,10 +84,12 @@ public class TurnTableAndCameraTest extends LinearOpMode {
         double goalTicks = goalDeg * degreesToTicks;
 
         currPosTicks = motor.getCurrentPosition();
-        motor.setPower(motorController.calculate(currPosTicks, goalTicks) + kf);
+        double setPower = motorController.calculate(currPosTicks, goalTicks) + kf;
+        motor.setPower(setPower);
         currPosDeg = currPosTicks * ticksToDegrees;
 
         t.addData("Current Position", currPosDeg);
         t.addData("Goal Position", goalDeg);
+        t.addData("Set Power", setPower);
     }
 }
