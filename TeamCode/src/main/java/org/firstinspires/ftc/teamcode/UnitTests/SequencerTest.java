@@ -11,24 +11,9 @@ import org.firstinspires.ftc.teamcode.Robot;
 public class SequencerTest extends LinearOpMode {
     Robot robot;
 
-    public double BTop = 3000;
-    /**If it goes well, this should have no effect*/
-    public double BBottom = 3000;
-    public double BBottomSecondary = 1500;
-    public double XTop = 3000;
-    public double XBottom = 3000;
-    public double YTop = 3000;
-    public double YBottom = 3000;
-
-
-
-
-
-
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot(hardwareMap);
-
         waitForStart();
         if (isStopRequested()) return;
 
