@@ -1,9 +1,9 @@
-package org.firstinspires.ftc.teamcode.Modules;
+package org.firstinspires.ftc.teamcode.Modules.Utils;
 
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
+import org.firstinspires.ftc.teamcode.Modules.Drivetrain;
 import org.firstinspires.ftc.teamcode.Placeholder;
 
 import java.lang.reflect.InvocationTargetException;
@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-//practically copy-pasting, don't blame me -
 /*
     TODO: (given by Aaron)
     Create two new actions. When the bot approaches a location given by the user, fire them.
@@ -21,6 +20,14 @@ import java.util.UUID;
     The other action, LoopImpulseAction, fires as long as the bot is in the location, and kills itself once the bot leaves.
 */
 
+/** 
+ * The Sequencer takes snippets of code and marks them for execution in different ways. <br>
+ * These are considered Actions. Together, the define what, when, and how a task is run. <br>
+ * Actions that start with T, or Trip, act as a "tripwire." They run when the bot approaches a given location. <br>
+ * If it does not, it runs after a given timer. <br>
+ * An impulse action will run once. <br>
+ * And finally, a loop action will run forever, or until the action is set to be killed. <br>
+ * */
 @Placeholder(note = "Mostly complete, has not undergone peer review. Change this when peer reviewed.")
 public class Sequencer { // Done by Owen
     public static final DistanceUnit unit = DistanceUnit.INCH;
@@ -58,7 +65,7 @@ public class Sequencer { // Done by Owen
     }
 
     /**One type of action that runs once after a delay, then ends.*/
-    public static class ImpulseAction extends SeqAction{
+    public static class ImpulseAction extends SeqAction {
         public ImpulseAction(Action a, double elapsedTime, String actionName) {
             super(a,elapsedTime,actionName);
         }
@@ -265,7 +272,8 @@ public class Sequencer { // Done by Owen
     
     /**Retrieves a loop action based upon a name. Throws an exception if none is found.*/
     public LoopAction getLoopAction(String name) {
-        if (!loopactions.containsKey(name)) throw new RuntimeException("No loop action by the name of " + name + "!");
+        if (!loopactions.containsKey(name))
+            throw new RuntimeException("No loop action by the name of " + name + "!");
         return loopactions.get(name);
     }
     
@@ -278,7 +286,8 @@ public class Sequencer { // Done by Owen
     
     /**Retrieves a trip loop action based upon a name. Throws an exception if none is found.*/
     public TripLoopAction getTLoopAction(String name) {
-        if (!Tloopactions.containsKey(name)) throw new RuntimeException("No trip loop action by the name of " + name + "!");
+        if (!Tloopactions.containsKey(name))
+            throw new RuntimeException("No trip loop action by the name of " + name + "!");
         return Tloopactions.get(name);
     }
     

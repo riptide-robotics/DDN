@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.Modules.Drivetrain;
 import org.firstinspires.ftc.teamcode.Modules.Indicator;
 import org.firstinspires.ftc.teamcode.Modules.Intake;
 import org.firstinspires.ftc.teamcode.Modules.Outtake;
-import org.firstinspires.ftc.teamcode.Modules.Sequencer;
+import org.firstinspires.ftc.teamcode.Modules.Utils.Sequencer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
