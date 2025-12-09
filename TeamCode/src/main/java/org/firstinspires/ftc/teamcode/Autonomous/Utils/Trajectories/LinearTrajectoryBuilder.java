@@ -17,7 +17,7 @@ import java.util.ArrayList;
 // --Aaron Xie
 public class LinearTrajectoryBuilder {
     ArrayList<Pose2D> controlPoints;
-    ArrayList<Pair<Integer, Double>> speedScalars;
+    ArrayList<Pair<Integer, Double>> speedScalars; // To scale the speed of a certain segment
 
     public LinearTrajectoryBuilder(ArrayList<Pose2D> controlPoints, ArrayList<Pair<Integer, Double>> speedScalars) {
         this.controlPoints = controlPoints;

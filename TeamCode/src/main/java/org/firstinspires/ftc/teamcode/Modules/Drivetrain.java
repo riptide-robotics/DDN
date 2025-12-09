@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
 import static org.firstinspires.ftc.teamcode.riptideUtil.FORWARD_KD;
+import static org.firstinspires.ftc.teamcode.riptideUtil.POINT_TOLERANCE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.TURN_KD;
 import static org.firstinspires.ftc.teamcode.riptideUtil.TURN_KI;
 import static org.firstinspires.ftc.teamcode.riptideUtil.TURN_KP;
 import static org.firstinspires.ftc.teamcode.riptideUtil.FORWARD_KI;
 import static org.firstinspires.ftc.teamcode.riptideUtil.FORWARD_KP;
+import static org.firstinspires.ftc.teamcode.riptideUtil.shortestAngleDiff;
 import static java.lang.Thread.sleep;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -141,33 +143,22 @@ public class Drivetrain {
     }
 
     // -------- Methods --------------- //
-
-   public void followGivenPath(){
-
+   public void followGivenPath(time){
+       goal = path.getCur(time);
+       at point = goToPosPID(goal);
+       if ( atPoint){
+            do some stuff maybe telemetry stuff
+       }
    }
 
-    public void goToPosPID(Pose2D goal) {
-        double heading = getCurrPos().getHeading(AngleUnit.RADIANS);
-        double dx = goal.getX(DistanceUnit.INCH) - getCurrPos().getX(DistanceUnit.INCH);
-        double dy = goal.getY(DistanceUnit.INCH) - getCurrPos().getY(DistanceUnit.INCH);
-
-        double forwardError = Math.cos(heading) * dx - Math.sin(heading) * dy;
-        double lateralError = Math.sin(heading) * dx + Math.cos(heading) * dy;
-
-        double forwardPower = forwardController.calculate(0, forwardError);
-        double lateralPower = turnController.calculate(0, lateralError);
-
-        setWheelPowers(
-                forwardPower + lateralPower,
-                forwardPower - lateralPower,
-                forwardPower - lateralPower,
-                forwardPower + lateralPower
-        );
+    public boolean goToPosPID(Pose2D goal) {
+        return false;
     }
 
     public boolean atPoint(Pose2D point) {
         double dx = point.getX(DistanceUnit.INCH) - getCurrPos().getX(DistanceUnit.INCH);
         double dy = point.getY(DistanceUnit.INCH) - getCurrPos().getY(DistanceUnit.INCH);
-        return false;
+
+        return Math.sqrt(dx * dx + dy * dy) < POINT_TOLERANCE;
     }
 }
