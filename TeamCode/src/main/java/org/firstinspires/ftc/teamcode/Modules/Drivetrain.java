@@ -153,7 +153,7 @@ public class Drivetrain {
     // boolean for testing if it got to the point, temporary
    public boolean followGivenPath(double time){
        Trajectory.PathSample goal = path.getExpectedPosition(time);
-       boolean atPoint = goToPosPID(new Pose2D(DistanceUnit.INCH, goal.x, goal.y, AngleUnit.DEGREES, 0));
+       boolean atPoint = goToPosPID(new Pose2D(DistanceUnit.INCH, goal.x, goal.y, AngleUnit.RADIANS, goal.heading));
 //       if (atPoint){
 //           //do some stuff maybe telemetry stuff
 //       }
@@ -161,26 +161,26 @@ public class Drivetrain {
    }
 
     public boolean goToPosPID(Pose2D goal) {
-        double dx = goal.getX(DistanceUnit.INCH) - this.xOdoOffsetInInches;
-        double dy = goal.getY(DistanceUnit.INCH) - this.yOdoOffsetInInches;
+        double dx = goal.getX(DistanceUnit.INCH) - pinpoint.getPosX(DistanceUnit.INCH);
+        double dy = goal.getY(DistanceUnit.INCH) - pinpoint.getPosY(DistanceUnit.INCH);
         double distanceToPoint = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
 
-        double headingError = shortestAngleDiff(0, Math.atan2(dy, dx));
+        double headingError = shortestAngleDiff(this.getRobotHeading(AngleUnit.RADIANS), Math.atan2(dy, dx));
 
-        double headingx = Math.cos(getRobotHeading(AngleUnit.DEGREES));
-        double headingy = Math.cos(getRobotHeading(AngleUnit.DEGREES));
-        ArrayList<Double> headingVect = new ArrayList<Double>(Arrays.asList(headingx, headingy)){};
-        ArrayList<Double> pointVect = new ArrayList<Double>(Arrays.asList(dx/distanceToPoint, dy/distanceToPoint)){};
-        double fbError = headingVect.get(0) * pointVect.get(0) + headingVect.get(1) * pointVect.get(1);
+        double headingx = Math.cos(getRobotHeading(AngleUnit.RADIANS));
+        double headingy = Math.sin(getRobotHeading(AngleUnit.RADIANS));
+        double[] headingVect = {headingx, headingy};
+        double[] pointVect = {dx/distanceToPoint, dy/distanceToPoint};
+        double fbError = headingVect[0] * pointVect[0] + headingVect[1] * pointVect[1];
 
         double forwardPower = forwardController.calculate(0, fbError);
         double turnPower = turnController.calculate(0, headingError);
 
         this.setWheelPowers(
                 forwardPower - turnPower,
-                forwardPower - turnPower,
                 forwardPower + turnPower,
-                forwardPower + turnPower
+                forwardPower + turnPower,
+                forwardPower - turnPower
         );
 
         return atPoint(goal);

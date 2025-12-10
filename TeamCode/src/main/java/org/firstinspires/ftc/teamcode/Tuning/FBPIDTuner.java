@@ -42,7 +42,21 @@ public class FBPIDTuner extends LinearOpMode {
         if (isStopRequested()) return;
 
         while(opModeIsActive()) {
-
+            pidVal = getFBVal();
         }
+    }
+
+    public double getFBVal() {
+        double dx = goal.getX(DistanceUnit.INCH) - pinpoint.getPosX(DistanceUnit.INCH);
+        double dy = goal.getY(DistanceUnit.INCH) - pinpoint.getPosY(DistanceUnit.INCH);
+        double distanceToPoint = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+
+        double headingx = Math.cos(getRobotHeading(AngleUnit.RADIANS));
+        double headingy = Math.sin(getRobotHeading(AngleUnit.RADIANS));
+        double[] headingVect = {headingx, headingy};
+        double[] pointVect = {dx/distanceToPoint, dy/distanceToPoint};
+        double fbError = headingVect[0] * pointVect[0] + headingVect[1] * pointVect[1];
+
+        return controller.calculate(0, fbError);
     }
 }
