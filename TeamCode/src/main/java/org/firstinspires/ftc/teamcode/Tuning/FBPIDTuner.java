@@ -19,6 +19,8 @@ public class FBPIDTuner extends LinearOpMode {
     // this should be 10 inches perpendicular to the robot
     public static double x = 10;
     public static double y = 0;
+    private double prevx = x;
+    private double prevy = y;
     public static Pose2D goal = new Pose2D(DistanceUnit.INCH, x, y, AngleUnit.DEGREES, 0);
 
     Robot robot;
@@ -42,21 +44,18 @@ public class FBPIDTuner extends LinearOpMode {
         if (isStopRequested()) return;
 
         while(opModeIsActive()) {
-            pidVal = getFBVal();
+            if(prevx != x || prevy != y) {
+                goal = new Pose2D(DistanceUnit.INCH, x, y, AngleUnit.DEGREES, 0);
+            }
+            robot.getDrivetrain().goToPosPID(goal);
+            telemetry.addData("Robot X", robot.getDrivetrain().getPinpoint().getPosX(DistanceUnit.INCH));
+            telemetry.addData("Robot Y", robot.getDrivetrain().getPinpoint().getPosY(DistanceUnit.INCH));
+            telemetry.addData("Robot Heading", robot.getDrivetrain().getRobotHeading(AngleUnit.DEGREES));
+            telemetry.addData("Left Wheel Powers", robot.getDrivetrain().getWheelPowers()[0]);
+            telemetry.addData("Right Wheel Powers", robot.getDrivetrain().getWheelPowers()[1]);
+            telemetry.update();
+            prevx = x;
+            prevy = y;
         }
-    }
-
-    public double getFBVal() {
-        double dx = goal.getX(DistanceUnit.INCH) - pinpoint.getPosX(DistanceUnit.INCH);
-        double dy = goal.getY(DistanceUnit.INCH) - pinpoint.getPosY(DistanceUnit.INCH);
-        double distanceToPoint = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
-
-        double headingx = Math.cos(getRobotHeading(AngleUnit.RADIANS));
-        double headingy = Math.sin(getRobotHeading(AngleUnit.RADIANS));
-        double[] headingVect = {headingx, headingy};
-        double[] pointVect = {dx/distanceToPoint, dy/distanceToPoint};
-        double fbError = headingVect[0] * pointVect[0] + headingVect[1] * pointVect[1];
-
-        return controller.calculate(0, fbError);
     }
 }

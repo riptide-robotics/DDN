@@ -149,6 +149,14 @@ public class Drivetrain {
         return imu.getRobotYawPitchRollAngles().getYaw(unit); // heading of bot in radians
     }
 
+    public GoBildaPinpointDriver getPinpoint() {
+        return pinpoint;
+    }
+
+    public double[] getWheelPowers() {
+        return new double[] {flWheel.getPower(), frWheel.getPower(), blWheel.getPower(), brWheel.getPower()};
+    }
+
     // -------- Methods --------------- //
     // boolean for testing if it got to the point, temporary
    public boolean followGivenPath(double time){
