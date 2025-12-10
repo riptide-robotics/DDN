@@ -37,6 +37,8 @@ public class FBPIDTuner extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         robot = new Robot(hardwareMap);
 
+        robot.getDrivetrain().startOdometry();
+
         telemetry.addData("Robot status", "successfully initiated");
         telemetry.update();
 
@@ -48,8 +50,8 @@ public class FBPIDTuner extends LinearOpMode {
                 goal = new Pose2D(DistanceUnit.INCH, x, y, AngleUnit.DEGREES, 0);
             }
             robot.getDrivetrain().goToPosPID(goal);
-            telemetry.addData("Robot X", robot.getDrivetrain().getPinpoint().getPosX(DistanceUnit.INCH));
-            telemetry.addData("Robot Y", robot.getDrivetrain().getPinpoint().getPosY(DistanceUnit.INCH));
+            telemetry.addData("Robot X", robot.getDrivetrain().getCurrPos().getX(DistanceUnit.INCH));
+            telemetry.addData("Robot Y", robot.getDrivetrain().getCurrPos().getY(DistanceUnit.INCH));
             telemetry.addData("Robot Heading", robot.getDrivetrain().getRobotHeading(AngleUnit.DEGREES));
             telemetry.addData("Left Wheel Powers", robot.getDrivetrain().getWheelPowers()[0]);
             telemetry.addData("Right Wheel Powers", robot.getDrivetrain().getWheelPowers()[1]);
