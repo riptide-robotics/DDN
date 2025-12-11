@@ -28,6 +28,9 @@ public class FBPIDTuner extends LinearOpMode {
     public static double kp = 0;
     public static double ki = 0;
     public static double kd = 0;
+    private double prevkp = 0;
+    private double prevki = 0;
+    private double prevkd = 0;
 
     PIDController controller = new PIDController(kp, ki, kd);
 
@@ -49,6 +52,9 @@ public class FBPIDTuner extends LinearOpMode {
             if(prevx != x || prevy != y) {
                 goal = new Pose2D(DistanceUnit.INCH, x, y, AngleUnit.DEGREES, 0);
             }
+            if (prevkp != kp || prevki != ki || prevkd != kd) {
+                controller.setPID(kp, ki, kd);
+            }
             robot.getDrivetrain().goToPosPID(goal);
             telemetry.addData("Robot X", robot.getDrivetrain().getCurrPos().getX(DistanceUnit.INCH));
             telemetry.addData("Robot Y", robot.getDrivetrain().getCurrPos().getY(DistanceUnit.INCH));
@@ -58,6 +64,9 @@ public class FBPIDTuner extends LinearOpMode {
             telemetry.update();
             prevx = x;
             prevy = y;
+            prevkp = kp;
+            prevki = ki;
+            prevkd = kd;
         }
     }
 }
