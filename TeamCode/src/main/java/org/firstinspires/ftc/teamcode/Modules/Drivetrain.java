@@ -25,6 +25,7 @@ import org.firstinspires.ftc.teamcode.Autonomous.Utils.Trajectories.Trajectory;
 import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
 import org.firstinspires.ftc.teamcode.Modules.Utils.GoBildaPinpointDriver;
 import org.firstinspires.ftc.teamcode.Placeholder;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,11 +34,11 @@ import java.util.List;
 
 public class Drivetrain {
 
-    //////////////////////////////////////////////
-    ////                                     /////
-    ////              VARIABLES              /////
-    ////                                     /////
-    //////////////////////////////////////////////
+    /// ///////////////////////////////////////////
+    /// /                                     /////
+    /// /              VARIABLES              /////
+    /// /                                     /////
+    /// ///////////////////////////////////////////
 
     // -------- DRIVETRAIN MOTORS -------- //
     private final DcMotor frWheel, flWheel, brWheel, blWheel;
@@ -46,22 +47,25 @@ public class Drivetrain {
     private ElapsedTime timer;
 
     private final OdometryLocalizer robotPos;
-    private final double xOdoOffsetInInches = 0;
-    private final double yOdoOffsetInInches = 0;
+    private final double xOdoOffsetInInches = 2.0;
+    private final double yOdoOffsetInInches = 4.0;
 
     // -------- AUTONOMOUS CONTROLLERS -------- //
 
     private final PIDController turnController = new PIDController(TURN_KP, TURN_KI, TURN_KD);
     private final PIDController forwardController = new PIDController(FORWARD_KP, FORWARD_KI, FORWARD_KD);
     // !!! ADD PATH HERE !!! //
-    private final Trajectory path = new LinearTrajectoryBuilder().build();
+    private final Trajectory path = new LinearTrajectoryBuilder()
+            .moveTo(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 90))
+            .moveTo(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 90))
+            .build();
 
 
-    //////////////////////////////////////////////
-    ////                                     /////
-    ////              FUNCTIONS              /////
-    ////                                     /////
-    //////////////////////////////////////////////
+    /// ///////////////////////////////////////////
+    /// /                                     /////
+    /// /              FUNCTIONS              /////
+    /// /                                     /////
+    /// ///////////////////////////////////////////
 
     // --------- INITIALIZATION --------- //
     public Drivetrain(HardwareMap hardwareMap) {
@@ -121,12 +125,12 @@ public class Drivetrain {
         blWheel.setPower(blWheelPower);
     }
 
-    public void setForwardController(double kp, double ki, double kd){
+    public void setForwardController(double kp, double ki, double kd) {
         forwardController.setPID(kp, ki, kd);
         forwardController.reset();
     }
 
-    public void setTurnController(double kp, double ki, double kd){
+    public void setTurnController(double kp, double ki, double kd) {
         turnController.setPID(kp, ki, kd);
         forwardController.reset();
     }
@@ -154,19 +158,19 @@ public class Drivetrain {
     }
 
     public double[] getWheelPowers() {
-        return new double[] {flWheel.getPower(), frWheel.getPower(), blWheel.getPower(), brWheel.getPower()};
+        return new double[]{flWheel.getPower(), frWheel.getPower(), blWheel.getPower(), brWheel.getPower()};
     }
 
     // -------- Methods --------------- //
     // boolean for testing if it got to the point, temporary
-   public boolean followGivenPath(double time){
-       Trajectory.PathSample goal = path.getExpectedPosition(time);
-       boolean atPoint = goToPosPID(new Pose2D(DistanceUnit.INCH, goal.x, goal.y, AngleUnit.RADIANS, goal.heading));
+    public boolean followGivenPath(double time) {
+        Trajectory.PathSample goal = path.getExpectedPosition(time);
+        boolean atPoint = goToPosPID(new Pose2D(DistanceUnit.INCH, goal.x, goal.y, AngleUnit.RADIANS, goal.heading));
 //       if (atPoint){
 //           //do some stuff maybe telemetry stuff
 //       }
-       return atPoint;
-   }
+        return atPoint;
+    }
 
     public boolean goToPosPID(Pose2D goal) {
         double dx = goal.getX(DistanceUnit.INCH) - getCurrPos().getX(DistanceUnit.INCH);
@@ -178,7 +182,7 @@ public class Drivetrain {
         double headingx = Math.cos(getRobotHeading(AngleUnit.RADIANS));
         double headingy = Math.sin(getRobotHeading(AngleUnit.RADIANS));
         double[] headingVect = {headingx, headingy};
-        double[] pointVect = {dx/distanceToPoint, dy/distanceToPoint};
+        double[] pointVect = {dx / distanceToPoint, dy / distanceToPoint};
         double fbError = headingVect[0] * pointVect[0] + headingVect[1] * pointVect[1];
 
         double forwardPower = forwardController.calculate(0, fbError);
