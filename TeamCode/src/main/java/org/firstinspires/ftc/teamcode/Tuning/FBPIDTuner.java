@@ -58,6 +58,8 @@ public class FBPIDTuner extends LinearOpMode {
             robot.getDrivetrain().goToPosPID(goal);
             telemetry.addData("Robot X", robot.getDrivetrain().getCurrPos().getX(DistanceUnit.INCH));
             telemetry.addData("Robot Y", robot.getDrivetrain().getCurrPos().getY(DistanceUnit.INCH));
+            telemetry.addData("Goal X: ", x);
+            telemetry.addData("Goal Y: ", y);
             telemetry.addData("Robot Heading", robot.getDrivetrain().getRobotHeading(AngleUnit.DEGREES));
             telemetry.addData("Left Wheel Powers", robot.getDrivetrain().getWheelPowers()[0]);
             telemetry.addData("Right Wheel Powers", robot.getDrivetrain().getWheelPowers()[1]);
