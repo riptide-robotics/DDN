@@ -71,7 +71,7 @@ public class Intake{
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
         spindexServo = hardwareMap.get(ServoImplEx.class, "spindexServo");
         spindexServo.setPwmRange(new PwmControl.PwmRange(500, 2500));
-        spindexArm = hardwareMap.get(Servo.class, "spindexArm");
+        spindexArm = hardwareMap.get(Servo.class, "bootkicker");
         spindexServo.setDirection(Servo.Direction.REVERSE);
     }
 
