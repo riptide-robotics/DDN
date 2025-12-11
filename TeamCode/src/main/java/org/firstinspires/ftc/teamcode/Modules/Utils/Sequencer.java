@@ -33,6 +33,7 @@ public class Sequencer { // Done by Owen
 
 
 
+
     // public Telemetry t = null;
     /**Outdated.*/
     public enum SequenceType {
@@ -147,8 +148,8 @@ public class Sequencer { // Done by Owen
          * @param drive The drivetrain that is used to check. Looking for a way to remove this.
          * */
         public boolean botWithinArea(Drivetrain drive) {
-            double X = drive.getCurrPos().getX(Sequencer.unit);
-            double Y = drive.getCurrPos().getY(Sequencer.unit);
+            double X = drive.getPinpoint().getPosX(Sequencer.unit);
+            double Y = drive.getPinpoint().getPosY(Sequencer.unit);
 
             if (X > xMax || X < xMin) return false;
             if (Y > yMax || Y < yMin) return false;

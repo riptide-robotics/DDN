@@ -39,7 +39,7 @@ public class SequencerTripTest extends LinearOpMode {
         telemetry.addData("TImpulseTest Run",impulseRun);
         telemetry.addData("TLoopTest Loop Count", loopCount);
         telemetry.addData("Within Range", area.botWithinArea(robot.getDrivetrain()));
-        telemetry.addData("Current X", robot.getDrivetrain().getCurrPos().getX(Sequencer.unit));
+        telemetry.addData("Current X", robot.getDrivetrain().getPinpoint().getPosX(Sequencer.unit));
 
 
 

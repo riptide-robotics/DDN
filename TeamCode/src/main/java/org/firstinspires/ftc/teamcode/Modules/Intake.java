@@ -72,7 +72,7 @@ public class Intake{
         spindexServo = hardwareMap.get(ServoImplEx.class, "spindexServo");
         spindexServo.setPwmRange(new PwmControl.PwmRange(500, 2500));
         spindexArm = hardwareMap.get(Servo.class, "spindexArm");
-        spindexServo.setDirection(Servo.Direction.FORWARD);
+        spindexServo.setDirection(Servo.Direction.REVERSE);
     }
 
     public String scanColor() {
