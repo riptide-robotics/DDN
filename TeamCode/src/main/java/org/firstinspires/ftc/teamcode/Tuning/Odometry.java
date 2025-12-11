@@ -71,7 +71,6 @@ public class Odometry extends LinearOpMode {
          * * * * * * * * * * * * * * *
          */
         telemetry.clear();
-        robot.getDrivetrain().startOdometry();
 
         /*
          * * * * * * * * * * * * * * *
@@ -82,7 +81,7 @@ public class Odometry extends LinearOpMode {
         while(opModeIsActive()) {
             tankDrive();
 
-            Pose2D currPos = robot.getDrivetrain().getCurrPos();
+            Pose2D currPos = robot.getDrivetrain().getPinpoint().getPosition();
 
             telemetry.addData("X Position", currPos.getX(DistanceUnit.INCH));
             telemetry.addData("Y Position", currPos.getY(DistanceUnit.INCH));
