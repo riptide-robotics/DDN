@@ -151,6 +151,7 @@ public class Sequencer { // Done by Owen
             double X = drive.getPinpoint().getPosX(Sequencer.unit);
             double Y = drive.getPinpoint().getPosY(Sequencer.unit);
 
+            //CONSISTENCY
             if (X > xMax || X < xMin) return false;
             if (Y > yMax || Y < yMin) return false;
 
