@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Modules;
 
 import static org.firstinspires.ftc.teamcode.riptideUtil.FORWARD_KD;
 import static org.firstinspires.ftc.teamcode.riptideUtil.POINT_TOLERANCE;
+import static org.firstinspires.ftc.teamcode.riptideUtil.START_POSITION;
 import static org.firstinspires.ftc.teamcode.riptideUtil.TURN_KD;
 import static org.firstinspires.ftc.teamcode.riptideUtil.TURN_KI;
 import static org.firstinspires.ftc.teamcode.riptideUtil.TURN_KP;
@@ -135,6 +136,11 @@ public class Drivetrain {
         forwardController.reset();
     }
 
+    public void resetCurrPos(){
+       getPinpoint().resetPosAndIMU();
+       getPinpoint().setPosition(START_POSITION);
+    }
+
     // ------------ GETTERS ------------ //
     public Pose2D getCurrPos() {
         return robotPos.getCurrPos();
@@ -173,8 +179,8 @@ public class Drivetrain {
     }
 
     public boolean goToPosPID(Pose2D goal) {
-        double dx = goal.getX(DistanceUnit.INCH) - getCurrPos().getX(DistanceUnit.INCH);
-        double dy = goal.getY(DistanceUnit.INCH) - getCurrPos().getY(DistanceUnit.INCH);
+        double dx = goal.getX(DistanceUnit.INCH) - getPinpoint().getPosX(DistanceUnit.INCH);
+        double dy = goal.getY(DistanceUnit.INCH) - getPinpoint().getPosY(DistanceUnit.INCH);
         double distanceToPoint = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
 
         double headingError = shortestAngleDiff(this.getRobotHeading(AngleUnit.RADIANS), Math.atan2(dy, dx));
