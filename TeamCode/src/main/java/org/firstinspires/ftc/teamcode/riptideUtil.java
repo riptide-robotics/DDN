@@ -93,7 +93,7 @@ public class riptideUtil {
     public static double tolerance = 50; //?? what
 
     // Spindex
-    public static double SPINDEX_ARM_UP = 0.5; // UNDETERMINED
+    public static double SPINDEX_ARM_UP = 0.33333333333; // UNDETERMINED
     public static double SPINDEX_ARM_RESTING = 0.1; // UNDETERMINED
     public static double ROTATE_SPINDEX_ONCE = 60;
 
