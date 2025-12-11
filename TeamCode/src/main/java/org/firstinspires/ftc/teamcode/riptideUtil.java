@@ -11,18 +11,15 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagLibrary;
 @Config
 public class riptideUtil {
 
-
-
-
-
-
     /**
      * Table of contents:
      * 1. General constants (things that are used generally, not specific locations)
      * 2. Autonomous Constants
      */
 
-    /** General constants */
+    /**
+     * General constants
+     */
     // COLOR SENSING
     // Green
     public static final float GREEN_R = 0.136f;
@@ -44,19 +41,21 @@ public class riptideUtil {
     public static double BOTTOM_FLYWHEEL_KP = 0.001;
 
     // Turntable
-    public static final double TICKS_TO_DEGREES = 360/751.8;
-    public static final double DEGREES_TO_TICKS = 751.8/360;
+    public static final double TICKS_TO_DEGREES = 360 / 751.8;
+    public static final double DEGREES_TO_TICKS = 751.8 / 360;
     public static final double DEADZONE = 3;
 
     public static final double TURNTABLE_KP = 0.002;
     public static final double TURNTABLE_KI = 0.003;
     public static final double TURNTABLE_KD = 0.00005;
 
-    /** Autonomous Constants */
+    /**
+     * Autonomous Constants
+     */
 
     public static final Pose2D START_POSITION = new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 90);
 
-    public static final double POINT_TOLERANCE = 2; // UNDETERMINED
+    public static final double POINT_TOLERANCE = 2; //inches
     // Maximums
     public static double MAX_V_TURN = 90;   // deg/s //UNDETERMINED
 
@@ -181,4 +180,24 @@ public class riptideUtil {
 
     public static double angularVelocity = 45;
     public static double econserved = 0.1;
+
+    // helper functions
+
+    /**
+     * Finds the shortest Angle difference between two angles. CCW is the positive direction
+     * Bound to (-180 to 180] degrees
+     * @param angle1 start angle, in degrees
+     * @param angle2 end angle, in degrees
+     * @return The shortest angle difference between the start angle and end angle. bound to (-180, 180] degrees
+     */
+    public static double shortestAngleDiff(double angle1, double angle2) {
+       double diff = angle2 - angle1;
+       if (diff > 180){
+           diff -= 360;
+       }
+       if (diff <= -180){
+           diff += 360;
+       }
+       return diff;
+    }
 }

@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Modules.Drivetrain;
 import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
 import org.firstinspires.ftc.teamcode.Robot;
@@ -81,11 +82,11 @@ public class Odometry extends LinearOpMode {
         while(opModeIsActive()) {
             tankDrive();
 
-            EditablePose2D currPos = robot.getDrivetrain().getCurrPos();
+            Pose2D currPos = robot.getDrivetrain().getCurrPos();
 
             telemetry.addData("X Position", currPos.getX(DistanceUnit.INCH));
             telemetry.addData("Y Position", currPos.getY(DistanceUnit.INCH));
-            telemetry.addData("Orientation (Degrees)", Math.toDegrees(currPos.getH()));
+            telemetry.addData("Orientation (Degrees)", Math.toDegrees(currPos.getHeading(AngleUnit.RADIANS)));
 
             telemetry.addLine("\n IMU measured heading \n")
                     .addData("Orientation (Degrees)", robot.getDrivetrain().getRobotHeading(AngleUnit.DEGREES));
