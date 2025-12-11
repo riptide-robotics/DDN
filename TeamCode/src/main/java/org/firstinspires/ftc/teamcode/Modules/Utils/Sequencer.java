@@ -32,7 +32,8 @@ public class Sequencer { // Done by Owen
     private final Drivetrain drive;
 
 
-   // public Telemetry t = null;
+
+    // public Telemetry t = null;
     /**Outdated.*/
     public enum SequenceType {
         IMPULSE,
@@ -263,7 +264,7 @@ public class Sequencer { // Done by Owen
      * Internal helper method to process specifically Loop Actions. <br>
      * THIS WILL NOT REMOVE THE ACTION ON ITS OWN!
      * @return The names of all actions that are to be removed. 
-     * */
+     **/
     private List<String> processLoopActions() {
         List<String> remove = new ArrayList<>();
         
@@ -385,5 +386,4 @@ public class Sequencer { // Done by Owen
         if (!Tloopactions.containsKey(name)) throw new RuntimeException("No loop action of name: " + name + "!");
         Tloopactions.get(name).killAction = kill;
     }
-
 }

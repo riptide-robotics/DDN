@@ -1,9 +1,13 @@
 package org.firstinspires.ftc.teamcode.UnitTests;
 
+import static org.firstinspires.ftc.teamcode.riptideUtil.SPINDEX_ARM_UP;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.Modules.Intake;
+import org.firstinspires.ftc.teamcode.Modules.Outtake;
 import org.firstinspires.ftc.teamcode.Robot;
 
 @Config
@@ -11,9 +15,14 @@ import org.firstinspires.ftc.teamcode.Robot;
 public class SequencerTest extends LinearOpMode {
     Robot robot;
 
+    Outtake out;
+    Intake in;
+
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot(hardwareMap);
+        out = new Outtake(hardwareMap);
+        in = new Intake(hardwareMap);
         waitForStart();
         if (isStopRequested()) return;
 
@@ -64,6 +73,17 @@ public class SequencerTest extends LinearOpMode {
             }, 3);
         }
 
+        if (gamepad1.y) {
+            robot.s.AddImpulseAction(() -> {
+                out.runOuttakePID(3000,3000,telemetry);
+            },1d);
+
+            robot.s.AddImpulseAction(() -> {
+                in.BootKick(SPINDEX_ARM_UP);
+            },3d);
+        }
+
+
         telemetry.addData("loopA", hasALoop);
         if (gamepad2.aWasPressed()) {
             robot.s.addLoopAction(() -> {
@@ -98,6 +118,8 @@ public class SequencerTest extends LinearOpMode {
             hasXRun = false;
             robot.s.getLoopAction("loopE").killAction = true;
         }
+
+
 
 //
 //

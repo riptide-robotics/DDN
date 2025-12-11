@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.Modules.Indicator;
 import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
 import org.firstinspires.ftc.teamcode.Modules.Utils.Sequencer;
 import org.firstinspires.ftc.teamcode.Robot;
@@ -19,7 +20,7 @@ public class SequencerTripTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         robot = new Robot(hardwareMap);
 
-        area = new Sequencer.Area(3,-1,7,1);
+        area = new Sequencer.Area(1,3,4,6);
 
         waitForStart();
         if (isStopRequested()) return;
@@ -38,6 +39,9 @@ public class SequencerTripTest extends LinearOpMode {
         telemetry.addData("TImpulseTest Run",impulseRun);
         telemetry.addData("TLoopTest Loop Count", loopCount);
         telemetry.addData("Within Range", area.botWithinArea(robot.getDrivetrain()));
+        telemetry.addData("Current X", robot.getDrivetrain().getCurrPos().getX(Sequencer.unit));
+
+
 
         if (gamepad1.x) {
             robot.s.addTImpulseAction(() -> {
