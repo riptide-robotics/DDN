@@ -10,7 +10,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.Modules.PIDController;
+//import org.firstinspires.ftc.teamcode.Modules.PIDController;
 import org.firstinspires.ftc.teamcode.Robot;
 
 @Config
@@ -32,7 +32,7 @@ public class FBPIDTuner extends LinearOpMode {
     private double prevki = 0;
     private double prevkd = 0;
 
-    PIDController controller = new PIDController(kp, ki, kd);
+    //PIDController controller = new PIDController(kp, ki, kd);
 
     Telemetry t = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -41,6 +41,8 @@ public class FBPIDTuner extends LinearOpMode {
         robot = new Robot(hardwareMap);
 
         robot.getDrivetrain().startOdometry();
+
+        robot.getDrivetrain().setTurnController(kp, ki, kd);
 
         telemetry.addData("Robot status", "successfully initiated");
         telemetry.update();
@@ -53,7 +55,7 @@ public class FBPIDTuner extends LinearOpMode {
                 goal = new Pose2D(DistanceUnit.INCH, x, y, AngleUnit.DEGREES, 0);
             }
             if (prevkp != kp || prevki != ki || prevkd != kd) {
-                controller.setPID(kp, ki, kd);
+                robot.getDrivetrain().setTurnController(kp, ki, kd);
             }
             robot.getDrivetrain().goToPosPID(goal);
             telemetry.addData("Robot X", robot.getDrivetrain().getCurrPos().getX(DistanceUnit.INCH));
