@@ -35,8 +35,8 @@ public class Outtake {
     private double prevPosTop = 0;
     private  double prevPosBottom = 0;
     private boolean atGoalSpeed = false;
-    private double rpmTopGoal;
-    private double rpmBottomGoal;
+    private double rpmTopGoal = 0;
+    private double rpmBottomGoal = 0;
 
 
     public Outtake(HardwareMap hardwareMap){
@@ -81,7 +81,7 @@ public class Outtake {
     /**
      * Runs based on stored goal instead of target RPMs given by the user.
      **/
-    public void runOuttakePID(Telemetry tele){pidtunedmotor(rpmTopGoal, rpmBottomGoal, tele);}
+    public void runOuttakePID(Telemetry tele){runOuttakePID(rpmTopGoal, rpmBottomGoal, tele);}
 
 
     /**
@@ -142,10 +142,6 @@ public class Outtake {
 
 //        averageTop = topRecords.size() >= queueSize ? (topRecords.get(0)+topRecords.get(1)+topRecords.get(2)+topRecords.get(3)+topRecords.get(4))/5 : currRPMTop;
 //        averageBottom = bottomRecords.size() >= queueSize ? (bottomRecords.get(0)+bottomRecords.get(1)+bottomRecords.get(2)+bottomRecords.get(3)+bottomRecords.get(4))/5 : currRPMBottom;
-
-        telemetry.addData("ready", bottomRecords.size() >= queueSize);
-        telemetry.addData("top", averageTop);
-        telemetry.addData("bottom", averageBottom);
 
 
         double wantedWheelPowerTopAverage = RPMControllerTop.calculate(averageTop - 200, rpmTop);

@@ -19,32 +19,33 @@ public class OdometryLocalizer implements Runnable {
 
     GoBildaPinpointDriver pinpoint;
 
-    public OdometryLocalizer(GoBildaPinpointDriver pinpoint, int pollRate){
+    public OdometryLocalizer(GoBildaPinpointDriver pinpoint, int pollRate) {
         this.pollRate = pollRate;
         this.pinpoint = pinpoint;
     }
 
-    public EditablePose2D getCurrPos(){
-        return new EditablePose2D(
+    public Pose2D getCurrPos() {
+        return new Pose2D(
+                DistanceUnit.INCH,
                 pinpoint.getPosX(DistanceUnit.INCH),
                 pinpoint.getPosY(DistanceUnit.INCH),
-                pinpoint.getHeading(AngleUnit.RADIANS),
-                DistanceUnit.INCH
+                AngleUnit.RADIANS,
+                pinpoint.getHeading(AngleUnit.RADIANS)
         );
     }
 
-    public void start(){
+    public void start() {
         pinpoint.resetPosAndIMU();
         pinpoint.setPosition(riptideUtil.START_POSITION);
-        currTime = System.nanoTime()/1e6;
+        currTime = System.nanoTime() / 1e6;
     }
 
-    public void stop(){
+    public void stop() {
         running = false;
     }
 
     @Override
-    public void run(){
+    public void run() {
         while (running) {
             currTime = System.nanoTime() / 1e6;
             if (currTime - previousTime >= pollRate) {
@@ -53,7 +54,8 @@ public class OdometryLocalizer implements Runnable {
             }
             try {
                 Thread.sleep((long) (pollRate / 2)); // sleep half poll period
-            } catch (InterruptedException ignored) {}
+            } catch (InterruptedException ignored) {
+            }
         }
     }
 }

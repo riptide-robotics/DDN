@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Tuning;
 
+import static org.firstinspires.ftc.teamcode.riptideUtil.START_POSITION;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -7,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Modules.Drivetrain;
 import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
 import org.firstinspires.ftc.teamcode.Robot;
@@ -57,6 +60,7 @@ public class Odometry extends LinearOpMode {
         flWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         blWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
+        robot.getDrivetrain().getPinpoint().setPosition(START_POSITION);
 
         telemetry.addData("Robot status", "succesfully initiated");
         telemetry.update();
@@ -70,7 +74,6 @@ public class Odometry extends LinearOpMode {
          * * * * * * * * * * * * * * *
          */
         telemetry.clear();
-        robot.getDrivetrain().startOdometry();
 
         /*
          * * * * * * * * * * * * * * *
@@ -81,11 +84,14 @@ public class Odometry extends LinearOpMode {
         while(opModeIsActive()) {
             tankDrive();
 
-            EditablePose2D currPos = robot.getDrivetrain().getCurrPos();
+            Pose2D currPos = robot.getDrivetrain().getPinpoint().getPosition();
+            if(gamepad1.a){
+               robot.getDrivetrain().getPinpoint().setPosition(START_POSITION);
+            }
 
             telemetry.addData("X Position", currPos.getX(DistanceUnit.INCH));
             telemetry.addData("Y Position", currPos.getY(DistanceUnit.INCH));
-            telemetry.addData("Orientation (Degrees)", Math.toDegrees(currPos.getH()));
+            telemetry.addData("Orientation (Degrees)", Math.toDegrees(currPos.getHeading(AngleUnit.RADIANS)));
 
             telemetry.addLine("\n IMU measured heading \n")
                     .addData("Orientation (Degrees)", robot.getDrivetrain().getRobotHeading(AngleUnit.DEGREES));

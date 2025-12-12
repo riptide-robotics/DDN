@@ -10,6 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Spindexer {
+
+
+    // ******************************************
+    //  WE ARE NOT USING THIS ALL SPINDEX STUFF WILL BE IN THE INTAKE
+    // ******************************************
     static Slot currentSlot = Slot.SLOT0;
 
     public enum artifactColor {

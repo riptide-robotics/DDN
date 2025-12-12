@@ -19,7 +19,6 @@ import org.firstinspires.ftc.teamcode.Modules.Camera;
  * This class is the hardware aspect of the camera, the camera class will be used for the pipeline (what processes the feed)
  *
  */
-@Autonomous
 public class CameraHardware {
 
     ///////////////////////////////////////////////

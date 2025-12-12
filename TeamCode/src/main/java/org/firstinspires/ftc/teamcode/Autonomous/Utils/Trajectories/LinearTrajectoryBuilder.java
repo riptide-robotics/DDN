@@ -12,13 +12,12 @@ import org.firstinspires.ftc.teamcode.Modules.Utils.Pair;
 
 import java.util.ArrayList;
 
-
-// This is for tank drive, for holonomic drive, Turning while moving is possible
+// This is for tank drive. There is no "free heading interpolation" in this mode. The heading will always be set to the direction of the path points.
 // if you need help expanding to holonomic drive trains, you can always hit me up
 // --Aaron Xie
 public class LinearTrajectoryBuilder {
     ArrayList<Pose2D> controlPoints;
-    ArrayList<Pair<Integer, Double>> speedScalars;
+    ArrayList<Pair<Integer, Double>> speedScalars; // To scale the speed of a certain segment
 
     public LinearTrajectoryBuilder(ArrayList<Pose2D> controlPoints, ArrayList<Pair<Integer, Double>> speedScalars) {
         this.controlPoints = controlPoints;
@@ -30,8 +29,6 @@ public class LinearTrajectoryBuilder {
     }
 
     /**
-     * First turns towards angle needed, then moves towards the specified point.
-     *
      * @param pos End of Control Point (Where you want to go essentially)
      * @return A LinearTrajectoryBuilder, with another control point attatched to ControlPoints
      */
@@ -46,14 +43,20 @@ public class LinearTrajectoryBuilder {
     }
 
     public Trajectory build() {
+
         if (controlPoints.size() <= 1) {
             throw new IllegalArgumentException("Your path size must be greater than 1");
         }
 
-        double startTime = 0;
+        // samples per segment.
+        // make sure to choose a good number for this. primes are pretty bad sample numbers
+        // because they cause a lot of round-off error.
         int samples = 100;
         ArrayList<Trajectory.PathSample> pathSamples = new ArrayList<>();
+
         double accumulatedTime = 0;
+
+
         for (int i = 0; i < controlPoints.size() - 1; i++) {
             // create profile, sample 100 times.
 
@@ -147,7 +150,7 @@ public class LinearTrajectoryBuilder {
                             totalTime + accumulatedTime,
                             startX + dist * Math.cos(heading),
                             startY + dist * Math.sin(heading),
-                            heading,
+                            endPoint.getHeading(AngleUnit.DEGREES),
                             0,
                             0,
                             0

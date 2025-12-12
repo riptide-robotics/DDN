@@ -71,7 +71,7 @@ public class HeadingPIDTuner extends LinearOpMode {
     public double getTurnValue() {
         double currAngle = getCurrentAngle();
 
-        double error =robot.getCamera().getGoalAngleError();
+        double error = robot.getCamera().getGoalAngleError();
 
         if (Math.abs(error) > 180) {error += Math.signum(error) * 360;}
 
