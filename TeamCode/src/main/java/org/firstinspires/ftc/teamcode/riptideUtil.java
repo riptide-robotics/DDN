@@ -22,19 +22,34 @@ public class riptideUtil {
      */
     // COLOR SENSING
     // Green
-    public static final float GREEN_R = 0.136f;
+    public static final float GREEN_R = 0.09f;
     public static final float GREEN_R_STDEV = 0.05f;
-    public static final float GREEN_G = 0.578f;
-    public static final float GREEN_G_STDEV = 0.15f;
-    public static final float GREEN_B = 0.404f;
-    public static final float GREEN_B_STDEV = 0.13f;
+    public static final float GREEN_G = 0.37f;
+    public static final float GREEN_G_STDEV = 0.19f;
+    public static final float GREEN_B = 0.37f;
+    public static final float GREEN_B_STDEV = 0.11f;
+
+    public static final float GREEN_R_HOLE = 0.019f;
+    public static final float GREEN_R_STDEV_HOLE = 0.0045f;
+    public static final float GREEN_G_HOLE = 0.056f;
+    public static final float GREEN_G_STDEV_HOLE = 0.018f;
+    public static final float GREEN_B_HOLE = 0.045f;
+    public static final float GREEN_B_STDEV_HOLE = 0.011f;
+
     // Purple
-    public static final float PURPLE_R = 0.346f;
-    public static final float PURPLE_R_STDEV = 0.02f;
-    public static final float PURPLE_G = 0.376f;
-    public static final float PURPLE_G_STDEV = 0.03f;
-    public static final float PURPLE_B = 0.686f;
-    public static final float PURPLE_B_STDEV = 0.04f;
+    public static final float PURPLE_R = 0.239f;
+    public static final float PURPLE_R_STDEV = 0.09f;
+    public static final float PURPLE_G = 0.262f;
+    public static final float PURPLE_G_STDEV = 0.1f;
+    public static final float PURPLE_B = 0.48f;
+    public static final float PURPLE_B_STDEV = 0.19f;
+
+    public static final float PURPLE_R_HOLE = 0.034f;
+    public static final float PURPLE_R_STDEV_HOLE = 0.023f;
+    public static final float PURPLE_G_HOLE = 0.053f;
+    public static final float PURPLE_G_STDEV_HOLE = 0.027f;
+    public static final float PURPLE_B_HOLE = 0.089f;
+    public static final float PURPLE_B_STDEV_HOLE = 0.05f;
 
     //flywheel
     public static double TOP_FLYWHEEL_KP = 0.001;

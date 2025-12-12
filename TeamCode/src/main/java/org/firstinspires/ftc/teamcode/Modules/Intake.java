@@ -1,17 +1,29 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
 import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_B;
+import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_B_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_B_STDEV;
+import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_B_STDEV_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_G;
+import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_G_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_G_STDEV;
+import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_G_STDEV_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_R;
+import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_R_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_R_STDEV;
+import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_R_STDEV_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_B;
+import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_B_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_B_STDEV;
+import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_B_STDEV_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_G;
+import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_G_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_G_STDEV;
+import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_G_STDEV_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R;
+import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R_STDEV;
+import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R_STDEV_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.ROTATE_SPINDEX_ONCE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.SLOT_ONE_PIKCUP_POS;
 import static org.firstinspires.ftc.teamcode.riptideUtil.SLOT_ONE_SHOOT_POS;
@@ -31,6 +43,7 @@ import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
+import com.qualcomm.robotcore.hardware.SwitchableLight;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Intake{
@@ -42,7 +55,6 @@ public class Intake{
     DcMotor intakeMotor;
     ServoImplEx spindexServo;
     Servo spindexArm;
-    float gain = 2; // ...... ANYWAY
     public enum positions {
         POS_1_SHOOT,
         POS_1_RECEIVE,
@@ -68,6 +80,7 @@ public class Intake{
 
     public Intake(HardwareMap hardwareMap){
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "REVcolorSensor");
+
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
         spindexServo = hardwareMap.get(ServoImplEx.class, "spindexServo");
         spindexServo.setPwmRange(new PwmControl.PwmRange(500, 2500));
@@ -75,7 +88,11 @@ public class Intake{
         spindexServo.setDirection(Servo.Direction.REVERSE);
     }
 
-    public String scanColor() {
+    public void setGain (float gain){
+        colorSensor.setGain(gain);
+    }
+
+    public char scanColor() {
         NormalizedRGBA detectedColor = colorSensor.getNormalizedColors();
 
         //return "Red: " + detectedColor.red * 10 + " - Green: " + detectedColor.green * 10 + " - Blue: " + detectedColor.blue * 10 + " - Alpha: " + detectedColor.alpha;
@@ -91,7 +108,7 @@ public class Intake{
             (detectedColor.blue < PURPLE_B + PURPLE_B_STDEV
                     &&
              detectedColor.blue > PURPLE_B - PURPLE_B_STDEV)) {
-            return "Purple";
+            return 'p';
         } else if ((detectedColor.red < GREEN_R + GREEN_R_STDEV
                             &&
                     detectedColor.red > GREEN_R - GREEN_R_STDEV)
@@ -103,9 +120,9 @@ public class Intake{
                    (detectedColor.blue < GREEN_B + GREEN_B_STDEV
                             &&
                     detectedColor.blue > GREEN_B - GREEN_B_STDEV)) {
-            return "Green";
+            return 'g';
         } else {
-            return "None";
+            return 'b';
         }
     }
 
@@ -125,15 +142,15 @@ public class Intake{
             return;
         }
 
-        String color = scanColor();
-        if (color.equals("Purple")) {
+        char color = scanColor();
+        if (color == 'p') {
             pgratio[0]++;
-        } else if (color.equals("Green")) {
+        } else if (color == 'g') {
             pgratio[1]++;
-        } else if (color.equals("Blank")) {
+        } else if (color == 'b') {
             t.addLine("Congrats: you found no color to uptake idiot.");
         }
-        order[toSet] = color.toLowerCase().charAt(0);
+        order[toSet] = color;
         t.addLine("Uptake Result: Success - " + color + " artifact uptaked into position " + toSet);
     }
 
@@ -172,16 +189,16 @@ public class Intake{
         CanBootKick(true);
         t.addLine("Empty slot aligned at intake");
 
-        String color = scanColor();
-        if (color.equals("Purple")) {
+        char color = scanColor();
+        if (color == 'g') {
             pgratio[0]++;
-        } else if (color.equals("Green")) {
+        } else if (color == 'p') {
             pgratio[1]++;
-        } else if (color.equals("Blank")) {
+        } else if (color == 'b') {
             t.addLine("Congrats: There's no ball there.");
         }
 
-        order[0] = color.toLowerCase().charAt(0);
+        order[0] = color;
     }
 
     boolean moveSlotOneToPickup = false;
@@ -364,18 +381,25 @@ public class Intake{
     }
 
 
+
     // ******************************************
     //                SPINDEX
     // ******************************************
-    public slotStatus SLOT_0 = slotStatus.BLANK;
-    public slotStatus SLOT_1 = slotStatus.BLANK;
-    public slotStatus SLOT_2 = slotStatus.BLANK;
 
-    public int diff;
-    public int currAngle;
+    public static slotStatus SLOT_0 = slotStatus.BLANK;
+    public static slotStatus SLOT_1 = slotStatus.BLANK;
+    public static slotStatus SLOT_2 = slotStatus.BLANK;
 
-    public UnshiftedPositions currentState = UnshiftedPositions.SLOT_0_SHOOT;
+    public static int diff;
+    public static int currAngle;
 
+    public static UnshiftedPositions currentState = UnshiftedPositions.SLOT_0_SHOOT;
+
+    public static int currentSlot = -1;
+
+    public boolean checkClose = false;
+
+    public static float gain = 30;
 
     public enum slotStatus {
         BLANK, GREEN, PURPLE
@@ -391,6 +415,79 @@ public class Intake{
 
         public final int posUnshifted;
         UnshiftedPositions(int pos) {this.posUnshifted = pos;}
+    }
+
+    public void initColorSensor(){
+        colorSensor.setGain(gain);
+        if (colorSensor instanceof SwitchableLight) {
+            ((SwitchableLight) colorSensor).enableLight(true);
+        }
+    }
+
+    public char checkColor(){
+        NormalizedRGBA colors = colorSensor.getNormalizedColors();
+        char currColor = 'b';
+        if ((colors.red < PURPLE_R + PURPLE_R_STDEV
+                &&
+                colors.red > PURPLE_R - PURPLE_R_STDEV)
+                &&
+                (colors.green < PURPLE_G + PURPLE_G_STDEV
+                        &&
+                        colors.green > PURPLE_G - PURPLE_G_STDEV)
+                &&
+                (colors.blue < PURPLE_B + PURPLE_B_STDEV
+                        &&
+                        colors.blue > PURPLE_B - PURPLE_B_STDEV)) {
+            currColor = 'p';
+
+        } else if ((colors.red < GREEN_R + GREEN_R_STDEV
+                &&
+                colors.red > GREEN_R - GREEN_R_STDEV)
+                &&
+                (colors.green < GREEN_G + GREEN_G_STDEV
+                        &&
+                        colors.green > GREEN_G - GREEN_G_STDEV)
+                &&
+                (colors.blue < GREEN_B + GREEN_B_STDEV
+                        &&
+                        colors.blue > GREEN_B - GREEN_B_STDEV) && colors.alpha > 0.8) {
+            currColor = 'g';
+        } else {
+            checkClose = true;
+//                    currColor = 'b';
+        }
+
+//        if (checkClose){
+//            if ((colors.red < PURPLE_R_HOLE + PURPLE_R_STDEV_HOLE
+//                    &&
+//                    colors.red > PURPLE_R_HOLE - PURPLE_R_STDEV_HOLE)
+//                    &&
+//                    (colors.green < PURPLE_G_HOLE + PURPLE_G_STDEV_HOLE
+//                            &&
+//                            colors.green > PURPLE_G_HOLE - PURPLE_G_STDEV_HOLE)
+//                    &&
+//                    (colors.blue < PURPLE_B_HOLE + PURPLE_B_STDEV_HOLE
+//                            &&
+//                            colors.blue > PURPLE_B_HOLE - PURPLE_B_STDEV_HOLE)) {
+//                currColor = 'p';
+//            } else if ((colors.red < GREEN_R_HOLE + GREEN_R_STDEV_HOLE
+//                    &&
+//                    colors.red > GREEN_R_HOLE - GREEN_R_STDEV_HOLE)
+//                    &&
+//                    (colors.green < GREEN_G_HOLE + GREEN_G_STDEV_HOLE
+//                            &&
+//                            colors.green > GREEN_G_HOLE - GREEN_G_STDEV_HOLE)
+//                    &&
+//                    (colors.blue < GREEN_B_HOLE + GREEN_B_STDEV_HOLE
+//                            &&
+//                            colors.blue > GREEN_B_HOLE - GREEN_B_STDEV_HOLE)) {
+//                currColor = 'g';
+//            } else{
+//                currColor = 'b';
+//            }
+//            checkClose = false;
+        //}
+        return currColor;
     }
 
     public void goTo(UnshiftedPositions goal) {
@@ -414,6 +511,9 @@ public class Intake{
         currAngle = 450;
         spindexPos2to1Gear(currAngle);
         currentState = UnshiftedPositions.SLOT_0_RECEIVE;
+        SLOT_0 = slotStatus.BLANK;
+        SLOT_1 = slotStatus.BLANK;
+        SLOT_2 = slotStatus.BLANK;
     }
 
 
@@ -421,7 +521,9 @@ public class Intake{
         if (SLOT_0 == slotStatus.BLANK) return 0;
         if (SLOT_1 == slotStatus.BLANK) return 1;
         if (SLOT_2 == slotStatus.BLANK) return 2;
-        return -1;
+        else {
+            return -1;
+        }
     }
 
     public int getNextOuttakeSlot() {
@@ -431,12 +533,86 @@ public class Intake{
         return -1;
     }
 
+    public slotStatus currColor(){
+        NormalizedRGBA colors = colorSensor.getNormalizedColors();
+        slotStatus status = slotStatus.BLANK;
+        if ((colors.red < PURPLE_R + PURPLE_R_STDEV
+                &&
+                colors.red > PURPLE_R - PURPLE_R_STDEV)
+                &&
+                (colors.green < PURPLE_G + PURPLE_G_STDEV
+                        &&
+                        colors.green > PURPLE_G - PURPLE_G_STDEV)
+                &&
+                (colors.blue < PURPLE_B + PURPLE_B_STDEV
+                        &&
+                        colors.blue > PURPLE_B - PURPLE_B_STDEV)) {
+            status = slotStatus.PURPLE;
+        } else if ((colors.red < GREEN_R + GREEN_R_STDEV
+                &&
+                colors.red > GREEN_R - GREEN_R_STDEV)
+                &&
+                (colors.green < GREEN_G + GREEN_G_STDEV
+                        &&
+                        colors.green > GREEN_G - GREEN_G_STDEV)
+                &&
+                (colors.blue < GREEN_B + GREEN_B_STDEV
+                        &&
+                        colors.blue > GREEN_B - GREEN_B_STDEV)) {
+            status = slotStatus.GREEN;
+        } else {
+            checkClose = true;
+//                    currColor = 'b';
+        }
 
+//        // Since I cant accurately tell what color the ball is when faced with a hole, I just check if there is a ball
+//        if (checkClose){
+//            if ((colors.red < PURPLE_R_HOLE + PURPLE_R_STDEV_HOLE
+//                    &&
+//                    colors.red > PURPLE_R_HOLE - PURPLE_R_STDEV_HOLE)
+//                    &&
+//                    (colors.green < PURPLE_G_HOLE + PURPLE_G_STDEV_HOLE
+//                            &&
+//                            colors.green > PURPLE_G_HOLE - PURPLE_G_STDEV_HOLE)
+//                    &&
+//                    (colors.blue < PURPLE_B_HOLE + PURPLE_B_STDEV_HOLE
+//                            &&
+//                            colors.blue > PURPLE_B_HOLE - PURPLE_B_STDEV_HOLE)) {
+//                status = slotStatus.PURPLE;
+//            } else if ((colors.red < GREEN_R_HOLE + GREEN_R_STDEV_HOLE
+//                    &&
+//                    colors.red > GREEN_R_HOLE - GREEN_R_STDEV_HOLE)
+//                    &&
+//                    (colors.green < GREEN_G_HOLE + GREEN_G_STDEV_HOLE
+//                            &&
+//                            colors.green > GREEN_G_HOLE - GREEN_G_STDEV_HOLE)
+//                    &&
+//                    (colors.blue < GREEN_B_HOLE + GREEN_B_STDEV_HOLE
+//                            &&
+//                            colors.blue > GREEN_B_HOLE - GREEN_B_STDEV_HOLE)) {
+//                status = slotStatus.GREEN;
+//            } else{
+//                status = slotStatus.BLANK;
+//            }
+//            checkClose = false;
+//        }
 
-
-
-
-
+        return status;
+    }
+//
+//    public int currSlot(){
+//        if (spindexCurrentPosition() == UnshiftedPositions.SLOT_0_RECEIVE.posUnshifted || spindexCurrentPosition() == UnshiftedPositions.SLOT_0_SHOOT.posUnshifted){
+//            currentSlot = 0;
+//        }
+//        if (spindexCurrentPosition() == UnshiftedPositions.SLOT_1_RECEIVE.posUnshifted || spindexCurrentPosition() == UnshiftedPositions.SLOT_1_SHOOT.posUnshifted){
+//            currentSlot = 1;
+//        }
+//
+//        if (spindexCurrentPosition() == UnshiftedPositions.SLOT_2_RECEIVE.posUnshifted || spindexCurrentPosition() == UnshiftedPositions.SLOT_2_SHOOT.posUnshifted){
+//            currentSlot = 2;
+//        }
+//        return currentSlot;
+//    }
 
 
     public void rotateSpindexOnce() {
@@ -473,9 +649,4 @@ public class Intake{
         spindexArm.setPosition(pos);
 
     }
-
-    public void ResetBootKick(double pos){
-        spindexArm.setPosition(pos);
-    }
-
 }

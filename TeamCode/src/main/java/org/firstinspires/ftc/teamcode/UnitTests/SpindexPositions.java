@@ -57,60 +57,35 @@ public class SpindexPositions extends LinearOpMode {
 
         while (opModeIsActive()) {
             cycleSlots();
-
-            if (!gamepad2.x) xPressedG2 = false;
-            if (!gamepad2.y) yPressedG2 = false;
+//
+//            if (!gamepad2.x) xPressedG2 = false;
+//            if (!gamepad2.y) yPressedG2 = false;
         }
     }
 
     public void cycleSlots() {
-        if (gamepad2.y && !yPressedG2) {
-            if (spindexPosIntake == -1) spindexPosIntake = 0;
-            else if (spindexPosIntake == 0) spindexPosIntake = 1;
-            else if (spindexPosIntake == 1) spindexPosIntake = 2;
-            else if (spindexPosIntake == 2) spindexPosIntake = 0;
-
-            if (spindexPosIntake == 0) {goTo(UnshiftedPositions.SLOT_0_RECEIVE);}
-            else if (spindexPosIntake == 1) {goTo(UnshiftedPositions.SLOT_1_RECEIVE);}
-            else if (spindexPosIntake == 2) {goTo(UnshiftedPositions.SLOT_2_RECEIVE);}
-
-            // spindexPosIntake = getNextIntakeSlot();
-
-            spindexPosOuttake = -1;
-
-//            if (spindexPosIntake != -1) {
-//                if (spindexPosIntake == 0) SLOT_0 = slotStatus.PURPLE;
-//                else if (spindexPosIntake == 1) SLOT_1 = slotStatus.PURPLE;
-//                else if (spindexPosIntake == 2) SLOT_2 = slotStatus.PURPLE;
-//            }
-
-            yPressedG2 = true;
+        if (gamepad2.y) {
+            goTo(UnshiftedPositions.SLOT_0_RECEIVE);
         }
 
-        if (gamepad2.x && !xPressedG2) {
-            if (spindexPosOuttake == -1) spindexPosOuttake = 0;
-            else if (spindexPosOuttake == 0) spindexPosOuttake = 1;
-            else if (spindexPosOuttake == 1) spindexPosOuttake = 2;
-            else if (spindexPosOuttake == 2) spindexPosOuttake = 0;
-//            spindexPosOuttake = getNextOuttakeSlot();
-
-            if (spindexPosOuttake == 0) {goTo(UnshiftedPositions.SLOT_0_SHOOT);}
-            else if (spindexPosOuttake == 1) {goTo(UnshiftedPositions.SLOT_1_SHOOT);}
-            else if (spindexPosOuttake == 2) {goTo(UnshiftedPositions.SLOT_2_SHOOT);}
-
-            spindexPosIntake = -1;
-//
-//            if (spindexPosOuttake != -1) {
-//                if (spindexPosOuttake == 0) SLOT_0 = slotStatus.BLANK;
-//                else if (spindexPosOuttake == 1) SLOT_1 = slotStatus.BLANK;
-//                else if (spindexPosOuttake == 2) SLOT_2 = slotStatus.BLANK;
-//            }
-
-            xPressedG2 = true;
+        if (gamepad2.x) {
+            goTo(UnshiftedPositions.SLOT_1_RECEIVE);
         }
 
-        else if (spindexPosOuttake != -1) {
+        if (gamepad2.a){
+            goTo(UnshiftedPositions.SLOT_2_RECEIVE);
+        }
 
+        if (gamepad2.b){
+            goTo(UnshiftedPositions.SLOT_0_SHOOT);
+        }
+
+        if (gamepad2.dpad_up){
+            goTo(UnshiftedPositions.SLOT_1_SHOOT);
+        }
+
+        if (gamepad2.dpad_right){
+            goTo(UnshiftedPositions.SLOT_2_SHOOT);
         }
 
 //        telemetry.addData("Intake Slot ", spindexPosIntake);
