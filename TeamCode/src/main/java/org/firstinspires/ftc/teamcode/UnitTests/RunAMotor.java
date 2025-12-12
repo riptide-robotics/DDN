@@ -1,14 +1,16 @@
 package org.firstinspires.ftc.teamcode.UnitTests;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-
+@Config
 @TeleOp(name="Run a Motor")
 public class RunAMotor extends LinearOpMode {
 
     DcMotor motor;
+    public  static double power;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -49,7 +51,7 @@ public class RunAMotor extends LinearOpMode {
 
 
             if(gamepad1.y){
-                motor.setPower(1);
+                motor.setPower(power);
             }else{
                 motor.setPower(0);
             }

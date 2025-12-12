@@ -22,12 +22,12 @@ public class riptideUtil {
      */
     // COLOR SENSING
     // Green
-    public static final float GREEN_R = 0.15f;
-    public static final float GREEN_R_STDEV = 0.04f;
-    public static final float GREEN_G = 0.605f;
-    public static final float GREEN_G_STDEV = 0.175f;
-    public static final float GREEN_B = 0.45f;
-    public static final float GREEN_B_STDEV = 0.127f;
+    public static final float GREEN_R = 0.09f;
+    public static final float GREEN_R_STDEV = 0.05f;
+    public static final float GREEN_G = 0.37f;
+    public static final float GREEN_G_STDEV = 0.19f;
+    public static final float GREEN_B = 0.37f;
+    public static final float GREEN_B_STDEV = 0.11f;
 
     public static final float GREEN_R_HOLE = 0.019f;
     public static final float GREEN_R_STDEV_HOLE = 0.0045f;

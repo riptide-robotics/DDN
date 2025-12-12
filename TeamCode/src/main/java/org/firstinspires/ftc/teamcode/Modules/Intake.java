@@ -401,7 +401,6 @@ public class Intake{
 
     public static float gain = 30;
 
-
     public enum slotStatus {
         BLANK, GREEN, PURPLE
     }
@@ -440,6 +439,7 @@ public class Intake{
                         &&
                         colors.blue > PURPLE_B - PURPLE_B_STDEV)) {
             currColor = 'p';
+
         } else if ((colors.red < GREEN_R + GREEN_R_STDEV
                 &&
                 colors.red > GREEN_R - GREEN_R_STDEV)
@@ -450,44 +450,43 @@ public class Intake{
                 &&
                 (colors.blue < GREEN_B + GREEN_B_STDEV
                         &&
-                        colors.blue > GREEN_B - GREEN_B_STDEV)) {
+                        colors.blue > GREEN_B - GREEN_B_STDEV) && colors.alpha > 0.8) {
             currColor = 'g';
         } else {
             checkClose = true;
 //                    currColor = 'b';
         }
 
-        // Since I cant accurately tell what color the ball is when faced with a hole, I just check if there is a ball
-        if (checkClose){
-            if ((colors.red < PURPLE_R_HOLE + PURPLE_R_STDEV_HOLE
-                    &&
-                    colors.red > PURPLE_R_HOLE - PURPLE_R_STDEV_HOLE)
-                    &&
-                    (colors.green < PURPLE_G_HOLE + PURPLE_G_STDEV_HOLE
-                            &&
-                            colors.green > PURPLE_G_HOLE - PURPLE_G_STDEV_HOLE)
-                    &&
-                    (colors.blue < PURPLE_B_HOLE + PURPLE_B_STDEV_HOLE
-                            &&
-                            colors.blue > PURPLE_B_HOLE - PURPLE_B_STDEV_HOLE)) {
-                currColor = 'p';
-            } else if ((colors.red < GREEN_R_HOLE + GREEN_R_STDEV_HOLE
-                    &&
-                    colors.red > GREEN_R_HOLE - GREEN_R_STDEV_HOLE)
-                    &&
-                    (colors.green < GREEN_G_HOLE + GREEN_G_STDEV_HOLE
-                            &&
-                            colors.green > GREEN_G_HOLE - GREEN_G_STDEV_HOLE)
-                    &&
-                    (colors.blue < GREEN_B_HOLE + GREEN_B_STDEV_HOLE
-                            &&
-                            colors.blue > GREEN_B_HOLE - GREEN_B_STDEV_HOLE)) {
-                currColor = 'g';
-            } else{
-                currColor = 'b';
-            }
-            checkClose = false;
-        }
+//        if (checkClose){
+//            if ((colors.red < PURPLE_R_HOLE + PURPLE_R_STDEV_HOLE
+//                    &&
+//                    colors.red > PURPLE_R_HOLE - PURPLE_R_STDEV_HOLE)
+//                    &&
+//                    (colors.green < PURPLE_G_HOLE + PURPLE_G_STDEV_HOLE
+//                            &&
+//                            colors.green > PURPLE_G_HOLE - PURPLE_G_STDEV_HOLE)
+//                    &&
+//                    (colors.blue < PURPLE_B_HOLE + PURPLE_B_STDEV_HOLE
+//                            &&
+//                            colors.blue > PURPLE_B_HOLE - PURPLE_B_STDEV_HOLE)) {
+//                currColor = 'p';
+//            } else if ((colors.red < GREEN_R_HOLE + GREEN_R_STDEV_HOLE
+//                    &&
+//                    colors.red > GREEN_R_HOLE - GREEN_R_STDEV_HOLE)
+//                    &&
+//                    (colors.green < GREEN_G_HOLE + GREEN_G_STDEV_HOLE
+//                            &&
+//                            colors.green > GREEN_G_HOLE - GREEN_G_STDEV_HOLE)
+//                    &&
+//                    (colors.blue < GREEN_B_HOLE + GREEN_B_STDEV_HOLE
+//                            &&
+//                            colors.blue > GREEN_B_HOLE - GREEN_B_STDEV_HOLE)) {
+//                currColor = 'g';
+//            } else{
+//                currColor = 'b';
+//            }
+//            checkClose = false;
+        //}
         return currColor;
     }
 
@@ -512,6 +511,9 @@ public class Intake{
         currAngle = 450;
         spindexPos2to1Gear(currAngle);
         currentState = UnshiftedPositions.SLOT_0_RECEIVE;
+        SLOT_0 = slotStatus.BLANK;
+        SLOT_1 = slotStatus.BLANK;
+        SLOT_2 = slotStatus.BLANK;
     }
 
 
@@ -519,7 +521,9 @@ public class Intake{
         if (SLOT_0 == slotStatus.BLANK) return 0;
         if (SLOT_1 == slotStatus.BLANK) return 1;
         if (SLOT_2 == slotStatus.BLANK) return 2;
-        return -1;
+        else {
+            return -1;
+        }
     }
 
     public int getNextOuttakeSlot() {
@@ -561,37 +565,37 @@ public class Intake{
 //                    currColor = 'b';
         }
 
-        // Since I cant accurately tell what color the ball is when faced with a hole, I just check if there is a ball
-        if (checkClose){
-            if ((colors.red < PURPLE_R_HOLE + PURPLE_R_STDEV_HOLE
-                    &&
-                    colors.red > PURPLE_R_HOLE - PURPLE_R_STDEV_HOLE)
-                    &&
-                    (colors.green < PURPLE_G_HOLE + PURPLE_G_STDEV_HOLE
-                            &&
-                            colors.green > PURPLE_G_HOLE - PURPLE_G_STDEV_HOLE)
-                    &&
-                    (colors.blue < PURPLE_B_HOLE + PURPLE_B_STDEV_HOLE
-                            &&
-                            colors.blue > PURPLE_B_HOLE - PURPLE_B_STDEV_HOLE)) {
-                status = slotStatus.PURPLE;
-            } else if ((colors.red < GREEN_R_HOLE + GREEN_R_STDEV_HOLE
-                    &&
-                    colors.red > GREEN_R_HOLE - GREEN_R_STDEV_HOLE)
-                    &&
-                    (colors.green < GREEN_G_HOLE + GREEN_G_STDEV_HOLE
-                            &&
-                            colors.green > GREEN_G_HOLE - GREEN_G_STDEV_HOLE)
-                    &&
-                    (colors.blue < GREEN_B_HOLE + GREEN_B_STDEV_HOLE
-                            &&
-                            colors.blue > GREEN_B_HOLE - GREEN_B_STDEV_HOLE)) {
-                status = slotStatus.GREEN;
-            } else{
-                status = slotStatus.BLANK;
-            }
-            checkClose = false;
-        }
+//        // Since I cant accurately tell what color the ball is when faced with a hole, I just check if there is a ball
+//        if (checkClose){
+//            if ((colors.red < PURPLE_R_HOLE + PURPLE_R_STDEV_HOLE
+//                    &&
+//                    colors.red > PURPLE_R_HOLE - PURPLE_R_STDEV_HOLE)
+//                    &&
+//                    (colors.green < PURPLE_G_HOLE + PURPLE_G_STDEV_HOLE
+//                            &&
+//                            colors.green > PURPLE_G_HOLE - PURPLE_G_STDEV_HOLE)
+//                    &&
+//                    (colors.blue < PURPLE_B_HOLE + PURPLE_B_STDEV_HOLE
+//                            &&
+//                            colors.blue > PURPLE_B_HOLE - PURPLE_B_STDEV_HOLE)) {
+//                status = slotStatus.PURPLE;
+//            } else if ((colors.red < GREEN_R_HOLE + GREEN_R_STDEV_HOLE
+//                    &&
+//                    colors.red > GREEN_R_HOLE - GREEN_R_STDEV_HOLE)
+//                    &&
+//                    (colors.green < GREEN_G_HOLE + GREEN_G_STDEV_HOLE
+//                            &&
+//                            colors.green > GREEN_G_HOLE - GREEN_G_STDEV_HOLE)
+//                    &&
+//                    (colors.blue < GREEN_B_HOLE + GREEN_B_STDEV_HOLE
+//                            &&
+//                            colors.blue > GREEN_B_HOLE - GREEN_B_STDEV_HOLE)) {
+//                status = slotStatus.GREEN;
+//            } else{
+//                status = slotStatus.BLANK;
+//            }
+//            checkClose = false;
+//        }
 
         return status;
     }
