@@ -477,13 +477,17 @@ public class Camera extends OpenCvPipeline {
     }
 
     public double getAbsoluteAngleError(double currAngle, double error) {
-        if (currAngle + error < 0) {
-            return error + 360;
-        } else if (currAngle + error > 360) {
-            return error - 360;
+        if (currAngle + error < -90) {
+            return error + 180;
+        } else if (currAngle + error > 90) {
+            return error - 180;
         } else {
             return error;
         }
+    }
+
+    public double getAbsoluteAngleGoal(double currAngle, double error) {
+        return currAngle + getAbsoluteAngleError(currAngle, error);
     }
 
     public void runCamera(processors_enabled processor){
