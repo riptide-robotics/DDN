@@ -13,7 +13,6 @@
     import com.qualcomm.robotcore.util.ElapsedTime;
 
     import org.firstinspires.ftc.robotcore.external.Telemetry;
-    import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
     import org.firstinspires.ftc.teamcode.Modules.Intake;
     import org.firstinspires.ftc.teamcode.Robot;
 
@@ -280,7 +279,7 @@
                 }
 
                 if (gamepad2.a && robot.getOuttake().isAtGoalSpeed()) {
-                    robot.getIntake().BootKick(SPINDEX_ARM_UP);
+                    robot.getIntake().bootkick(SPINDEX_ARM_UP);
                     if (spindexPosOuttake == 0){Intake.SLOT_0 = Intake.slotStatus.BLANK;}
                     else if (spindexPosOuttake == 1){Intake.SLOT_1 = Intake.slotStatus.BLANK;}
                     else if (spindexPosOuttake == 2){Intake.SLOT_2 = Intake.slotStatus.BLANK;}
@@ -295,7 +294,7 @@
 
 
                 if (robot.getIntake().bootKickCurrPos() == SPINDEX_ARM_UP) {
-                    if (bootKickerDelayTimer.milliseconds() >= bootKickDelay) {robot.getIntake().BootKick(SPINDEX_ARM_RESTING); moveToNextOuttakeSlot = true;}
+                    if (bootKickerDelayTimer.milliseconds() >= bootKickDelay) {robot.getIntake().bootkick(SPINDEX_ARM_RESTING); moveToNextOuttakeSlot = true;}
                 }
 
                 tele.addLine("Spindex is outtaking");

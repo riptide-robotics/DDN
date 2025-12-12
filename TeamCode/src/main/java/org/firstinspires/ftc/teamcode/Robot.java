@@ -76,8 +76,8 @@ public class Robot {
             return;
         }
         else {
-            s.AddImpulseAction(() -> {
-                intake.BootKick(0 /*TODO no clue what goes here*/);
+            s.addImpulseAction(() -> {
+                intake.bootkick(0 /*TODO no clue what goes here*/);
                 //TODO remove color from position
             }, 0.5);
         }

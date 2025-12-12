@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.UnitTests;
 
+import static org.firstinspires.ftc.teamcode.riptideUtil.SPINDEX_ARM_RESTING;
 import static org.firstinspires.ftc.teamcode.riptideUtil.SPINDEX_ARM_UP;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -14,7 +15,6 @@ import org.firstinspires.ftc.teamcode.Robot;
 @TeleOp(name = "SequencerTest")
 public class SequencerTest extends LinearOpMode {
     Robot robot;
-
     Outtake out;
     Intake in;
 
@@ -44,12 +44,12 @@ public class SequencerTest extends LinearOpMode {
     public int numberXLoop = 0;
     boolean hasXRun = false;
 
-    private void sequencerTest() {
+    boolean debounce = false;
 
-        robot.s.loop();
+    private void sequencerTest() {
         telemetry.addData("actionA",hasARun);
         if (gamepad1.aWasPressed() && robot.s.impulseactions.isEmpty())
-            robot.s.AddImpulseAction(() -> {
+            robot.s.addImpulseAction(() -> {
                 hasARun = true;
             },1);
 
@@ -59,27 +59,27 @@ public class SequencerTest extends LinearOpMode {
         telemetry.addData("actionBB",hasBBRun);
 
         if (gamepad1.bWasPressed() && robot.s.impulseactions.isEmpty()) {
-            robot.s.AddImpulseAction(() -> {
+            robot.s.addImpulseAction(() -> {
                 hasBARun = true;
             }, 1);
-            robot.s.AddImpulseAction(() -> {
+            robot.s.addImpulseAction(() -> {
                 hasBBRun = true;
             },1);
         }
         telemetry.addData("actionXCount",numberXRun);
         if (gamepad1.x) {
-            robot.s.AddImpulseAction(() -> {
+            robot.s.addImpulseAction(() -> {
                 numberXRun++;
             }, 3);
         }
 
         if (gamepad1.y) {
-            robot.s.AddImpulseAction(() -> {
-                out.runOuttakePID(3000,3000,telemetry);
+            robot.s.addImpulseAction(() -> {
+                out.setOuttakeRPM(3000,3000);
             },1d);
 
-            robot.s.AddImpulseAction(() -> {
-                in.BootKick(SPINDEX_ARM_UP);
+            robot.s.addImpulseAction(() -> {
+                in.bootkick(SPINDEX_ARM_UP);
             },3d);
         }
 
@@ -119,26 +119,45 @@ public class SequencerTest extends LinearOpMode {
             robot.s.getLoopAction("loopE").killAction = true;
         }
 
+        if (gamepad1.leftBumperWasPressed()) {
+
+        }
+        if (gamepad1.rightBumperWasPressed()) {
+            robot.s.addImpulseAction(() -> {
+                robot.getOuttake().setOuttakeRPM(4000,4000);
+            }, 1);
+        }
+
+        if (!(gamepad1.left_bumper || gamepad1.right_bumper)) debounce = false;
+
+        if (!debounce && (gamepad1.left_bumper || gamepad1.right_bumper)) {
+
+            if (gamepad1.left_bumper) {
+                robot.s.addImpulseAction(() -> {
+                    robot.getOuttake().setOuttakeRPM(2000,2000);
+                }, 1);
+            }
 
 
-//
-//
-//        if (gamepad1.xWasPressed()) {
-//            robot.s.addAction(() -> {
-//                robot.getOuttake().runOuttakePID(XTop,XBottom,telemetry);
-//            },1);
-//            robot.s.addAction(() -> {
-//                robot.getOuttake().runOuttakePID(XTop,XBottom,telemetry);
-//            },1.5);
-//        }
-//        if (gamepad1.yWasPressed()) {
-//            robot.s.addAction(() -> {
-//                robot.getOuttake().runOuttakePID(YTop,YBottom,telemetry);
-//            },1);
-//            robot.s.addAction(() -> {
-//                robot.getIntake().spin(0.5); //james says keep this low to be safe. This has the side effect of removing control from the driver.
-//            },1);
-//        }
+            if (gamepad1.right_bumper) {
+                robot.s.addImpulseAction(() -> {
+                    robot.getOuttake().setOuttakeRPM(4000,4000);
+                }, 1);
+            }
+
+            robot.getIntake().bootkick(SPINDEX_ARM_RESTING);
+
+            robot.s.addImpulseAction(() -> {
+                robot.getIntake().bootkick(SPINDEX_ARM_UP);
+            },4);
+
+            robot.s.addImpulseAction(() -> {
+                robot.getIntake().bootkick(SPINDEX_ARM_RESTING);
+            },6);
+        }
+
+        robot.s.loop();
+        robot.getOuttake().runOuttakePID(telemetry);
         telemetry.update();
     }
 }

@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.Modules.Utils;
 
 
+import androidx.annotation.Nullable;
+
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Modules.Drivetrain;
@@ -10,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 
@@ -19,8 +22,9 @@ import java.util.UUID;
  * Actions that start with T, or Trip, act as a "tripwire." They run when the bot approaches a given location. <br>
  * If it does not, it runs after a given timer. <br>
  * An impulse action will run once. <br>
- * And finally, a loop action will run repeatedly, or until the action is set to be killed. <br>
- * */
+ * A loop action will run repeatedly, or until the action is set to be killed. <br> <br>
+ * For now, the trip actions are not completed, and are completely untested. Please do not use them.
+ **/
 public class Sequencer { // Done by Owen
     public static final DistanceUnit unit = DistanceUnit.INCH;
 
@@ -29,7 +33,12 @@ public class Sequencer { // Done by Owen
     public Map<String, LoopAction> loopactions;
     public Map<String,TripImpulseAction> Timpulseactions;
     public Map<String,TripLoopAction> Tloopactions;
+    @Nullable
     private final Drivetrain drive;
+
+
+
+    private static final boolean processTripActions = false;
 
 
 
@@ -40,8 +49,10 @@ public class Sequencer { // Done by Owen
         IMPULSE,
         LOOPED
     }
-    /**Creates a sequencer. This class allows you to perform tasks after a set amount of time.*/
-    public Sequencer(Drivetrain drive){
+    /**Creates a sequencer. This class allows you to perform tasks after a set amount of time. <br>
+     * A null drivetrain means that trip actions will not be triggered.
+     * */
+    public Sequencer(@Nullable Drivetrain drive){
         impulseactions = new HashMap<>();
         loopactions = new HashMap<>();
         Timpulseactions = new HashMap<>();
@@ -148,6 +159,8 @@ public class Sequencer { // Done by Owen
          * @param drive The drivetrain that is used to check. Looking for a way to remove this.
          * */
         public boolean botWithinArea(Drivetrain drive) {
+            if (drive == null) return false;
+
             double X = drive.getPinpoint().getPosX(Sequencer.unit);
             double Y = drive.getPinpoint().getPosY(Sequencer.unit);
 
@@ -360,7 +373,7 @@ public class Sequencer { // Done by Owen
         Tloopactions.put(a.name,a);
     }
 
-    public void AddImpulseAction(Action a, double delayINSECONDS){
+    public void addImpulseAction(Action a, double delayINSECONDS){
         addImpulseAction(new ImpulseAction(a,delayINSECONDS));
     }
 
@@ -381,11 +394,11 @@ public class Sequencer { // Done by Owen
     }
 
     public void killLoopAction(String name, boolean kill) {
-        if (!loopactions.containsKey(name)) throw new RuntimeException("No loop action of name: " + name + "!");
+        if (!loopactions.containsKey(name)) throw new NoSuchElementException("No loop action of name: " + name + "! Make sure this is created before you delete it.");
         loopactions.get(name).killAction = kill;
     }
     public void killTLoopAction(String name, boolean kill) {
-        if (!Tloopactions.containsKey(name)) throw new RuntimeException("No loop action of name: " + name + "!");
+        if (!Tloopactions.containsKey(name)) throw new NoSuchElementException("No loop action of name: " + name + "! Make sure this is created before you delete it.");
         Tloopactions.get(name).killAction = kill;
     }
 }
