@@ -75,6 +75,8 @@
         boolean xPressedG2 = false;
         boolean rightPressedG2 = false;
         boolean yPressedG2 = false;
+        boolean bPressedG2 = false;
+        boolean aPressedG2 = false;
 
 
 
@@ -178,6 +180,8 @@
             if (!gamepad2.x){xPressedG2 = false;}
             if (!gamepad2.y){yPressedG2 = false;}
             if (!gamepad2.back){backPressedG2 = false;}
+            if (!gamepad2.b) {bPressedG2 = false;}
+            if (!gamepad2.a) {aPressedG2 = false;}
         }
 
         public void tankDrive() {
@@ -276,12 +280,15 @@
             }
 
             if (gamepad2.x && !xPressedG2 && outtake){
-                spindexPosOuttake = robot.getIntake().getNextOuttakeSlot();
                 outtake = false;
                 xPressedG2 = true;
             }
 
             if (outtake){
+                if (gamepad2.b && !bPressedG2){
+                    spindexPosOuttake = robot.getIntake().getNextOuttakeSlot();
+                    bPressedG2 = true;
+                }
                 spindexPosIntake = -1;
 
                 if (spindexPosOuttake != -1){
@@ -292,21 +299,20 @@
                     if (spindexPosOuttake == 2) {robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_2_SHOOT);}
                 }
 
-                if (gamepad2.a && robot.getOuttake().isAtGoalSpeed()) {
-                    if (bootKickActivateDelayTimer.milliseconds() >= bootKickActivateDelay) {
-                        robot.getIntake().bootkick(SPINDEX_ARM_UP);
-                        bootKickerDelayTimerUp.reset();
-                        bootKickerDelayTimerUp.startTime();
-                        tele.addLine("Boot kick activate delay");
-                    }
+                if (gamepad2.a && robot.getOuttake().isAtGoalSpeed() && !aPressedG2) {
+                    robot.getIntake().bootkick(SPINDEX_ARM_UP);
+                    bootKickerDelayTimerUp.reset();
+                    bootKickerDelayTimerUp.startTime();
+                    aPressedG2 = true;
                 }
 
-                if (robot.getIntake().bootKickCurrPos() == SPINDEX_ARM_UP && !moveToNextOuttakeSlot) {
+                if (robot.getIntake().bootKickCurrPos() == SPINDEX_ARM_UP) {
                     if (bootKickerDelayTimerUp.milliseconds() >= bootKickDelay) {
                         robot.getIntake().bootkick(SPINDEX_ARM_RESTING);
                         if (spindexPosOuttake == 0){Intake.SLOT_0 = Intake.slotStatus.BLANK;}
                         else if (spindexPosOuttake == 1){Intake.SLOT_1 = Intake.slotStatus.BLANK;}
                         else if (spindexPosOuttake == 2){Intake.SLOT_2 = Intake.slotStatus.BLANK;}
+                        tele.addLine("Set spindex arm to resting");
                     }
                 }
 
