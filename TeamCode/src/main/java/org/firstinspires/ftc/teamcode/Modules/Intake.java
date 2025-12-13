@@ -96,6 +96,22 @@ public class Intake{
         spindexArm.setDirection(Servo.Direction.REVERSE);
     }
 
+    public void initColorSensor(){
+        colorSensor.setGain(gain);
+        if (colorSensor instanceof SwitchableLight) {
+            ((SwitchableLight) colorSensor).enableLight(true);
+        }
+    }
+
+    public void initSpindex(){
+        currAngle = 450;
+        spindexPos2to1Gear(currAngle);
+        currentState = UnshiftedPositions.SLOT_0_RECEIVE;
+        SLOT_0 = slotStatus.BLANK;
+        SLOT_1 = slotStatus.BLANK;
+        SLOT_2 = slotStatus.BLANK;
+    }
+
     /**
      * Gain is...
      *
@@ -104,47 +120,9 @@ public class Intake{
         colorSensor.setGain(gain);
     }
 
-    // Used for telemetry
-    // Looks for...
-    public char scanColor() {
-        NormalizedRGBA detectedColor = colorSensor.getNormalizedColors();
-
-        if ((detectedColor.red < PURPLE_R + PURPLE_R_STDEV
-                    &&
-             detectedColor.red > PURPLE_R - PURPLE_R_STDEV)
-                &&
-            (detectedColor.green < PURPLE_G + PURPLE_G_STDEV
-                    &&
-             detectedColor.green > PURPLE_G - PURPLE_G_STDEV)
-                &&
-            (detectedColor.blue < PURPLE_B + PURPLE_B_STDEV
-                    &&
-             detectedColor.blue > PURPLE_B - PURPLE_B_STDEV)) {
-            return 'p';
-        } else if ((detectedColor.red < GREEN_R + GREEN_R_STDEV
-                            &&
-                    detectedColor.red > GREEN_R - GREEN_R_STDEV)
-                        &&
-                   (detectedColor.green < GREEN_G + GREEN_G_STDEV
-                            &&
-                    detectedColor.green > GREEN_G - GREEN_G_STDEV)
-                        &&
-                   (detectedColor.blue < GREEN_B + GREEN_B_STDEV
-                            &&
-                    detectedColor.blue > GREEN_B - GREEN_B_STDEV)) {
-            return 'g';
-        } else {
-            return 'b';
-        }
-    }
-
     // Sets the power of the intake motor, NOT THE SPINDEX
     public void spin(double p) {
         intakeMotor.setPower(p);
-    }
-
-    public TelemetryPacket sendTelemetry(){
-        return t;
     }
 
     public double fiveTurnToServo(double angle){
@@ -152,12 +130,6 @@ public class Intake{
         return angle <= 887 && angle >= 0 ? angle / 887 : angle > 887 ? 1 : 0;
     }
 
-    public void initColorSensor(){
-        colorSensor.setGain(gain);
-        if (colorSensor instanceof SwitchableLight) {
-            ((SwitchableLight) colorSensor).enableLight(true);
-        }
-    }
 
     public char checkColor(){
         NormalizedRGBA colors = colorSensor.getNormalizedColors();
@@ -194,50 +166,11 @@ public class Intake{
         return currColor;
     }
 
-    public void goTo(UnshiftedPositions goal) {
-        diff = goal.posUnshifted - currentState.posUnshifted;
-
-        if (diff < -180) {
-            diff += 360;
-        }
-
-        if (diff > 180) {
-            diff -= 360;
-        }
-
-        int newAngle = currAngle + diff;
-        if (newAngle < 0) {newAngle += 360;}
-        if (newAngle > 887) {newAngle -= 360;}
-        currAngle = newAngle;
-        spindexPos2to1Gear(newAngle);
-        currentState = goal;
-    }
-
-    public void initSpindex(){
-        currAngle = 450;
-        spindexPos2to1Gear(currAngle);
-        currentState = UnshiftedPositions.SLOT_0_RECEIVE;
-        SLOT_0 = slotStatus.BLANK;
-        SLOT_1 = slotStatus.BLANK;
-        SLOT_2 = slotStatus.BLANK;
-    }
-
-    public double getNextIntakeSlot() {
-        if (SLOT_0 == slotStatus.BLANK) return 0;
-        if (SLOT_1 == slotStatus.BLANK) return 1;
-        if (SLOT_2 == slotStatus.BLANK) return 2;
-        else {
-            return -1;
-        }
-    }
-
-    public int getNextOuttakeSlot() {
-        if (SLOT_0 != slotStatus.BLANK) return 0;
-        if (SLOT_1 != slotStatus.BLANK) return 1;
-        if (SLOT_2 != slotStatus.BLANK) return 2;
-        return -1;
-    }
-
+    /**
+     * NOTE NEEDS TO BE REFACTORED TO USE checkColor()
+     *
+     * @return
+     */
     public slotStatus currColor(){
         NormalizedRGBA colors = colorSensor.getNormalizedColors();
         slotStatus status = slotStatus.BLANK;
@@ -274,12 +207,46 @@ public class Intake{
         return status;
     }
 
-    public void spindexPos2to1Gear(double pos){
-        spindexServo.setPosition(fiveTurnToServo(pos));
+    public void goTo(UnshiftedPositions goal) {
+        diff = goal.posUnshifted - currentState.posUnshifted;
+
+        if (diff < -180) {
+            diff += 360;
+        }
+
+        if (diff > 180) {
+            diff -= 360;
+        }
+
+        int newAngle = currAngle + diff;
+        if (newAngle < 0) {newAngle += 360;}
+        if (newAngle > 887) {newAngle -= 360;}
+        currAngle = newAngle;
+        spindexPos2to1Gear(newAngle);
+        currentState = goal;
     }
 
-    public void spindexPos(double pos){
-        spindexServo.setPosition(pos);
+
+    public double getNextIntakeSlot() {
+        if (SLOT_0 == slotStatus.BLANK) return 0;
+        if (SLOT_1 == slotStatus.BLANK) return 1;
+        if (SLOT_2 == slotStatus.BLANK) return 2;
+        else {
+            return -1;
+        }
+    }
+
+    public int getNextOuttakeSlot() {
+        if (SLOT_0 != slotStatus.BLANK) return 0;
+        if (SLOT_1 != slotStatus.BLANK) return 1;
+        if (SLOT_2 != slotStatus.BLANK) return 2;
+        return -1;
+    }
+
+
+
+    public void spindexPos2to1Gear(double pos){
+        spindexServo.setPosition(fiveTurnToServo(pos));
     }
 
     public double spindexCurrentPosition(){
