@@ -60,7 +60,7 @@ public class riptideUtil {
     public static final double DEGREES_TO_TICKS = 751.8 / 360;
     public static final double DEADZONE = 3;
 
-    public static final double TURNTABLE_KP = 0.002;
+    public static final double TURNTABLE_KP = 0.1;
     public static final double TURNTABLE_KI = 0.003;
     public static final double TURNTABLE_KD = 0.00005;
     public static final double TURNTABLE_KF = 5;
