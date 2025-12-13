@@ -24,8 +24,8 @@ import java.util.List;
 
 public class Robot {
 
-    public static final VelocityStorage[] shootlookupred = new VelocityStorage[5];
-    public static final VelocityStorage[] shootlookupblue = new VelocityStorage[5]; //this will be the lookup tables
+    public static final VelocityStorage[] shootlookupred = new VelocityStorage[3];
+    public static final VelocityStorage[] shootlookupblue = new VelocityStorage[3]; //this will be the lookup tables
 
     HardwareMap hardwareMap;
 
@@ -43,6 +43,7 @@ public class Robot {
 
     riptideUtil.TEAM_COLOR alliance = riptideUtil.TEAM_COLOR.RED; // change based on alliance
 
+    /**TODO we're going to have to loop this*/
     public Sequencer s;
 
     static {
@@ -50,14 +51,12 @@ public class Robot {
         shootlookupblue[0] = new VelocityStorage();
         shootlookupblue[1] = new VelocityStorage();
         shootlookupblue[2] = new VelocityStorage();
-        shootlookupblue[3] = new VelocityStorage();
-        shootlookupblue[4] = new VelocityStorage();
+      
 
         shootlookupred[0] = new VelocityStorage();
         shootlookupred[1] = new VelocityStorage();
         shootlookupred[2] = new VelocityStorage();
-        shootlookupred[3] = new VelocityStorage();
-        shootlookupred[4] = new VelocityStorage();
+       
 
     }
 
@@ -96,19 +95,15 @@ public class Robot {
         if (true) /*shut up IDE*/ throw new UnsupportedOperationException("Can't do this yet!");
         rotateToColor(color);
         if (true) /*TODO, run if no color*/ {
-
-
+        //vibrate(); todo
+        return;
         }
-        else {
-            //TODO get through lookup table
-            outtake.setOuttakeRPM(3000,3000);
-            s.addImpulseAction(() -> {
-                intake.bootkick(SPINDEX_ARM_UP);
-            }, 2);
-            s.addImpulseAction(() -> {
-                intake.bootkick(SPINDEX_ARM_RESTING);
-            },4);
-        }
+        char[] artifacts = new char[3]; //todo get chars from the thing
+        byte b = 0; //todo get current position of spindexer
+        if (artifacts[b] == color) {/*can eject NOW*/};
+        //rotate to required position
+        double[] velocity = getOuttakeRPMS(true /*todo again get team color here*/);
+        outtake.setOuttakeRPM(velocity[1],velocity[2]);
     }
     @Placeholder
     public void /*figure out what we are returning later*/ rotateToColor(char color) {
@@ -135,6 +130,8 @@ public class Robot {
     @Placeholder
     public void aimToRedGoal(){ // copy for blue
         double dist = camera.getDistanceToRedGoal();
+        double[] velocity = getOuttakeRPMS(true);
+        outtake.setOuttakeRPM(velocity[1],velocity[2]);
         /**
          * split maximum shooting distance into 5 "sections", set flywheel powers based on a lookup table (array)
          * based on which section we fall into.
@@ -143,10 +140,8 @@ public class Robot {
     @Placeholder
     public void aimToBlueGoal(){ // copy for blue
         double dist = camera.getDistanceToBlueGoal();
-        /**
-         * split maximum shooting distance into 5 "sections", set flywheel powers based on a lookup table (array)
-         * based on which section we fall into.
-         */
+        double[] velocity = getOuttakeRPMS(true);
+        outtake.setOuttakeRPM(velocity[1],velocity[2]);
     }
     /**
      * Set indicator light based upon current spindexer. Put this in a loop.
@@ -184,6 +179,28 @@ public class Robot {
         alliance = color;
     }
 
+    /**get flywheel RPMs based upon distance. Not tested.*/
+    public double[] getOuttakeRPMS(boolean onBlueGoal) {
+        double distance = onBlueGoal ? camera.getDistanceToBlueGoal() : camera.getDistanceToRedGoal();
+        double[] returned = new double[2];
+
+        VelocityStorage[] velocities = onBlueGoal ? shootlookupblue : shootlookupred;
+
+
+        for (int i = 0; i < velocities.length; i++) {
+            VelocityStorage curr = velocities[i];
+
+            if ((i + 1 >= velocities.length && distance >= curr.distance) ||
+                    (distance >= curr.distance && distance <= curr.distance)) {
+
+                returned[0] = curr.lowerRPM;
+                returned[1] = curr.upperRPM;
+            }
+        }
+        return returned;
+    }
+    
+    
     /**Only access outside of Robot for the purposes of reading data from it.*/
     private static class VelocityStorage {
         public double upperRPM;
@@ -200,7 +217,17 @@ public class Robot {
             this.lowerRPM = 0;
             this.distance = 0;
         }
-
-
+    }
+    private void outtake(double rpmupper, double rpmlower) {
+        outtake.setOuttakeRPM(rpmupper,rpmlower);
+        s.addImpulseAction(() -> {
+            intake.bootkick(SPINDEX_ARM_UP);
+        }, 2);
+        s.addImpulseAction(() -> {
+            intake.bootkick(SPINDEX_ARM_RESTING);
+        },4);
+        s.addImpulseAction(() -> {
+            outtake.setOuttakeRPM(0,0);
+        },6);
     }
 }
