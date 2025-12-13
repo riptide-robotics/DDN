@@ -40,7 +40,6 @@ public class SpindexArmTuner extends LinearOpMode {
             if (gamepad2.x){
                 robot.getIntake().bootkick(up);
             } else {
-                robot.getIntake().closeTransfer(resting);
             }
 
 

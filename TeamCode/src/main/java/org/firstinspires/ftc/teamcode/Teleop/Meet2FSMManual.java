@@ -51,14 +51,19 @@
 
 
         /**            TIMERS              **/
-        ElapsedTime bootKickerDelayTimer;
+        ElapsedTime bootKickerDelayTimerUp;
+        ElapsedTime bootKickerDelayTimerDown;
+        ElapsedTime bootKickActivateDelayTimer;
         ElapsedTime spindexDelayTimer;
         ElapsedTime endTimer;
         public static double spindexDelay = 1000; // IN MS
         public static double bootKickDelay = 300; // IN MS
+        public static double bootKickActivateDelay = 1500;
+
         boolean didRumble = false;
         boolean startedDelay = false;
         boolean moveToNextOuttakeSlot = false;
+
 
 
         /**            DEBOUNCE              **/
@@ -76,13 +81,16 @@
         public void runOpMode() throws InterruptedException {
             hasrun = false;
             robot = new Robot(hardwareMap);
-            bootKickerDelayTimer = new ElapsedTime();
+            bootKickerDelayTimerUp = new ElapsedTime();
+            bootKickerDelayTimerDown = new ElapsedTime();
             spindexDelayTimer = new ElapsedTime();
+            bootKickActivateDelayTimer= new ElapsedTime();
             endTimer = new ElapsedTime();
-            recieve = false;
+            recieve = true;
             outtake = false;
             runIntakePos = false;
             runOuttakePos = false;
+            moveToNextOuttakeSlot = false;
 
             robot.getIntake().initSpindex();
             robot.getIntake().initColorSensor();
@@ -97,6 +105,9 @@
             if (isStopRequested()) return;
             endTimer.reset();
             endTimer.startTime();
+
+            bootKickActivateDelayTimer.reset();
+            bootKickActivateDelayTimer.startTime();
             telemetry.clear();
             telemetry.addData("Robot status", "Started!");
             telemetry.update();
@@ -110,7 +121,8 @@
                 robot.getOuttake().runOuttakePID(currentTopRPMGoal, currentBottomRPMGoal, tele);
 
                 double currTime = endTimer.seconds();
-
+                mapJoyToAngle(gamepad2.right_stick_x);
+                robot.getOuttake().
                 if (currTime >= 80 && !didRumble){gamepad1.rumble(1, 1, 500); gamepad2.rumble(1, 1, 500);}
                 if (currTime >= 82) {didRumble = true;}
                 tele.update();
@@ -188,6 +200,8 @@
 
         public void cycleSlots(){
             if (gamepad2.y && !yPressedG2 && !recieve) {
+                currentTopRPMGoal = 0;
+                currentBottomRPMGoal = 0;
 //                CYCLE MANUALLY
 //                if (spindexPosIntake == -1) spindexPosIntake = 0;
 //                else if (spindexPosIntake == 0) spindexPosIntake = 1;
@@ -200,6 +214,8 @@
             }
 
             if (gamepad2.y && !yPressedG2 && recieve){
+                currentTopRPMGoal = 0;
+                currentBottomRPMGoal = 0;
                 recieve = false;
                 yPressedG2 = true;
             }
@@ -264,6 +280,8 @@
             }
 
             if (gamepad2.x && !xPressedG2 && outtake){
+                currentTopRPMGoal = 0;
+                currentBottomRPMGoal = 0;
                 outtake = false;
                 xPressedG2 = true;
             }
@@ -279,27 +297,36 @@
                     if (spindexPosOuttake == 2) {robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_2_SHOOT);}
                 }
 
-                if (gamepad2.a && robot.getOuttake().isAtGoalSpeed()) {
-                    robot.getIntake().BootKick(SPINDEX_ARM_UP);
-                    tele.addLine("Boot Kicker Up");
-                    bootKickerDelayTimer.reset();
-                    bootKickerDelayTimer.startTime();
+                if (gamepad2.a && robot.getOuttake().isAtGoalSpeed() && !moveToNextOuttakeSlot) {
+                    if (bootKickActivateDelayTimer.milliseconds() >= bootKickActivateDelay) {
+                        robot.getIntake().bootkick(SPINDEX_ARM_UP);
+                        bootKickerDelayTimerUp.reset();
+                        bootKickerDelayTimerUp.startTime();
+                        tele.addLine("Boot kick activate delay");
+                    }
                 }
 
+                if (robot.getIntake().bootKickCurrPos() == SPINDEX_ARM_UP && !moveToNextOuttakeSlot) {
+                    if (bootKickerDelayTimerUp.milliseconds() >= bootKickDelay) {
+                        robot.getIntake().bootkick(SPINDEX_ARM_RESTING);
+                        bootKickerDelayTimerDown.reset();
+                        bootKickerDelayTimerDown.startTime();
+                        moveToNextOuttakeSlot = true;
+                        tele.addLine("Boot kick up delay");
+                    }
+                }
 
-                if (robot.getIntake().bootKickCurrPos() == SPINDEX_ARM_UP) {
-                    if (bootKickerDelayTimer.milliseconds() >= bootKickDelay) {robot.getIntake().bootkick(SPINDEX_ARM_RESTING); moveToNextOuttakeSlot = true;}
-                    if (bootKickerDelayTimer.milliseconds() >= bootKickDelay) {
-                        robot.getIntake().BootKick(SPINDEX_ARM_RESTING);
+                if (robot.getIntake().bootKickCurrPos() == SPINDEX_ARM_RESTING && moveToNextOuttakeSlot){
+                    if (bootKickerDelayTimerDown.milliseconds() >= bootKickDelay){
                         if (spindexPosOuttake == 0){Intake.SLOT_0 = Intake.slotStatus.BLANK;}
                         else if (spindexPosOuttake == 1){Intake.SLOT_1 = Intake.slotStatus.BLANK;}
                         else if (spindexPosOuttake == 2){Intake.SLOT_2 = Intake.slotStatus.BLANK;}
                         spindexPosOuttake = robot.getIntake().getNextOuttakeSlot();
+                        bootKickActivateDelayTimer.reset();
+                        bootKickActivateDelayTimer.startTime();
+                        moveToNextOuttakeSlot = false;
+                        tele.addLine("Boot kick down delay");
                     }
-                }
-
-                if (robot.getIntake().bootKickCurrPos() == SPINDEX_ARM_RESTING){
-
                 }
 
                 tele.addLine("Spindex is outtaking");
