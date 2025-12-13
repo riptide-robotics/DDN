@@ -24,7 +24,7 @@ public class TurnTableAndCameraTest extends LinearOpMode {
     public static double ki = 0.003;
     public static double kd = 0.00005;
     public static double kf = 0;
-    public static double deadZone = 5;
+    public static double deadZone = 5; // Never tested these five
 
     double currPosDeg = 0;
     double currPosTicks = 0;
@@ -75,6 +75,7 @@ public class TurnTableAndCameraTest extends LinearOpMode {
             prevGoalDeg = 0;
 
             setTurnPID(hardwareMap.dcMotor.get("turnTable"), absoluteGoal != null ? absoluteGoal : prevGoalDeg);
+            t.update();
         }
     }
 

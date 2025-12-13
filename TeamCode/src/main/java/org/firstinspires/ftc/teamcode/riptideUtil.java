@@ -63,6 +63,7 @@ public class riptideUtil {
     public static final double TURNTABLE_KP = 0.002;
     public static final double TURNTABLE_KI = 0.003;
     public static final double TURNTABLE_KD = 0.00005;
+    public static final double TURNTABLE_KF = 5;
 
     /**
      * Autonomous Constants
