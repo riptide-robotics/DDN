@@ -179,8 +179,9 @@ public class Drivetrain {
     }
 
     public boolean goToPosPID(Pose2D goal) {
-        double dx = goal.getX(DistanceUnit.INCH) - getPinpoint().getPosX(DistanceUnit.INCH);
-        double dy = goal.getY(DistanceUnit.INCH) - getPinpoint().getPosY(DistanceUnit.INCH);
+        pinpoint.update();
+        double dx = goal.getX(DistanceUnit.INCH) - pinpoint.getPosX(DistanceUnit.INCH);
+        double dy = goal.getY(DistanceUnit.INCH) - pinpoint.getPosY(DistanceUnit.INCH);
         double distanceToPoint = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
 
         double headingError = shortestAngleDiff(this.getRobotHeading(AngleUnit.RADIANS), Math.atan2(dy, dx));

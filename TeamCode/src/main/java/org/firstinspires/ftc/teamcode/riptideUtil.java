@@ -13,7 +13,7 @@ public class riptideUtil {
 
     /**
      * Table of contents:
-     * 1. General constants (things that are used gneerally, not specific locations)
+     * 1. General constants (things that are used generally, not specific locations)
      * 2. Autonomous Constants
      */
 
@@ -63,6 +63,7 @@ public class riptideUtil {
     public static final double TURNTABLE_KP = 0.002;
     public static final double TURNTABLE_KI = 0.003;
     public static final double TURNTABLE_KD = 0.00005;
+    public static final double TURNTABLE_KF = 5;
 
     /**
      * Autonomous Constants
@@ -108,8 +109,8 @@ public class riptideUtil {
     public static double tolerance = 50; //?? what
 
     // Spindex
-    public static double SPINDEX_ARM_UP = 0.5; // UNDETERMINED
-    public static double SPINDEX_ARM_RESTING = 0.1; // UNDETERMINED
+    public static double SPINDEX_ARM_UP = 0.15; // UNDETERMINED
+    public static double SPINDEX_ARM_RESTING = 0; // UNDETERMINED
     public static double ROTATE_SPINDEX_ONCE = 60;
 
     // POS 1

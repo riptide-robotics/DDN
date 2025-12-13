@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.Modules.Drivetrain;
 import org.firstinspires.ftc.teamcode.Modules.Indicator;
 import org.firstinspires.ftc.teamcode.Modules.Intake;
 import org.firstinspires.ftc.teamcode.Modules.Outtake;
-import org.firstinspires.ftc.teamcode.Modules.Sequencer;
+import org.firstinspires.ftc.teamcode.Modules.Utils.Sequencer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,9 +39,9 @@ public class Robot {
     public Robot (HardwareMap map){
         hardwareMap = map;
 
-        s = new Sequencer();
         indicator = new Indicator(hardwareMap);
         drivetrain = new Drivetrain(hardwareMap);
+        s = new Sequencer(drivetrain);
         intake = new Intake(hardwareMap);
         endgameServos = new EndgameServos(hardwareMap);
         outtake = new Outtake(hardwareMap);
@@ -76,8 +76,8 @@ public class Robot {
             return;
         }
         else {
-            s.AddImpulseAction(() -> {
-                intake.BootKick(0 /*TODO no clue what goes here*/);
+            s.addImpulseAction(() -> {
+                intake.bootkick(0 /*TODO no clue what goes here*/);
                 //TODO remove color from position
             }, 0.5);
         }
