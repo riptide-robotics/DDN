@@ -33,6 +33,10 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.hardware.SwitchableLight;
 
 public class Intake{
+    /**
+     * This is the combination of the intake and spindex subassembilies.
+     * ...
+     */
     TelemetryPacket t = new TelemetryPacket();
 
     NormalizedColorSensor colorSensor;
@@ -92,10 +96,16 @@ public class Intake{
         spindexArm.setDirection(Servo.Direction.REVERSE);
     }
 
+    /**
+     * Gain is...
+     *
+     */
     public void setGain (float gain){
         colorSensor.setGain(gain);
     }
 
+    // Used for telemetry
+    // Looks for...
     public char scanColor() {
         NormalizedRGBA detectedColor = colorSensor.getNormalizedColors();
 
@@ -128,6 +138,7 @@ public class Intake{
         }
     }
 
+    // Sets the power of the intake motor, NOT THE SPINDEX
     public void spin(double p) {
         intakeMotor.setPower(p);
     }
@@ -185,9 +196,11 @@ public class Intake{
 
     public void goTo(UnshiftedPositions goal) {
         diff = goal.posUnshifted - currentState.posUnshifted;
+
         if (diff < -180) {
             diff += 360;
         }
+
         if (diff > 180) {
             diff -= 360;
         }
@@ -208,7 +221,6 @@ public class Intake{
         SLOT_1 = slotStatus.BLANK;
         SLOT_2 = slotStatus.BLANK;
     }
-
 
     public double getNextIntakeSlot() {
         if (SLOT_0 == slotStatus.BLANK) return 0;
@@ -265,10 +277,10 @@ public class Intake{
     public void spindexPos2to1Gear(double pos){
         spindexServo.setPosition(fiveTurnToServo(pos));
     }
+
     public void spindexPos(double pos){
         spindexServo.setPosition(pos);
     }
-
 
     public double spindexCurrentPosition(){
         return spindexServo.getPosition() * 887;
@@ -277,7 +289,6 @@ public class Intake{
     public double bootKickCurrPos(){
         return spindexArm.getPosition();
     }
-
 
     public void bootkick(double pos){
         spindexArm.setPosition(pos);
