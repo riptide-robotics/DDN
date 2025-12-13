@@ -1,7 +1,6 @@
-package org.firstinspires.ftc.teamcode.Modules;
+package org.firstinspires.ftc.teamcode.Modules.Utils;
 
-import org.firstinspires.ftc.teamcode.Modules.Sequencer;
-
+/**This class is the parent of all Action classes. It is not intended to be used directly.*/
 public class SeqAction {
     public Sequencer.Action a;
     public String name;

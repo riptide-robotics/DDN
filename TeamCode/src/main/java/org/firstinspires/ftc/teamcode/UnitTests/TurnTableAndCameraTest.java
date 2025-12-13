@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode.UnitTests;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -12,6 +14,8 @@ import org.firstinspires.ftc.teamcode.Modules.PIDController;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.riptideUtil.TEAM_COLOR;
 
+@Config
+@TeleOp(name = "Turntable + Camera")
 public class TurnTableAndCameraTest extends LinearOpMode {
     Robot robot;
     Telemetry t = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -20,7 +24,7 @@ public class TurnTableAndCameraTest extends LinearOpMode {
     public static double ki = 0.003;
     public static double kd = 0.00005;
     public static double kf = 0;
-    public static double deadZone = 5;
+    public static double deadZone = 5; // Never tested these five
 
     double currPosDeg = 0;
     double currPosTicks = 0;
@@ -42,6 +46,7 @@ public class TurnTableAndCameraTest extends LinearOpMode {
         Double error;
         Double absoluteError;
         Double dist;
+        Double absoluteGoal;
 
         motorController = new PIDController(kp, ki, kd);
 
@@ -53,8 +58,10 @@ public class TurnTableAndCameraTest extends LinearOpMode {
             if (error == null) {
                 t.addData("Absolute error", "Null");
                 absoluteError = null;
+                absoluteGoal = null;
             } else {
                 absoluteError = robot.getCamera().getAbsoluteAngleError(robot.getDrivetrain().getRobotHeading(AngleUnit.DEGREES), error);
+                absoluteGoal = robot.getCamera().getAbsoluteAngleGoal(robot.getDrivetrain().getRobotHeading(AngleUnit.DEGREES), error);
                 t.addData("Absolute error", absoluteError);
             }
             int len = robot.getCamera().getTagDetections().size();
@@ -67,7 +74,8 @@ public class TurnTableAndCameraTest extends LinearOpMode {
             t.addData("Distance", dist);
             prevGoalDeg = 0;
 
-            setTurnPID(hardwareMap.dcMotor.get("turnTable"), absoluteError != null ? absoluteError : prevGoalDeg);
+            setTurnPID(hardwareMap.dcMotor.get("turnTable"), absoluteGoal != null ? absoluteGoal : prevGoalDeg);
+            t.update();
         }
     }
 

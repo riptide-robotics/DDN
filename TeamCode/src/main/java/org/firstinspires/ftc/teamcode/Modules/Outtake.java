@@ -35,8 +35,8 @@ public class Outtake {
     private double prevPosTop = 0;
     private  double prevPosBottom = 0;
     private boolean atGoalSpeed = false;
-    private double rpmTopGoal;
-    private double rpmBottomGoal;
+    private double rpmTopGoal = 0;
+    private double rpmBottomGoal = 0;
 
 
     public Outtake(HardwareMap hardwareMap){
@@ -81,7 +81,7 @@ public class Outtake {
     /**
      * Runs based on stored goal instead of target RPMs given by the user.
      **/
-    public void runOuttakePID(Telemetry tele){pidtunedmotor(rpmTopGoal, rpmBottomGoal, tele);}
+    public void runOuttakePID(Telemetry tele){runOuttakePID(rpmTopGoal, rpmBottomGoal, tele);}
 
 
     /**

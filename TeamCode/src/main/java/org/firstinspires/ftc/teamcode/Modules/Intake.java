@@ -1,29 +1,17 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
 import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_B;
-import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_B_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_B_STDEV;
-import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_B_STDEV_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_G;
-import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_G_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_G_STDEV;
-import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_G_STDEV_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_R;
-import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_R_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_R_STDEV;
-import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_R_STDEV_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_B;
-import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_B_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_B_STDEV;
-import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_B_STDEV_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_G;
-import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_G_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_G_STDEV;
-import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_G_STDEV_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R;
-import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R_STDEV;
-import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R_STDEV_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.ROTATE_SPINDEX_ONCE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.SLOT_ONE_PIKCUP_POS;
 import static org.firstinspires.ftc.teamcode.riptideUtil.SLOT_ONE_SHOOT_POS;
@@ -31,7 +19,6 @@ import static org.firstinspires.ftc.teamcode.riptideUtil.SLOT_THREE_PIKCUP_POS;
 import static org.firstinspires.ftc.teamcode.riptideUtil.SLOT_THREE_SHOOT_POS;
 import static org.firstinspires.ftc.teamcode.riptideUtil.SLOT_TWO_PIKCUP_POS;
 import static org.firstinspires.ftc.teamcode.riptideUtil.SLOT_TWO_SHOOT_POS;
-import static org.firstinspires.ftc.teamcode.riptideUtil.SPINDEX_ARM_RESTING;
 
 // Imports to sync
 
@@ -44,7 +31,6 @@ import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.hardware.SwitchableLight;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Intake{
     char[] order = new char[3];
@@ -85,7 +71,8 @@ public class Intake{
         spindexServo = hardwareMap.get(ServoImplEx.class, "spindexServo");
         spindexServo.setPwmRange(new PwmControl.PwmRange(500, 2500));
         spindexArm = hardwareMap.get(Servo.class, "bootkicker");
-        spindexServo.setDirection(Servo.Direction.FORWARD);
+        spindexServo.setDirection(Servo.Direction.REVERSE);
+        spindexArm.setDirection(Servo.Direction.REVERSE);
     }
 
     public void setGain (float gain){
@@ -645,7 +632,7 @@ public class Intake{
     }
 
 
-    public void BootKick(double pos){
+    public void bootkick(double pos){
         spindexArm.setPosition(pos);
 
     }

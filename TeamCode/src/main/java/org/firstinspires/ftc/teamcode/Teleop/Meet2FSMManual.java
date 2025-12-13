@@ -13,7 +13,6 @@
     import com.qualcomm.robotcore.util.ElapsedTime;
 
     import org.firstinspires.ftc.robotcore.external.Telemetry;
-    import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
     import org.firstinspires.ftc.teamcode.Modules.Intake;
     import org.firstinspires.ftc.teamcode.Robot;
 
@@ -289,6 +288,7 @@
 
 
                 if (robot.getIntake().bootKickCurrPos() == SPINDEX_ARM_UP) {
+                    if (bootKickerDelayTimer.milliseconds() >= bootKickDelay) {robot.getIntake().bootkick(SPINDEX_ARM_RESTING); moveToNextOuttakeSlot = true;}
                     if (bootKickerDelayTimer.milliseconds() >= bootKickDelay) {
                         robot.getIntake().BootKick(SPINDEX_ARM_RESTING);
                         if (spindexPosOuttake == 0){Intake.SLOT_0 = Intake.slotStatus.BLANK;}
