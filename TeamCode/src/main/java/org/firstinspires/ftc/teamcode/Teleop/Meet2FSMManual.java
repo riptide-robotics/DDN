@@ -43,6 +43,7 @@
         public static double spindexPosOuttake = -1;
         public char currColor = 'b';
         boolean resetBootKicker;
+        boolean idleSpinOverride = false;
 
         /**            OUTTAKE              **/
         public static double currentTopRPMGoal;
@@ -121,8 +122,8 @@
                 robot.getOuttake().runOuttakePID(currentTopRPMGoal, currentBottomRPMGoal, tele);
 
                 double currTime = endTimer.seconds();
-                mapJoyToAngle(gamepad2.right_stick_x);
-                robot.getOuttake().
+                robot.getOuttake().mapJoyToAngle(gamepad2.right_stick_x);
+                robot.getOuttake().updateTurntableAngle(tele);
                 if (currTime >= 80 && !didRumble){gamepad1.rumble(1, 1, 500); gamepad2.rumble(1, 1, 500);}
                 if (currTime >= 82) {didRumble = true;}
                 tele.update();
@@ -137,15 +138,6 @@
                         currentTopRPMGoal = 0;
                         currentBottomRPMGoal = 0;
                         hasrun = true;
-                    }
-
-                    // INTAKE
-                    if (gamepad2.right_trigger >= 0.1) {
-                        robot.getIntake().spin(0.6);
-                    } else if (gamepad2.back) {
-                        robot.getIntake().spin(-0.6);
-                    } else {
-                        robot.getIntake().spin(0);
                     }
 
                     cycleSlots();
@@ -219,7 +211,11 @@
                 recieve = false;
                 yPressedG2 = true;
             }
-            robot.getIntake().spin(spin);
+            if (gamepad2.back){
+                robot.getIntake().spin(-1);
+            } else{
+                robot.getIntake().spin(spin);
+            }
             if (recieve){
                 //              CYCLE AUTOMATIC
                 spindexPosOuttake = -1;
@@ -280,8 +276,7 @@
             }
 
             if (gamepad2.x && !xPressedG2 && outtake){
-                currentTopRPMGoal = 0;
-                currentBottomRPMGoal = 0;
+                spindexPosOuttake = robot.getIntake().getNextOuttakeSlot();
                 outtake = false;
                 xPressedG2 = true;
             }
@@ -297,7 +292,7 @@
                     if (spindexPosOuttake == 2) {robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_2_SHOOT);}
                 }
 
-                if (gamepad2.a && robot.getOuttake().isAtGoalSpeed() && !moveToNextOuttakeSlot) {
+                if (gamepad2.a && robot.getOuttake().isAtGoalSpeed()) {
                     if (bootKickActivateDelayTimer.milliseconds() >= bootKickActivateDelay) {
                         robot.getIntake().bootkick(SPINDEX_ARM_UP);
                         bootKickerDelayTimerUp.reset();
@@ -309,23 +304,9 @@
                 if (robot.getIntake().bootKickCurrPos() == SPINDEX_ARM_UP && !moveToNextOuttakeSlot) {
                     if (bootKickerDelayTimerUp.milliseconds() >= bootKickDelay) {
                         robot.getIntake().bootkick(SPINDEX_ARM_RESTING);
-                        bootKickerDelayTimerDown.reset();
-                        bootKickerDelayTimerDown.startTime();
-                        moveToNextOuttakeSlot = true;
-                        tele.addLine("Boot kick up delay");
-                    }
-                }
-
-                if (robot.getIntake().bootKickCurrPos() == SPINDEX_ARM_RESTING && moveToNextOuttakeSlot){
-                    if (bootKickerDelayTimerDown.milliseconds() >= bootKickDelay){
                         if (spindexPosOuttake == 0){Intake.SLOT_0 = Intake.slotStatus.BLANK;}
                         else if (spindexPosOuttake == 1){Intake.SLOT_1 = Intake.slotStatus.BLANK;}
                         else if (spindexPosOuttake == 2){Intake.SLOT_2 = Intake.slotStatus.BLANK;}
-                        spindexPosOuttake = robot.getIntake().getNextOuttakeSlot();
-                        bootKickActivateDelayTimer.reset();
-                        bootKickActivateDelayTimer.startTime();
-                        moveToNextOuttakeSlot = false;
-                        tele.addLine("Boot kick down delay");
                     }
                 }
 

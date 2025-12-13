@@ -30,7 +30,7 @@ public class ColorSensorTest extends LinearOpMode {
 
         while (opModeIsActive()) {
             robot.getIntake().setGain(gain);
-            sendColor = robot.getIntake().scanColor();
+            sendColor = robot.getIntake().checkColor();
             if (sendColor != prevString) {
                 prevString = sendColor;
                 telemetry.addData("Color Detected", sendColor);

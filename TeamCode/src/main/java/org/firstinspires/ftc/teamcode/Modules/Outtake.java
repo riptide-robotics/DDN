@@ -45,7 +45,6 @@ public class Outtake {
 
     private double turntableAngle = 0;
     private PIDController turntableController = new PIDController(TURNTABLE_KP, TURNTABLE_KI, TURNTABLE_KD);
-
     static final double ticksToDegrees = 360/751.8;
     static final double degreesToTicks = 751.8/360;
     private final DcMotor turntable;
@@ -293,7 +292,7 @@ public class Outtake {
      */
     public void mapJoyToAngle(double joy){
         joy = Math.max(-1, Math.min(1, joy));
-        double angle = Math.signum(joy)* (180 * Math.abs(joy) - 90);
+        double angle = 90 * joy;
         setTurntableGoalAngle(angle);
 
     }
