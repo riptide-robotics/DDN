@@ -24,10 +24,9 @@ import java.util.List;
 
 public class Robot {
 
-    public static final List<VelocityStorage> shootlookupred;
-    public static final List<VelocityStorage> shootlookupblue; //this will be the lookup tables
+    public static final VelocityStorage[] shootlookupred = new VelocityStorage[5];
+    public static final VelocityStorage[] shootlookupblue = new VelocityStorage[5]; //this will be the lookup tables
 
-    private static final Logger log = LoggerFactory.getLogger(Robot.class);
     HardwareMap hardwareMap;
 
     Indicator indicator;
@@ -47,30 +46,22 @@ public class Robot {
     public Sequencer s;
 
     static {
-        List<VelocityStorage> notimmutablered = new ArrayList<>();
 
-        //theres going to be 5
-        notimmutablered.add(new VelocityStorage());
-        notimmutablered.add(new VelocityStorage());
-        notimmutablered.add(new VelocityStorage());
-        notimmutablered.add(new VelocityStorage());
-        notimmutablered.add(new VelocityStorage());
+        shootlookupblue[0] = new VelocityStorage();
+        shootlookupblue[1] = new VelocityStorage();
+        shootlookupblue[2] = new VelocityStorage();
+        shootlookupblue[3] = new VelocityStorage();
+        shootlookupblue[4] = new VelocityStorage();
 
-        shootlookupred = Collections.unmodifiableList(notimmutablered);
+        shootlookupred[0] = new VelocityStorage();
+        shootlookupred[1] = new VelocityStorage();
+        shootlookupred[2] = new VelocityStorage();
+        shootlookupred[3] = new VelocityStorage();
+        shootlookupred[4] = new VelocityStorage();
 
-        List<VelocityStorage> notimmutableblue = new ArrayList<>();
-
-        //theres going to be 5
-        notimmutableblue.add(new VelocityStorage());
-        notimmutableblue.add(new VelocityStorage());
-        notimmutableblue.add(new VelocityStorage());
-        notimmutableblue.add(new VelocityStorage());
-        notimmutableblue.add(new VelocityStorage());
-
-        shootlookupblue = Collections.unmodifiableList(notimmutableblue);
     }
 
-    public Robot (HardwareMap map){
+    public Robot (VelocityStorage[] shootlookupblue, HardwareMap map){
         hardwareMap = map;
 
         indicator = new Indicator(hardwareMap);
