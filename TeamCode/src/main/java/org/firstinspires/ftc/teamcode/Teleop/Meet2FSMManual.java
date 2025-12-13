@@ -43,6 +43,7 @@
         public static double spindexPosIntake = 1;
         public static double spindexPosOuttake = -1;
         public char currColor = 'b';
+        boolean resetBootKicker;
 
         /**            OUTTAKE              **/
         public static double currentTopRPMGoal;
@@ -281,13 +282,6 @@
 
                 if (gamepad2.a && robot.getOuttake().isAtGoalSpeed()) {
                     robot.getIntake().BootKick(SPINDEX_ARM_UP);
-                    if (spindexPosOuttake == 0){Intake.SLOT_0 = Intake.slotStatus.BLANK;}
-                    else if (spindexPosOuttake == 1){Intake.SLOT_1 = Intake.slotStatus.BLANK;}
-                    else if (spindexPosOuttake == 2){Intake.SLOT_2 = Intake.slotStatus.BLANK;}
-                    if (moveToNextOuttakeSlot) {
-                        spindexPosOuttake = robot.getIntake().getNextOuttakeSlot();
-                        moveToNextOuttakeSlot = false;
-                    }
                     tele.addLine("Boot Kicker Up");
                     bootKickerDelayTimer.reset();
                     bootKickerDelayTimer.startTime();
@@ -295,7 +289,17 @@
 
 
                 if (robot.getIntake().bootKickCurrPos() == SPINDEX_ARM_UP) {
-                    if (bootKickerDelayTimer.milliseconds() >= bootKickDelay) {robot.getIntake().BootKick(SPINDEX_ARM_RESTING); moveToNextOuttakeSlot = true;}
+                    if (bootKickerDelayTimer.milliseconds() >= bootKickDelay) {
+                        robot.getIntake().BootKick(SPINDEX_ARM_RESTING);
+                        if (spindexPosOuttake == 0){Intake.SLOT_0 = Intake.slotStatus.BLANK;}
+                        else if (spindexPosOuttake == 1){Intake.SLOT_1 = Intake.slotStatus.BLANK;}
+                        else if (spindexPosOuttake == 2){Intake.SLOT_2 = Intake.slotStatus.BLANK;}
+                        spindexPosOuttake = robot.getIntake().getNextOuttakeSlot();
+                    }
+                }
+
+                if (robot.getIntake().bootKickCurrPos() == SPINDEX_ARM_RESTING){
+
                 }
 
                 tele.addLine("Spindex is outtaking");

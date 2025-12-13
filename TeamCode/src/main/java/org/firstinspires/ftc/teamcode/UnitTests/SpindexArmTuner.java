@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Modules.Intake;
 import org.firstinspires.ftc.teamcode.Robot;
 
 @Config
@@ -30,6 +31,7 @@ public class SpindexArmTuner extends LinearOpMode {
 
 
         robot.getOuttake().startFlywheel();
+        robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_0_SHOOT);
 
 
 
@@ -39,12 +41,6 @@ public class SpindexArmTuner extends LinearOpMode {
                 robot.getIntake().BootKick(up);
             } else {
                 robot.getIntake().closeTransfer(resting);
-            }
-
-            if (gamepad2.y){
-                robot.getIntake().spindexPos2to1Gear(spindexPosfull);
-            } else{
-                robot.getIntake().spindexPos(spindexPosNormal);
             }
 
 

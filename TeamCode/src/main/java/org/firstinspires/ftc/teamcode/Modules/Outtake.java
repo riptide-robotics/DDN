@@ -144,8 +144,8 @@ public class Outtake {
 //        averageBottom = bottomRecords.size() >= queueSize ? (bottomRecords.get(0)+bottomRecords.get(1)+bottomRecords.get(2)+bottomRecords.get(3)+bottomRecords.get(4))/5 : currRPMBottom;
 
 
-        double wantedWheelPowerTopAverage = RPMControllerTop.calculate(averageTop - 200, rpmTop);
-        double wantedWheelPowerBottomAverage = RPMControllerBottom.calculate(averageBottom - 200, rpmBottom);
+        double wantedWheelPowerTopAverage = RPMControllerTop.calculate(averageTop-150, rpmTop);
+        double wantedWheelPowerBottomAverage = RPMControllerBottom.calculate(averageBottom-150, rpmBottom);
 
 
         setFlyWheelPower(rpmTop != 0 ? wantedWheelPowerTopAverage:0,rpmBottom != 0 ? wantedWheelPowerBottomAverage:0);
