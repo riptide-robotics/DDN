@@ -12,6 +12,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 //import org.firstinspires.ftc.teamcode.Modules.PIDController;
 import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.riptideUtil;
 
 @Config
 @TeleOp(name="Forward Backward PID Tuner")
@@ -41,6 +42,7 @@ public class FBPIDTuner extends LinearOpMode {
         robot = new Robot(hardwareMap);
 
         robot.getDrivetrain().startOdometry();
+        robot.getDrivetrain().getPinpoint().setPosition(riptideUtil.START_POSITION);
 
         robot.getDrivetrain().setTurnController(kp, ki, kd);
 
@@ -51,6 +53,8 @@ public class FBPIDTuner extends LinearOpMode {
         if (isStopRequested()) return;
 
         while(opModeIsActive()) {
+            robot.getDrivetrain().getPinpoint().update();
+            robot.getDrivetrain().getPinpoint().getCurrPos();
             if(prevx != x || prevy != y) {
                 goal = new Pose2D(DistanceUnit.INCH, x, y, AngleUnit.DEGREES, 0);
             }
@@ -58,19 +62,25 @@ public class FBPIDTuner extends LinearOpMode {
                 robot.getDrivetrain().setTurnController(kp, ki, kd);
             }
             robot.getDrivetrain().goToPosPID(goal);
-            telemetry.addData("Robot X", robot.getDrivetrain().getCurrPos().getX(DistanceUnit.INCH));
-            telemetry.addData("Robot Y", robot.getDrivetrain().getCurrPos().getY(DistanceUnit.INCH));
-            telemetry.addData("Goal X: ", x);
-            telemetry.addData("Goal Y: ", y);
-            telemetry.addData("Robot Heading", robot.getDrivetrain().getRobotHeading(AngleUnit.DEGREES));
-            telemetry.addData("Left Wheel Powers", robot.getDrivetrain().getWheelPowers()[0]);
-            telemetry.addData("Right Wheel Powers", robot.getDrivetrain().getWheelPowers()[1]);
-            telemetry.update();
+
+            telem();
+
             prevx = x;
             prevy = y;
             prevkp = kp;
             prevki = ki;
             prevkd = kd;
         }
+    }
+
+    public void telem() {
+        telemetry.addData("Robot X", robot.getDrivetrain().getCurrPos().getX(DistanceUnit.INCH));
+        telemetry.addData("Robot Y", robot.getDrivetrain().getCurrPos().getY(DistanceUnit.INCH));
+        telemetry.addData("Goal X: ", x);
+        telemetry.addData("Goal Y: ", y);
+        telemetry.addData("Robot Heading", robot.getDrivetrain().getRobotHeading(AngleUnit.DEGREES));
+        telemetry.addData("Left Wheel Powers", robot.getDrivetrain().getWheelPowers()[0]);
+        telemetry.addData("Right Wheel Powers", robot.getDrivetrain().getWheelPowers()[1]);
+        telemetry.update();
     }
 }
