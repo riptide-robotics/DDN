@@ -14,7 +14,7 @@ public class Indicator {
     private final PwmControl rgbLight;
     public Indicator(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
-        this.rgbLightServo = hardwareMap.servo.get("Indicator");
+        this.rgbLightServo = hardwareMap.servo.get("indicator");
         this.rgbLight = (PwmControl) rgbLightServo;
 
         rgbLight.setPwmRange(new PwmControl.PwmRange(500,2500));
