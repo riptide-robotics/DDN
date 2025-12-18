@@ -12,13 +12,6 @@ import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_G;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_G_STDEV;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R_STDEV;
-import static org.firstinspires.ftc.teamcode.riptideUtil.ROTATE_SPINDEX_ONCE;
-import static org.firstinspires.ftc.teamcode.riptideUtil.SLOT_ONE_PIKCUP_POS;
-import static org.firstinspires.ftc.teamcode.riptideUtil.SLOT_ONE_SHOOT_POS;
-import static org.firstinspires.ftc.teamcode.riptideUtil.SLOT_THREE_PIKCUP_POS;
-import static org.firstinspires.ftc.teamcode.riptideUtil.SLOT_THREE_SHOOT_POS;
-import static org.firstinspires.ftc.teamcode.riptideUtil.SLOT_TWO_PIKCUP_POS;
-import static org.firstinspires.ftc.teamcode.riptideUtil.SLOT_TWO_SHOOT_POS;
 
 // Imports to sync
 
@@ -32,7 +25,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.hardware.SwitchableLight;
 
-public class Intake{
+public class Intake {
     /**
      * This is the combination of the intake and spindex subassembilies.
      * ...
@@ -57,6 +50,8 @@ public class Intake{
 
     public static float gain = 30;
 
+    private final double spindexRange = 900;
+
     public enum slotStatus {
         BLANK, GREEN, PURPLE
     }
@@ -70,7 +65,10 @@ public class Intake{
         SLOT_2_RECEIVE(-120);
 
         public final int posUnshifted;
-        UnshiftedPositions(int pos) {this.posUnshifted = pos;}
+
+        UnshiftedPositions(int pos) {
+            this.posUnshifted = pos;
+        }
     }
 
     /**
@@ -85,27 +83,27 @@ public class Intake{
      * These colors must be recalibrated to represent purple & green
      */
 
-    public Intake(HardwareMap hardwareMap){
+    public Intake(HardwareMap hardwareMap) {
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "REVcolorSensor");
 
         intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
         spindexServo = hardwareMap.get(ServoImplEx.class, "spindexServo");
         spindexServo.setPwmRange(new PwmControl.PwmRange(500, 2500));
         spindexArm = hardwareMap.get(Servo.class, "bootkicker");
-        spindexServo.setDirection(Servo.Direction.REVERSE);
+        spindexServo.setDirection(Servo.Direction.FORWARD);
         spindexArm.setDirection(Servo.Direction.REVERSE);
     }
 
-    public void initColorSensor(){
+    public void initColorSensor() {
         colorSensor.setGain(gain);
         if (colorSensor instanceof SwitchableLight) {
             ((SwitchableLight) colorSensor).enableLight(true);
         }
     }
 
-    public void initSpindex(){
+    public void initSpindex() {
         currAngle = 450;
-        spindexPos2to1Gear(currAngle);
+        setSpindexPosition(currAngle);
         currentState = UnshiftedPositions.SLOT_0_RECEIVE;
         SLOT_0 = slotStatus.BLANK;
         SLOT_1 = slotStatus.BLANK;
@@ -114,9 +112,8 @@ public class Intake{
 
     /**
      * Gain is...
-     *
      */
-    public void setGain (float gain){
+    public void setGain(float gain) {
         colorSensor.setGain(gain);
     }
 
@@ -125,13 +122,9 @@ public class Intake{
         intakeMotor.setPower(p);
     }
 
-    public double fiveTurnToServo(double angle){
-        //900 instead of 1800 because we using 2:1 gear ratio (180*5)
-        return angle <= 887 && angle >= 0 ? angle / 887 : angle > 887 ? 1 : 0;
-    }
 
 
-    public char checkColor(){
+    public char checkColor() {
         NormalizedRGBA colors = colorSensor.getNormalizedColors();
         char currColor = 'b';
         if ((colors.red < PURPLE_R + PURPLE_R_STDEV
@@ -171,7 +164,7 @@ public class Intake{
      *
      * @return
      */
-    public slotStatus currColor(){
+    public slotStatus currColor() {
         NormalizedRGBA colors = colorSensor.getNormalizedColors();
         slotStatus status = slotStatus.BLANK;
         if ((colors.red < PURPLE_R + PURPLE_R_STDEV
@@ -219,10 +212,14 @@ public class Intake{
         }
 
         int newAngle = currAngle + diff;
-        if (newAngle < 0) {newAngle += 360;}
-        if (newAngle > 887) {newAngle -= 360;}
+        if (newAngle < 0) {
+            newAngle += 360;
+        }
+        if (newAngle > spindexRange) {
+            newAngle -= 360;
+        }
         currAngle = newAngle;
-        spindexPos2to1Gear(newAngle);
+        setSpindexPosition(newAngle);
         currentState = goal;
     }
 
@@ -243,21 +240,57 @@ public class Intake{
         return -1;
     }
 
+    @Deprecated
+    public double fiveTurnToServo(double angle) {
+        //900 instead of 1800 because we using 2:1 gear ratio (180*5)
+        return angle <= 887 && angle >= 0 ? angle / 887 : angle > 887 ? 1 : 0;
+    }
 
+    /**
+     * a utility function to convert an actual angle to a range between [0, 1]
+     * For any type of servo, spindex
+     *
+     * @param angle an angle, will be clamped to [0, spindexRange]
+     * @return a double in the range [0, 1]
+     */
+    public double angleToServo(double angle) {
+        double max = spindexRange;
+        double min = 0;
+        return angle > min && angle < max ? angle / spindexRange : angle > max ? 1 : 0;
+    }
 
-    public void spindexPos2to1Gear(double pos){
+    @Deprecated
+    public void spindexPos2to1Gear(double pos) {
         spindexServo.setPosition(fiveTurnToServo(pos));
     }
 
-    public double spindexCurrentPosition(){
-        return spindexServo.getPosition() * 887;
+    /**
+     * Sets the spindex servo to an angle position.
+     *
+     * @param pos a degree measure between [0 and spindex Range]
+     */
+    public void setSpindexPosition(double pos){
+        spindexServo.setPosition(angleToServo(pos));
     }
 
-    public double bootKickCurrPos(){
+    /**
+     * Sets the spindex Servo to the center of it's range (spindexRange / 2)
+     */
+    public void zeroSpindex(){
+       spindexServo.setPosition(0.5);
+       currAngle = (int)spindexRange / 2;
+       currentState = UnshiftedPositions.SLOT_0_RECEIVE;
+    }
+
+    public double spindexCurrentPosition() {
+        return spindexServo.getPosition() * spindexRange;
+    }
+
+    public double bootKickCurrPos() {
         return spindexArm.getPosition();
     }
 
-    public void bootkick(double pos){
+    public void bootkick(double pos) {
         spindexArm.setPosition(pos);
 
     }

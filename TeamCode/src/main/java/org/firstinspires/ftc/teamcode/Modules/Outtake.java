@@ -312,6 +312,7 @@ public class Outtake {
         double goalAngleInTicks = turntableAngle * 3 * degreesToTicks;
         double power = turntableController.calculate(currPos, goalAngleInTicks);
         turntable.setPower(power);
+        t.addData("Goal Angle", turntableAngle);
         t.addData("Turntable angle", currPos * ticksToDegrees / 3);
     }
 
