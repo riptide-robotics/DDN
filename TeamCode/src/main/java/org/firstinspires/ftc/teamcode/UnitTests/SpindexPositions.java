@@ -70,32 +70,32 @@ public class SpindexPositions extends LinearOpMode {
 
     public void cycleSlots() {
         if (gamepad2.y && !yPressedG2) {
-            robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_0_RECEIVE, telemetry);
+            robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_0_RECEIVE);
             yPressedG2 = true;
         }
 
         if (gamepad2.x && !xPressedG2) {
-            robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_1_RECEIVE, telemetry);
+            robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_1_RECEIVE);
             xPressedG2 = true;
         }
 
         if (gamepad2.a && !aPressedG2){
-            robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_2_RECEIVE, telemetry);
+            robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_2_RECEIVE);
             aPressedG2 = true;
         }
 
         if (gamepad2.b && !bPressedG2){
-            robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_0_SHOOT, telemetry);
+            robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_0_SHOOT);
             bPressedG2 = true;
         }
 
         if (gamepad2.dpad_up && !dUpPressedG2){
-            robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_1_SHOOT, telemetry);
+            robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_1_SHOOT);
             dUpPressedG2 = true;
         }
 
         if (gamepad2.dpad_right && !dRightPressedG2){
-            robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_2_SHOOT, telemetry);
+            robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_2_SHOOT);
             dRightPressedG2 = true;
         }
 

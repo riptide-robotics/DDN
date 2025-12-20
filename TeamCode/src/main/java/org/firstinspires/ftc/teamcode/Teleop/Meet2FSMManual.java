@@ -251,11 +251,11 @@
                 if (runIntakePos) {
                     spindexPosIntake = robot.getIntake().getNextIntakeSlot();
                     if (spindexPosIntake == 0) {
-                        robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_0_RECEIVE, tele);
+                        robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_0_RECEIVE);
                     } else if (spindexPosIntake == 1) {
-                        robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_1_RECEIVE , tele);
+                        robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_1_RECEIVE );
                     } else if (spindexPosIntake == 2) {
-                        robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_2_RECEIVE, tele);
+                        robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_2_RECEIVE);
                     }
 
                     if (!startedDelay) {
@@ -298,15 +298,15 @@
 
                 if (spindexPosOuttake != -1) {
                     if (spindexPosOuttake == 0) {
-                        robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_0_SHOOT, tele);
+                        robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_0_SHOOT);
                     }
 
                     if (spindexPosOuttake == 1) {
-                        robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_1_SHOOT, tele);
+                        robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_1_SHOOT);
                     }
 
                     if (spindexPosOuttake == 2) {
-                        robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_2_SHOOT, tele);
+                        robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_2_SHOOT);
                     }
                 }
 

@@ -216,7 +216,7 @@ public class Intake{
         return SLOT_2;
     }
 
-    public void goTo(UnshiftedPositions goal, Telemetry tele) {
+    public void goTo(UnshiftedPositions goal) {
         diff = goal.posUnshifted - currentState.posUnshifted;
 
         if (diff < -180) {
@@ -238,7 +238,6 @@ public class Intake{
         setSpindexPosition(newAngle);
         currentState = goal;
 
-        tele.addData("Goal ", goal);
     }
 
 
