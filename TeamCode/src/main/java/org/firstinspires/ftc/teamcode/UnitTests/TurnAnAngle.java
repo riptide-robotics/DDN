@@ -30,8 +30,8 @@ public class TurnAnAngle extends LinearOpMode {
     public static double goalDeg = 0;
     double prevGoalDeg;
     double goalTicks = 0;
-    static final double ticksToDegrees = 360/751.8;
-    static final double degreesToTicks = 751.8/360;
+    static final double ticksToDegrees = 360/145.1;
+    static final double degreesToTicks = 145.1/360;
 
     public ElapsedTime startTime= new ElapsedTime();
 
@@ -44,7 +44,7 @@ public class TurnAnAngle extends LinearOpMode {
          */
         PIDController motorController = new PIDController(kp, ki, kd);
 
-        motor = hardwareMap.dcMotor.get("flWheel");
+        motor = hardwareMap.dcMotor.get("turnTable");
 
         motor.setDirection(DcMotor.Direction.FORWARD);
 

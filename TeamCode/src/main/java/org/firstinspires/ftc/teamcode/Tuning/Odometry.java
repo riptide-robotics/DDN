@@ -42,8 +42,8 @@ public class Odometry extends LinearOpMode {
         blWheel = hardwareMap.dcMotor.get("blWheel");
 
         blWheel.setDirection(DcMotorSimple.Direction.REVERSE);
-        flWheel.setDirection(DcMotorSimple.Direction.REVERSE);
-        frWheel.setDirection(DcMotorSimple.Direction.FORWARD);
+        flWheel.setDirection(DcMotorSimple.Direction.FORWARD);
+        frWheel.setDirection(DcMotorSimple.Direction.REVERSE);
         brWheel.setDirection(DcMotorSimple.Direction.FORWARD);
 
         brWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -61,6 +61,7 @@ public class Odometry extends LinearOpMode {
         blWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         robot.getDrivetrain().getPinpoint().setPosition(START_POSITION);
+        robot.getDrivetrain().getPinpoint().update();
 
         telemetry.addData("Robot status", "succesfully initiated");
         telemetry.update();
@@ -84,7 +85,11 @@ public class Odometry extends LinearOpMode {
         while(opModeIsActive()) {
             tankDrive();
 
+
             Pose2D currPos = robot.getDrivetrain().getPinpoint().getPosition();
+
+            telemetry.addLine(currPos.toString() + '\n');
+
             if(gamepad1.a){
                robot.getDrivetrain().getPinpoint().setPosition(START_POSITION);
             }
@@ -97,6 +102,7 @@ public class Odometry extends LinearOpMode {
                     .addData("Orientation (Degrees)", robot.getDrivetrain().getRobotHeading(AngleUnit.DEGREES));
 
             telemetry.update();
+            robot.getDrivetrain().getPinpoint().update();
         }
     }
 
