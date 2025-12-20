@@ -228,22 +228,22 @@
                 spindexPosOuttake = -1;
                 if (spindexPosIntake != -1 && !runIntakePos) {
                     if (spindexPosIntake == 0) {
-                        if (Intake.SLOT_0 == Intake.slotStatus.BLANK) {
-                            Intake.SLOT_0 = robot.getIntake().currColor();
+                        if (Intake.SLOT_0 == 'b') {
+                            Intake.SLOT_0 = 'b';
                             runIntakePos = true;
                         }
                     }
 
                     if (spindexPosIntake == 1) {
-                        if (Intake.SLOT_1 == Intake.slotStatus.BLANK) {
-                            Intake.SLOT_1 = robot.getIntake().currColor();
+                        if (Intake.SLOT_1 == 'b') {
+                            Intake.SLOT_1 = robot.getIntake().checkColor();
                             runIntakePos = true;
                         }
                     }
 
                     if (spindexPosIntake == 2) {
-                        if (Intake.SLOT_2 == Intake.slotStatus.BLANK) {
-                            Intake.SLOT_2 = robot.getIntake().currColor();
+                        if (Intake.SLOT_2 == 'b') {
+                            Intake.SLOT_2 = robot.getIntake().checkColor();
                             runIntakePos = true;
                         }
                     }
@@ -321,9 +321,9 @@
                 if (resetBootKick) {
                     if (bootKickerDelayTimerUp.milliseconds() >= bootKickDelay) {
                         robot.getIntake().bootkick(SPINDEX_ARM_RESTING);
-                        if (spindexPosOuttake == 0){Intake.SLOT_0 = Intake.slotStatus.BLANK;}
-                        else if (spindexPosOuttake == 1){Intake.SLOT_1 = Intake.slotStatus.BLANK;}
-                        else if (spindexPosOuttake == 2){Intake.SLOT_2 = Intake.slotStatus.BLANK;}
+                        if (spindexPosOuttake == 0){Intake.SLOT_0 = 'b';}
+                        else if (spindexPosOuttake == 1){Intake.SLOT_1 = 'b';}
+                        else if (spindexPosOuttake == 2){Intake.SLOT_2 = 'b';}
                         resetBootKick = false;
                     }
                     tele.addData("Boot kick reset timer ", bootKickerDelayTimerUp.milliseconds());
@@ -339,7 +339,6 @@
             tele.addData("Slot 0: ", Intake.SLOT_0);
             tele.addData("Slot 1: ", Intake.SLOT_1);
             tele.addData("Slot 2: ", Intake.SLOT_2);
-            tele.addData("Current Status: ", robot.getIntake().currColor());
             tele.addData("Current Color: ", robot.getIntake().checkColor());
             tele.addData("Is at goal speed ", robot.getOuttake().isAtGoalSpeed());
         }

@@ -41,9 +41,9 @@ public class Intake{
     ServoImplEx spindexServo;
     Servo spindexArm;
 
-    public static slotStatus SLOT_0 = slotStatus.BLANK;
-    public static slotStatus SLOT_1 = slotStatus.BLANK;
-    public static slotStatus SLOT_2 = slotStatus.BLANK;
+    public static char SLOT_0 = 'b';
+    public static char SLOT_1 = 'b';
+    public static char SLOT_2 = 'b';
 
     public static int diff;
     public static int currAngle;
@@ -109,9 +109,9 @@ public class Intake{
         currAngle = 450;
         setSpindexPosition(currAngle);
         currentState = UnshiftedPositions.SLOT_0_RECEIVE;
-        SLOT_0 = slotStatus.BLANK;
-        SLOT_1 = slotStatus.BLANK;
-        SLOT_2 = slotStatus.BLANK;
+        SLOT_0 = 'b';
+        SLOT_1 = 'b';
+        SLOT_2 = 'b';
     }
 
     /**
@@ -167,52 +167,52 @@ public class Intake{
      * NOTE NEEDS TO BE REFACTORED TO USE checkColor()
      *
      * @return
-     */
-    public slotStatus currColor() {
-        NormalizedRGBA colors = colorSensor.getNormalizedColors();
-        slotStatus status = slotStatus.BLANK;
-        if ((colors.red < PURPLE_R + PURPLE_R_STDEV
-                &&
-                colors.red > PURPLE_R - PURPLE_R_STDEV)
-                &&
-                (colors.green < PURPLE_G + PURPLE_G_STDEV
-                        &&
-                        colors.green > PURPLE_G - PURPLE_G_STDEV)
-                &&
-                (colors.blue < PURPLE_B + PURPLE_B_STDEV
-                        &&
-                        colors.blue > PURPLE_B - PURPLE_B_STDEV)) {
-            status = slotStatus.PURPLE;
-        } else if ((colors.red < GREEN_R + GREEN_R_STDEV
-                &&
-                colors.red > GREEN_R - GREEN_R_STDEV)
-                &&
-                (colors.green < GREEN_G + GREEN_G_STDEV
-                        &&
-                        colors.green > GREEN_G - GREEN_G_STDEV)
-                &&
-                (colors.blue < GREEN_B + GREEN_B_STDEV
-                        &&
-                        colors.blue > GREEN_B - GREEN_B_STDEV)) {
-            status = slotStatus.GREEN;
-        } else {
-            checkClose = true;
-        }
+//     */
+//    public slotStatus currColor() {
+//        NormalizedRGBA colors = colorSensor.getNormalizedColors();
+//        slotStatus status = slotStatus.BLANK;
+//        if ((colors.red < PURPLE_R + PURPLE_R_STDEV
+//                &&
+//                colors.red > PURPLE_R - PURPLE_R_STDEV)
+//                &&
+//                (colors.green < PURPLE_G + PURPLE_G_STDEV
+//                        &&
+//                        colors.green > PURPLE_G - PURPLE_G_STDEV)
+//                &&
+//                (colors.blue < PURPLE_B + PURPLE_B_STDEV
+//                        &&
+//                        colors.blue > PURPLE_B - PURPLE_B_STDEV)) {
+//            status = slotStatus.PURPLE;
+//        } else if ((colors.red < GREEN_R + GREEN_R_STDEV
+//                &&
+//                colors.red > GREEN_R - GREEN_R_STDEV)
+//                &&
+//                (colors.green < GREEN_G + GREEN_G_STDEV
+//                        &&
+//                        colors.green > GREEN_G - GREEN_G_STDEV)
+//                &&
+//                (colors.blue < GREEN_B + GREEN_B_STDEV
+//                        &&
+//                        colors.blue > GREEN_B - GREEN_B_STDEV)) {
+//            status = slotStatus.GREEN;
+//        } else {
+//            checkClose = true;
+//        }
+//
+//        // Since I cant accurately tell what color the ball is when faced with a hole, I just check if there is a ball
+//
+//        return status;
+//    }
 
-        // Since I cant accurately tell what color the ball is when faced with a hole, I just check if there is a ball
-
-        return status;
-    }
-
-    public slotStatus slot0CurrColor (){
+    public char slot0CurrColor (){
         return SLOT_0;
     }
 
-    public slotStatus slot1CurrColor (){
+    public char slot1CurrColor (){
         return SLOT_1;
     }
 
-    public slotStatus slot2CurrColor (){
+    public char slot2CurrColor (){
         return SLOT_2;
     }
 
@@ -242,18 +242,18 @@ public class Intake{
 
 
     public double getNextIntakeSlot() {
-        if (SLOT_0 == slotStatus.BLANK) return 0;
-        if (SLOT_1 == slotStatus.BLANK) return 1;
-        if (SLOT_2 == slotStatus.BLANK) return 2;
+        if (SLOT_0 == 'b') return 0;
+        if (SLOT_1 == 'b') return 1;
+        if (SLOT_2 == 'b') return 2;
         else {
             return -1;
         }
     }
 
     public int getNextOuttakeSlot() {
-        if (SLOT_0 != slotStatus.BLANK) return 0;
-        if (SLOT_1 != slotStatus.BLANK) return 1;
-        if (SLOT_2 != slotStatus.BLANK) return 2;
+        if (SLOT_0 != 'b') return 0;
+        if (SLOT_1 != 'b') return 1;
+        if (SLOT_2 != 'b') return 2;
         return -1;
     }
 
