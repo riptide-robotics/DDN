@@ -334,7 +334,6 @@
 
                 tele.addLine("Spindex is outtaking");
             }
-
             tele.addData("Intake Slot: ", spindexPosIntake);
             tele.addData("Outtake Slot: ", spindexPosOuttake);
             tele.addData("Slot 0: ", Intake.SLOT_0);
@@ -342,6 +341,6 @@
             tele.addData("Slot 2: ", Intake.SLOT_2);
             tele.addData("Current Status: ", robot.getIntake().currColor());
             tele.addData("Current Color: ", robot.getIntake().checkColor());
-
+            tele.addData("Is at goal speed ", robot.getOuttake().isAtGoalSpeed());
         }
     }

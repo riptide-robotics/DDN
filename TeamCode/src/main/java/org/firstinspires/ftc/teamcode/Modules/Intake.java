@@ -204,6 +204,18 @@ public class Intake{
         return status;
     }
 
+    public slotStatus slot0CurrColor (){
+        return SLOT_0;
+    }
+
+    public slotStatus slot1CurrColor (){
+        return SLOT_1;
+    }
+
+    public slotStatus slot2CurrColor (){
+        return SLOT_2;
+    }
+
     public void goTo(UnshiftedPositions goal, Telemetry tele) {
         diff = goal.posUnshifted - currentState.posUnshifted;
 

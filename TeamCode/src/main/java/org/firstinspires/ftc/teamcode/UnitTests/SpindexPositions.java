@@ -57,7 +57,7 @@ public class SpindexPositions extends LinearOpMode {
         robot = new Robot(hardwareMap);
         currAngle = 450;
 
-        robot.getIntake().spindexPos2to1Gear(currAngle);
+        robot.getIntake().setSpindexPosition(currAngle);
         waitForStart();
 
         while (opModeIsActive()) {
