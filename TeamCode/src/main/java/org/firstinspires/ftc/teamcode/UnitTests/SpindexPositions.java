@@ -111,13 +111,6 @@ public class SpindexPositions extends LinearOpMode {
 
 //        robot.getIntake().spin(-1);
 
-//        telemetry.addData("Intake Slot ", spindexPosIntake);
-//        telemetry.addData("Outtake Slot ", spindexPosOuttake);
-////        telemetry.addData("Target Pos ", pos(currentState));
-//        telemetry.addData("Current Pos ", robot.getIntake().spindexCurrentPosition());
-//        telemetry.addData("SLOT 0: ", SLOT_0);
-//        telemetry.addData("SLOT 1: ", SLOT_1);
-//        telemetry.addData("SLOT 2: ", SLOT_2);
         telemetry.update();
     }
 

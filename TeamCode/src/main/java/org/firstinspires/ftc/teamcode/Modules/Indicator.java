@@ -21,11 +21,11 @@ public class Indicator {
     }
 
     public enum statusLights {
-        EMPTY(0),
-        SEMI_OPEN(0.5),
-        SEMI_OPEN_AND_NONE_REQUESTED(0.5),
-        FULL_SPINDEXER(0.5),
-        FULL_SPINDEXER_AND_NONE_REQUESTED(0.5);
+        EMPTY(0.3),
+        SEMI_OPEN(0.389),
+        SEMI_OPEN_AND_NONE_REQUESTED(0.501),
+        FULL_SPINDEXER(0.612),
+        FULL_SPINDEXER_AND_NONE_REQUESTED(0.700);
 
        final double pos;
         statusLights(double pos) {

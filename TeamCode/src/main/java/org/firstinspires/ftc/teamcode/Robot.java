@@ -1,8 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.riptideUtil.SPINDEX_ARM_RESTING;
+import static org.firstinspires.ftc.teamcode.riptideUtil.SPINDEX_ARM_UP;
+
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.DummyClasses.EndgameServos;
 import org.firstinspires.ftc.teamcode.Modules.Camera;
 import org.firstinspires.ftc.teamcode.Modules.Drivetrain;
@@ -14,10 +18,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class Robot {
 
-    private static final Logger log = LoggerFactory.getLogger(Robot.class);
+    public static final VelocityStorage[] shootlookupred = new VelocityStorage[3];
+    public static final VelocityStorage[] shootlookupblue = new VelocityStorage[3]; //this will be the lookup tables
+
     HardwareMap hardwareMap;
 
     Indicator indicator;
@@ -34,7 +43,22 @@ public class Robot {
 
     riptideUtil.TEAM_COLOR alliance = riptideUtil.TEAM_COLOR.RED; // change based on alliance
 
+    /**TODO we're going to have to loop this*/
     public Sequencer s;
+
+    static {
+
+        shootlookupblue[0] = new VelocityStorage();
+        shootlookupblue[1] = new VelocityStorage();
+        shootlookupblue[2] = new VelocityStorage();
+      
+
+        shootlookupred[0] = new VelocityStorage();
+        shootlookupred[1] = new VelocityStorage();
+        shootlookupred[2] = new VelocityStorage();
+       
+
+    }
 
     public Robot (HardwareMap map){
         hardwareMap = map;
@@ -67,46 +91,47 @@ public class Robot {
     }
 
     @Placeholder(note = "atomic amount of framework here")
-    public void shootbasedoncolor() {
+    public void shootbasedoncolor(char color) {
         if (true) /*shut up IDE*/ throw new UnsupportedOperationException("Can't do this yet!");
-        rotateToColor();
+        rotateToColor(color);
         if (true) /*TODO, run if no color*/ {
-            //TODO too: vibrate to warn driver
-
-            return;
+        //vibrate(); todo
+        return;
         }
-        else {
-            s.addImpulseAction(() -> {
-                intake.bootkick(0 /*TODO no clue what goes here*/);
-                //TODO remove color from position
-            }, 0.5);
-        }
+        char[] artifacts = new char[3]; //todo get chars from the thing
+        byte b = 0; //todo get current position of spindexer
+        if (artifacts[b] == color) {/*can eject NOW*/};
+        //rotate to required position
+        double[] velocity = getOuttakeRPMS(true /*todo again get team color here*/);
+        outtake.setOuttakeRPM(velocity[1],velocity[2]);
     }
     @Placeholder
-    public void /*figure out what we are returning later*/ rotateToColor() {
+    public void /*figure out what we are returning later*/ rotateToColor(char color) {
         throw new UnsupportedOperationException("Can't rotate just yet");
     }
 
     @Placeholder
     public void alignTurretToRedGoal() {
-        //getAngleToRedGoal(); TODO set this up somewhere?
-        //outtake.setGoalAngle(outtake.getCurrentAngle() + error) TODO too
-
-        //shut up ide im trying to do work that wont run yet
         if (1+1==2) throw new UnsupportedOperationException("Can't align just yet");
 
-        double error = camera.getGoalAngleError();
-        //TODO this has to be added to the FSM directly or maybe to a system that can.
+        double error = camera.getAngleToRedGoal();
+        outtake.SetTurretGoalAngle(/*get current angle of turret*/ 0 - error);
+
+
     }
     @Placeholder
     public void alignTurretToBlueGoal() {
-        double error = 0; //getAngleToBlueGoal(); TODO set this up somewhere?
-        //outtake.setGoalAngle(outtake.getCurrentAngle() + error) TODO too
-        throw new UnsupportedOperationException("Can't align just yet");
+        if (1+1==2) throw new UnsupportedOperationException("Can't align just yet");
+
+        double error = camera.getAngleToBlueGoal();
+        outtake.SetTurretGoalAngle(/*get current angle of turret*/ 0 - error);
+
     }
     @Placeholder
     public void aimToRedGoal(){ // copy for blue
-        double dist = 0; //camera.getdisttoredgoal(); yeah TODO too
+        double dist = camera.getDistanceToRedGoal();
+        double[] velocity = getOuttakeRPMS(true);
+        outtake.setOuttakeRPM(velocity[1],velocity[2]);
         /**
          * split maximum shooting distance into 5 "sections", set flywheel powers based on a lookup table (array)
          * based on which section we fall into.
@@ -114,11 +139,9 @@ public class Robot {
     }
     @Placeholder
     public void aimToBlueGoal(){ // copy for blue
-        double dist = 0; //camera.getdisttobluegoal(); yeah TODO too
-        /**
-         * split maximum shooting distance into 5 "sections", set flywheel powers based on a lookup table (array)
-         * based on which section we fall into.
-         */
+        double dist = camera.getDistanceToBlueGoal();
+        double[] velocity = getOuttakeRPMS(true);
+        outtake.setOuttakeRPM(velocity[1],velocity[2]);
     }
     /**
      * Set indicator light based upon current spindexer. Put this in a loop.
@@ -154,5 +177,57 @@ public class Robot {
 
     public void setTeamColor(riptideUtil.TEAM_COLOR color) {
         alliance = color;
+    }
+
+    /**get flywheel RPMs based upon distance. Not tested.*/
+    public double[] getOuttakeRPMS(boolean onBlueGoal) {
+        double distance = onBlueGoal ? camera.getDistanceToBlueGoal() : camera.getDistanceToRedGoal();
+        double[] returned = new double[2];
+
+        VelocityStorage[] velocities = onBlueGoal ? shootlookupblue : shootlookupred;
+
+
+        for (int i = 0; i < velocities.length; i++) {
+            VelocityStorage curr = velocities[i];
+
+            if ((i + 1 >= velocities.length && distance >= curr.distance) ||
+                    (distance >= curr.distance && distance <= curr.distance)) {
+
+                returned[0] = curr.lowerRPM;
+                returned[1] = curr.upperRPM;
+            }
+        }
+        return returned;
+    }
+    
+    
+    /**Only access outside of Robot for the purposes of reading data from it.*/
+    private static class VelocityStorage {
+        public double upperRPM;
+        public double lowerRPM;
+        public double distance;
+
+        public VelocityStorage(double upperRPM, double lowerRPM, double distanceININCHES) {
+            this.upperRPM = upperRPM;
+            this.lowerRPM = lowerRPM;
+            this.distance = distanceININCHES;
+        }
+        public VelocityStorage() {
+            this.upperRPM = 0;
+            this.lowerRPM = 0;
+            this.distance = 0;
+        }
+    }
+    private void outtake(double rpmupper, double rpmlower) {
+        outtake.setOuttakeRPM(rpmupper,rpmlower);
+        s.addImpulseAction(() -> {
+            intake.bootkick(SPINDEX_ARM_UP);
+        }, 2);
+        s.addImpulseAction(() -> {
+            intake.bootkick(SPINDEX_ARM_RESTING);
+        },4);
+        s.addImpulseAction(() -> {
+            outtake.setOuttakeRPM(0,0);
+        },6);
     }
 }
