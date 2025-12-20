@@ -22,6 +22,7 @@ import static org.firstinspires.ftc.teamcode.riptideUtil.SLOT_TWO_SHOOT_POS;
 
 // Imports to sync
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -32,6 +33,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.hardware.SwitchableLight;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
+@Config
 public class Intake{
     /**
      * This is the combination of the intake and spindex subassembilies.
@@ -57,17 +61,25 @@ public class Intake{
 
     public static float gain = 30;
 
+    public static int slot0 = 180;
+    public static  int slot1 = 60;
+    public static int slot2 = -60;
+
+    public static int slot0r= 0;
+    public static int slot1r = 120;
+    public static int slot2r = -120;
+
     public enum slotStatus {
         BLANK, GREEN, PURPLE
     }
 
     public enum UnshiftedPositions {
-        SLOT_0_SHOOT(180),
-        SLOT_1_SHOOT(60),
-        SLOT_2_SHOOT(-60),
-        SLOT_0_RECEIVE(0),
-        SLOT_1_RECEIVE(120),
-        SLOT_2_RECEIVE(-120);
+        SLOT_0_SHOOT(180), //180
+        SLOT_1_SHOOT(60), //60
+        SLOT_2_SHOOT(-60), // -60
+        SLOT_0_RECEIVE(0), //0
+        SLOT_1_RECEIVE(120), //120
+        SLOT_2_RECEIVE(-20);
 
         public final int posUnshifted;
         UnshiftedPositions(int pos) {this.posUnshifted = pos;}
@@ -207,7 +219,7 @@ public class Intake{
         return status;
     }
 
-    public void goTo(UnshiftedPositions goal) {
+    public void goTo(UnshiftedPositions goal, Telemetry tele) {
         diff = goal.posUnshifted - currentState.posUnshifted;
 
         if (diff < -180) {
@@ -224,6 +236,8 @@ public class Intake{
         currAngle = newAngle;
         spindexPos2to1Gear(newAngle);
         currentState = goal;
+
+        tele.addData("Goal ", goal);
     }
 
 

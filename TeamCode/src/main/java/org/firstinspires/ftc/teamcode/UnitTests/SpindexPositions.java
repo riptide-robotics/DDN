@@ -3,8 +3,8 @@ package org.firstinspires.ftc.teamcode.UnitTests;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Modules.Intake;
 import org.firstinspires.ftc.teamcode.Robot;
 
 @Config
@@ -16,6 +16,11 @@ public class SpindexPositions extends LinearOpMode {
 
     boolean xPressedG2 = false;
     boolean yPressedG2 = false;
+    boolean bPressedG2 = false;
+    boolean aPressedG2 = false;
+    boolean dUpPressedG2 = false;
+    boolean dRightPressedG2 = false;
+
 
     double spindexPos;
 
@@ -30,29 +35,29 @@ public class SpindexPositions extends LinearOpMode {
     public enum slotStatus{
         BLANK, GREEN, PURPLE
     }
-
-    public UnshiftedPositions currentState = UnshiftedPositions.SLOT_0_SHOOT;
+//
+//    public UnshiftedPositions currentState = UnshiftedPositions.SLOT_0_SHOOT;
     public  int currAngle;
-
-    public enum UnshiftedPositions {
-        SLOT_0_SHOOT(180),
-        SLOT_1_SHOOT(60),
-        SLOT_2_SHOOT(-60),
-        SLOT_0_RECEIVE(0),
-        SLOT_1_RECEIVE(120),
-        SLOT_2_RECEIVE(-120);
-
-
-        public final int posUnshifted;
-        UnshiftedPositions(int pos) {this.posUnshifted = pos;}
-    }
+//
+//    public enum UnshiftedPositions {
+//        SLOT_0_SHOOT(180),
+//        SLOT_1_SHOOT(60),
+//        SLOT_2_SHOOT(-60),
+//        SLOT_0_RECEIVE(0),
+//        SLOT_1_RECEIVE(120),
+//        SLOT_2_RECEIVE(-120);
+//
+//
+//        public final int posUnshifted;
+//        UnshiftedPositions(int pos) {this.posUnshifted = pos;}
+//    }
 
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot(hardwareMap);
         currAngle = 450;
+
         robot.getIntake().spindexPos2to1Gear(currAngle);
-        currentState = UnshiftedPositions.SLOT_0_RECEIVE;
         waitForStart();
 
         while (opModeIsActive()) {
@@ -64,29 +69,47 @@ public class SpindexPositions extends LinearOpMode {
     }
 
     public void cycleSlots() {
-        if (gamepad2.y) {
-            goTo(UnshiftedPositions.SLOT_0_RECEIVE);
+        if (gamepad2.y && !yPressedG2) {
+            robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_0_RECEIVE, telemetry);
+            yPressedG2 = true;
         }
 
-        if (gamepad2.x) {
-            goTo(UnshiftedPositions.SLOT_1_RECEIVE);
+        if (gamepad2.x && !xPressedG2) {
+            robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_1_RECEIVE, telemetry);
+            xPressedG2 = true;
         }
 
-        if (gamepad2.a){
-            goTo(UnshiftedPositions.SLOT_2_RECEIVE);
+        if (gamepad2.a && !aPressedG2){
+            robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_2_RECEIVE, telemetry);
+            aPressedG2 = true;
         }
 
-        if (gamepad2.b){
-            goTo(UnshiftedPositions.SLOT_0_SHOOT);
+        if (gamepad2.b && !bPressedG2){
+            robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_0_SHOOT, telemetry);
+            bPressedG2 = true;
         }
 
-        if (gamepad2.dpad_up){
-            goTo(UnshiftedPositions.SLOT_1_SHOOT);
+        if (gamepad2.dpad_up && !dUpPressedG2){
+            robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_1_SHOOT, telemetry);
+            dUpPressedG2 = true;
         }
 
-        if (gamepad2.dpad_right){
-            goTo(UnshiftedPositions.SLOT_2_SHOOT);
+        if (gamepad2.dpad_right && !dRightPressedG2){
+            robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_2_SHOOT, telemetry);
+            dRightPressedG2 = true;
         }
+
+
+
+        if (!gamepad2.x){xPressedG2 = false;}
+        if (!gamepad2.y){yPressedG2 = false;}
+        if (!gamepad2.a){aPressedG2 = false;}
+        if (!gamepad2.dpad_right){
+            dRightPressedG2 = false;}
+        if (!gamepad2.dpad_up){dUpPressedG2 = false;}
+        if(!gamepad2.b){bPressedG2 = false;}
+
+//        robot.getIntake().spin(-1);
 
 //        telemetry.addData("Intake Slot ", spindexPosIntake);
 //        telemetry.addData("Outtake Slot ", spindexPosOuttake);
@@ -96,41 +119,6 @@ public class SpindexPositions extends LinearOpMode {
 //        telemetry.addData("SLOT 1: ", SLOT_1);
 //        telemetry.addData("SLOT 2: ", SLOT_2);
         telemetry.update();
-    }
-    public int diff;
-    public void goTo(UnshiftedPositions goal) {
-        diff = goal.posUnshifted - currentState.posUnshifted;
-        if (diff < -180) {
-            diff += 360;
-        }
-        if (diff > 180) {
-            diff -= 360;
-        }
-        telemetry.addData("Diff ", diff);
-
-        int newAngle = currAngle + diff;
-        if (newAngle < 0) {newAngle += 360;}
-        if (newAngle > 890) {newAngle -= 360;}
-        currAngle = newAngle;
-        robot.getIntake().spindexPos2to1Gear(newAngle);
-        telemetry.addData("New angle ", newAngle);
-        telemetry.addData("Servo Angle ", robot.getIntake().spindexCurrentPosition());
-        currentState = goal;
-    }
-
-    public double pos(UnshiftedPositions goal) {
-        double diff = goal.posUnshifted - currentState.posUnshifted;
-        if (diff < -180) {
-            diff += 360;
-        }
-        if (diff > 180) {
-            diff -= 360;
-        }
-
-        double newAngle = robot.getIntake().spindexCurrentPosition() + diff;
-        if (newAngle < 0) {newAngle += 360;}
-        if (newAngle > 890) {newAngle -= 360;}
-        return newAngle;
     }
 
     public double getNextIntakeSlot() {

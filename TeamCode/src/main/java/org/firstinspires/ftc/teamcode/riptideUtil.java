@@ -97,8 +97,8 @@ public class riptideUtil {
     public static double LONG_DIST_TOP = 3250; // UNDETERMINED
     public static double LONG_DIST_BOT = 3730; // UNDETERMINED
 
-    public static double MID_DIST_TOP = 2650; // UNDETERMINED
-    public static double MID_DIST_BOT = 3000;// UNDETERMINED
+    public static double MID_DIST_TOP = 3750; // UNDETERMINED
+    public static double MID_DIST_BOT = 4000;// UNDETERMINED
 
     public static double SHORT_DIST_TOP = 2950; // UNDETERMINED
     public static double SHORT_DIST_BOT = 3480;// UNDETERMINED
@@ -106,11 +106,11 @@ public class riptideUtil {
     public static double KPTop = 0.002; //0.004
     public static double KPBottom = 0.0035; // 0.0045
 
-    public static double tolerance = 150; //?? what
+    public static double tolerance = 300; //?? what
 
     // Spindex
-    public static double SPINDEX_ARM_UP = 0.2; // UNDETERMINED
-    public static double SPINDEX_ARM_RESTING = 1; // UNDETERMINED
+    public static double SPINDEX_ARM_UP = 0.2;
+    public static double SPINDEX_ARM_RESTING = 1;
     public static double ROTATE_SPINDEX_ONCE = 60;
 
     // POS 1

@@ -28,7 +28,7 @@
         boolean outtake = false;
         boolean runIntakePos = true;
         boolean runOuttakePos = true;
-        public static  double spin = 0.85;
+        public static  double spin = 1;
 
         Telemetry tele = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -58,8 +58,9 @@
         ElapsedTime spindexDelayTimer;
         ElapsedTime endTimer;
         public static double spindexDelay = 1000; // IN MS
-        public static double bootKickDelay = 300; // IN MS
+        public static double bootKickDelay = 500; // IN MS
         public static double bootKickActivateDelay = 1500;
+        boolean resetBootKick = false;
 
         boolean didRumble = false;
         boolean startedDelay = false;
@@ -124,7 +125,7 @@
                 robot.getOuttake().runOuttakePID(currentTopRPMGoal, currentBottomRPMGoal, tele);
 
                 double currTime = endTimer.seconds();
-                robot.getOuttake().mapJoyToAngle(gamepad2.right_stick_x);
+//                robot.getOuttake().mapJoyToAngle(gamepad2.right_stick_x);
                 robot.getOuttake().updateTurntableAngle(tele);
                 if (currTime >= 80 && !didRumble){gamepad1.rumble(1, 1, 500); gamepad2.rumble(1, 1, 500);}
                 if (currTime >= 82) {didRumble = true;}
@@ -180,15 +181,13 @@
             if (!gamepad2.x){xPressedG2 = false;}
             if (!gamepad2.y){yPressedG2 = false;}
             if (!gamepad2.back){backPressedG2 = false;}
-            if (!gamepad2.b) {bPressedG2 = false;}
-            if (!gamepad2.a) {aPressedG2 = false;}
         }
 
         public void tankDrive() {
             double slowdown = gamepad1.right_trigger > 0 ? 0.25 : 1;
             robot.getDrivetrain().setWheelPowers(
-                    -gamepad1.left_stick_y * slowdown,
-                    -gamepad1.right_stick_y * slowdown,
+                    gamepad1.left_stick_y * slowdown,
+                    gamepad1.right_stick_y * slowdown,
                     -gamepad1.right_stick_y * slowdown,
                     -gamepad1.left_stick_y * slowdown
             );
@@ -215,10 +214,14 @@
                 recieve = false;
                 yPressedG2 = true;
             }
+
+            // idle spin
             if (gamepad2.back){
                 robot.getIntake().spin(-1);
-            } else{
+            } else if (gamepad2.right_trigger >= 0.1){
                 robot.getIntake().spin(spin);
+            } else{
+                robot.getIntake().spin(0);
             }
             if (recieve){
                 //              CYCLE AUTOMATIC
@@ -248,11 +251,11 @@
                 if (runIntakePos) {
                     spindexPosIntake = robot.getIntake().getNextIntakeSlot();
                     if (spindexPosIntake == 0) {
-                        robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_0_RECEIVE);
+                        robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_0_RECEIVE, tele);
                     } else if (spindexPosIntake == 1) {
-                        robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_1_RECEIVE);
+                        robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_1_RECEIVE , tele);
                     } else if (spindexPosIntake == 2) {
-                        robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_2_RECEIVE);
+                        robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_2_RECEIVE, tele);
                     }
 
                     if (!startedDelay) {
@@ -280,6 +283,8 @@
             }
 
             if (gamepad2.x && !xPressedG2 && outtake){
+                currentTopRPMGoal = 0;
+                currentBottomRPMGoal = 0;
                 outtake = false;
                 xPressedG2 = true;
             }
@@ -291,30 +296,41 @@
                 }
                 spindexPosIntake = -1;
 
-                if (spindexPosOuttake != -1){
-                    if (spindexPosOuttake == 0) {robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_0_SHOOT);}
+                if (spindexPosOuttake != -1) {
+                    if (spindexPosOuttake == 0) {
+                        robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_0_SHOOT, tele);
+                    }
 
-                    if (spindexPosOuttake == 1) {robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_1_SHOOT);}
+                    if (spindexPosOuttake == 1) {
+                        robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_1_SHOOT, tele);
+                    }
 
-                    if (spindexPosOuttake == 2) {robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_2_SHOOT);}
+                    if (spindexPosOuttake == 2) {
+                        robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_2_SHOOT, tele);
+                    }
                 }
 
-                if (gamepad2.a && robot.getOuttake().isAtGoalSpeed() && !aPressedG2) {
+                if (gamepad2.a && robot.getOuttake().isAtGoalSpeed() && !aPressedG2 && !resetBootKick) {
                     robot.getIntake().bootkick(SPINDEX_ARM_UP);
+                    tele.addLine("Boot Kicker Up");
                     bootKickerDelayTimerUp.reset();
                     bootKickerDelayTimerUp.startTime();
+                    resetBootKick = true;
                     aPressedG2 = true;
                 }
-
-                if (robot.getIntake().bootKickCurrPos() == SPINDEX_ARM_UP) {
+                if (resetBootKick) {
                     if (bootKickerDelayTimerUp.milliseconds() >= bootKickDelay) {
                         robot.getIntake().bootkick(SPINDEX_ARM_RESTING);
                         if (spindexPosOuttake == 0){Intake.SLOT_0 = Intake.slotStatus.BLANK;}
                         else if (spindexPosOuttake == 1){Intake.SLOT_1 = Intake.slotStatus.BLANK;}
                         else if (spindexPosOuttake == 2){Intake.SLOT_2 = Intake.slotStatus.BLANK;}
-                        tele.addLine("Set spindex arm to resting");
+                        resetBootKick = false;
                     }
+                    tele.addData("Boot kick reset timer ", bootKickerDelayTimerUp.milliseconds());
                 }
+
+                if (!gamepad2.a) {aPressedG2 = false;}
+                if (!gamepad2.b) {bPressedG2 = false;}
 
                 tele.addLine("Spindex is outtaking");
             }
