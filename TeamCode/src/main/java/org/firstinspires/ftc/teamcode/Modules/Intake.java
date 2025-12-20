@@ -45,6 +45,8 @@ public class Intake{
     public static char SLOT_1 = 'b';
     public static char SLOT_2 = 'b';
 
+    public static double ballsShot = 0;
+
     public static int diff;
     public static int currAngle;
 
@@ -112,6 +114,19 @@ public class Intake{
         SLOT_0 = 'b';
         SLOT_1 = 'b';
         SLOT_2 = 'b';
+    }
+
+    public void increaseCount(){
+        ballsShot++;
+    }
+
+    // just incase driver messes up
+    public void decreseCount(){
+        ballsShot--;
+    }
+
+    public double getCount(){
+        return ballsShot;
     }
 
     /**

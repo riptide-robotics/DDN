@@ -78,6 +78,8 @@
         boolean yPressedG2 = false;
         boolean bPressedG2 = false;
         boolean aPressedG2 = false;
+        boolean dUpPressedG2 = false;
+        boolean dDownPressedG2 = false;
 
 
 
@@ -144,6 +146,7 @@
                     }
 
                     cycleSlots();
+                    count();
 
                     // ENDGAME
     //                if (gamepad2.dpad_up){
@@ -181,6 +184,8 @@
             if (!gamepad2.x){xPressedG2 = false;}
             if (!gamepad2.y){yPressedG2 = false;}
             if (!gamepad2.back){backPressedG2 = false;}
+            if (!gamepad2.dpad_up) {dUpPressedG2 = false;}
+            if (!gamepad2.dpad_down) {dDownPressedG2 = false;}
         }
 
         public void tankDrive() {
@@ -191,6 +196,20 @@
                     -gamepad1.right_stick_y * slowdown,
                     -gamepad1.left_stick_y * slowdown
             );
+        }
+
+
+        public void count(){
+            if (gamepad2.dpad_up && !dUpPressedG2){
+                robot.getIntake().increaseCount();
+                dUpPressedG2 = true;
+            }
+
+            if (gamepad2.dpad_down && !dDownPressedG2){
+                robot.getIntake().decreseCount();
+                dDownPressedG2 = true;
+            }
+            tele.addData("Current Count: ", robot.getIntake().getCount());
         }
 
         public void cycleSlots(){
@@ -218,10 +237,8 @@
             // idle spin
             if (gamepad2.back){
                 robot.getIntake().spin(-1);
-            } else if (gamepad2.right_trigger >= 0.1){
-                robot.getIntake().spin(spin);
             } else{
-                robot.getIntake().spin(0);
+                robot.getIntake().spin(spin);
             }
             if (recieve){
                 //              CYCLE AUTOMATIC
@@ -229,7 +246,7 @@
                 if (spindexPosIntake != -1 && !runIntakePos) {
                     if (spindexPosIntake == 0) {
                         if (Intake.SLOT_0 == 'b') {
-                            Intake.SLOT_0 = 'b';
+                            Intake.SLOT_0 = robot.getIntake().checkColor();
                             runIntakePos = true;
                         }
                     }
