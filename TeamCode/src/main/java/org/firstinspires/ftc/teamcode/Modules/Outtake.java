@@ -317,4 +317,6 @@ public class Outtake {
     }
 
 
+    public void SetTurretGoalAngle(double v) {
+    }
 }

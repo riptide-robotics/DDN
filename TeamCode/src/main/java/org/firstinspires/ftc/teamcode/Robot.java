@@ -60,7 +60,7 @@ public class Robot {
 
     }
 
-    public Robot (VelocityStorage[] shootlookupblue, HardwareMap map){
+    public Robot (HardwareMap map){
         hardwareMap = map;
 
         indicator = new Indicator(hardwareMap);
