@@ -9,7 +9,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.Placeholder;
 
 
-@Placeholder(note = "Waiting on an RGB light")
 public class Indicator {
     private final HardwareMap hardwareMap;
     private final Servo rgbLightServo;

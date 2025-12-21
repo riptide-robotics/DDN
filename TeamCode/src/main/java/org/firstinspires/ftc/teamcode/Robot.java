@@ -43,6 +43,8 @@ public class Robot {
 
     riptideUtil.TEAM_COLOR alliance = riptideUtil.TEAM_COLOR.RED; // change based on alliance
 
+    double indColorLastReq = 0;
+
     /**TODO we're going to have to loop this*/
     public Sequencer s;
 
@@ -137,6 +139,7 @@ public class Robot {
          * based on which section we fall into.
          */
     }
+    /**Launch an artifact based on position. Does not properly function as of this moment.*/
     @Placeholder
     public void aimToBlueGoal(){ // copy for blue
         double dist = camera.getDistanceToBlueGoal();
@@ -145,36 +148,25 @@ public class Robot {
     }
     /**
      * Set indicator light based upon current spindexer. Put this in a loop.
-     * <br><br>
-     * I hate this thing.
-     * */
-    public void setStatus(char color) throws NoSuchFieldException, IllegalAccessException {
-        // i -really- don't want to touch intake with someone else works on it. This will do until it can be set to public or something
-        //ABSOLUTELY DO NOT TOUCH THIS until it can be replaced
-        Field infield = Intake.class.getDeclaredField("order");
-        infield.setAccessible(true);
-        final char[] order = (char[]) infield.get(intake);
-        infield.setAccessible(false);
+     * @param colorRequested The color the driver requests to launch. If they have not requested a color, srt it to EMPTY. The timer is handled.
+     * **/
+    public void setStatus(Intake.slotStatus colorRequested) {
+        Intake.slotStatus slot0 = intake.slot0CurrColor();
+        Intake.slotStatus slot1 = intake.slot0CurrColor();
+        Intake.slotStatus slot2 = intake.slot0CurrColor();
 
-        boolean contains =
-                order[0] == color ||
-                order[1] == color ||
-                order[2] == color ;
+        byte currCount = (byte) (
+            (slot0 != Intake.slotStatus.BLANK ? 1:0) +
+            (slot1 != Intake.slotStatus.BLANK ? 1:0) +
+            (slot2 != Intake.slotStatus.BLANK ? 1:0)
+        );
 
-        byte amount = (byte) (
-                (order[0] != ' ' ? 1:0) +
-                (order[1] != ' ' ? 1:0) +
-                (order[2] != ' ' ? 1:0) );
+        boolean containsRequested = false;
+        if (colorRequested == Intake.slotStatus.BLANK)
 
-        if (amount == 0) indicator.setStatusColor(Indicator.statusLights.EMPTY);
-
-        if ((amount == 1 || amount == 2) && contains) indicator.setStatusColor(Indicator.statusLights.SEMI_OPEN);
-        if ((amount == 1 || amount == 2) && !contains) indicator.setStatusColor(Indicator.statusLights.SEMI_OPEN_AND_NONE_REQUESTED);
-
-        if (amount == 3 && contains) indicator.setStatusColor(Indicator.statusLights.FULL_SPINDEXER);
-        if (amount == 3 && !contains) indicator.setStatusColor(Indicator.statusLights.FULL_SPINDEXER_AND_NONE_REQUESTED);
     }
 
+    /**Designed and intended for testing, but might work before an actual match.*/
     public void setTeamColor(riptideUtil.TEAM_COLOR color) {
         alliance = color;
     }
