@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.Modules.Indicator;
 import org.firstinspires.ftc.teamcode.Modules.Utils.Sequencer;
 
-@TeleOp
+@TeleOp(name = "IndicatorTest")
 public class IndicatorTest extends LinearOpMode {
     Indicator indicator;
     Sequencer seq;
@@ -32,10 +32,11 @@ public class IndicatorTest extends LinearOpMode {
            if (currentState == (byte) 2) indicator.setStatusColor(Indicator.statusLights.SEMI_OPEN_AND_NONE_REQUESTED);
            if (currentState == (byte) 3) indicator.setStatusColor(Indicator.statusLights.FULL_SPINDEXER);
            if (currentState == (byte) 4) indicator.setStatusColor(Indicator.statusLights.FULL_SPINDEXER_AND_NONE_REQUESTED);
-         if (System.currentTimeMillis() - prevTime > 1000) {
-             prevTime = System.currentTimeMillis();
-             currentState++;
-             if (currentState > 4) currentState = 0;
+
+           if (System.currentTimeMillis() - prevTime > 1000) {
+                prevTime = System.currentTimeMillis();
+            //  currentState++;
+                if (currentState > 4) currentState = 0;
          }
         }
 
