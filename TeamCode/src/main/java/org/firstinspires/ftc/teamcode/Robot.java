@@ -19,8 +19,10 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class Robot {
 
@@ -43,11 +45,10 @@ public class Robot {
 
     riptideUtil.TEAM_COLOR alliance = riptideUtil.TEAM_COLOR.RED; // change based on alliance
 
-    double indColorLastReq = 0;
-
     /**TODO we're going to have to loop this*/
     public Sequencer s;
 
+    char[] motifOrder = {'b','b','b'};
     static {
 
         shootlookupblue[0] = new VelocityStorage();
@@ -72,6 +73,8 @@ public class Robot {
         endgameServos = new EndgameServos(hardwareMap);
         outtake = new Outtake(hardwareMap);
         camera = new Camera(hardwareMap, alliance);
+
+        motifOrder = camera.scanMotifOrder();
     }
 
     public Drivetrain getDrivetrain(){
@@ -148,22 +151,37 @@ public class Robot {
     }
     /**
      * Set indicator light based upon current spindexer. Put this in a loop.
-     * @param colorRequested The color the driver requests to launch. If they have not requested a color, srt it to EMPTY. The timer is handled.
+     * @param colorRequested The color that is checked for existence. Use a space for no check.
      * **/
-    public void setStatus(Intake.slotStatus colorRequested) {
-        Intake.slotStatus slot0 = intake.slot0CurrColor();
-        Intake.slotStatus slot1 = intake.slot0CurrColor();
-        Intake.slotStatus slot2 = intake.slot0CurrColor();
+    public void setStatus(char colorRequested) {
+        char[] order = new char[] {intake.slot0CurrColor(),intake.slot1CurrColor(),intake.slot2CurrColor()};
 
-        byte currCount = (byte) (
-            (slot0 != Intake.slotStatus.BLANK ? 1:0) +
-            (slot1 != Intake.slotStatus.BLANK ? 1:0) +
-            (slot2 != Intake.slotStatus.BLANK ? 1:0)
-        );
+        boolean contains =
+                order[0] == colorRequested ||
+                order[1] == colorRequested ||
+                order[2] == colorRequested ;
 
-        boolean containsRequested = false;
-        if (colorRequested == Intake.slotStatus.BLANK)
+        if (colorRequested == ' ') contains = true;
 
+        byte amount = (byte) (
+                (order[0] != ' ' ? 1:0) +
+                (order[1] != ' ' ? 1:0) +
+                (order[2] != ' ' ? 1:0) );
+
+        if (amount == 0) indicator.setStatusColor(Indicator.statusLights.EMPTY);
+
+        if ((amount == 1 || amount == 2) && contains) indicator.setStatusColor(Indicator.statusLights.SEMI_OPEN);
+        if ((amount == 1 || amount == 2) && !contains) indicator.setStatusColor(Indicator.statusLights.SEMI_OPEN_WITHOUT_MOTIF);
+
+        if (amount == 3 && contains) indicator.setStatusColor(Indicator.statusLights.FULL_SPINDEXER);
+        if (amount == 3 && !contains) indicator.setStatusColor(Indicator.statusLights.FULL_SPINDEXER_WITHOUT_MOTIF);
+    }
+
+    /***/
+    public void setStatus(byte artifactsInTrough) {
+        char[] badChar = {'b','b','b'};
+        if (Arrays.equals(motifOrder, badChar)) motifOrder = camera.scanMotifOrder();
+        setStatus(motifOrder[artifactsInTrough % 3]);
     }
 
     /**Designed and intended for testing, but might work before an actual match.*/

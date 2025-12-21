@@ -26,11 +26,17 @@ public class Indicator {
     public enum statusLights {
         EMPTY(0.301),
         SEMI_OPEN(0.389),
+        @Deprecated
         SEMI_OPEN_AND_NONE_REQUESTED(0.501),
-        FULL_SPINDEXER(0.612),
-        FULL_SPINDEXER_AND_NONE_REQUESTED(0.700);
+        SEMI_OPEN_WITHOUT_MOTIF(0.501),
 
-       /**The position the "servo" the RGB indicator is set to, in order to set it to a specific color.*/
+        FULL_SPINDEXER(0.612),
+        @Deprecated
+        FULL_SPINDEXER_AND_NONE_REQUESTED(0.700),
+        FULL_SPINDEXER_WITHOUT_MOTIF(0.700);
+
+
+        /**The position the "servo" the RGB indicator is set to, in order to set it to a specific color.*/
        final double pos;
         statusLights(double pos) {
             this.pos = pos;
