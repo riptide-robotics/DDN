@@ -2,10 +2,8 @@ package org.firstinspires.ftc.teamcode.Teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.DummyClasses.EndgameServos;
+import org.firstinspires.ftc.teamcode.Modules.EndgameServos;
 import org.firstinspires.ftc.teamcode.Robot;
 
 @TeleOp(name = "RotateLiftServos")

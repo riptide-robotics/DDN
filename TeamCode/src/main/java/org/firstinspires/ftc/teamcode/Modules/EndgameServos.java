@@ -1,8 +1,8 @@
-package org.firstinspires.ftc.teamcode.DummyClasses;
+package org.firstinspires.ftc.teamcode.Modules;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-
+// make some kind of program so we can test which angles work
 public class EndgameServos {
     Servo sL;
     Servo sR;
@@ -25,5 +25,14 @@ public class EndgameServos {
     public void lower(){
         sL.setPosition(0);
         sR.setPosition(0);
+    }
+
+    public void testLift(double lift) {
+        sL.setPosition(lift);
+        sR.setPosition(lift);
+    }
+    public void testLower(double zero) {
+        sL.setPosition(zero);
+        sR.setPosition(zero);
     }
 }

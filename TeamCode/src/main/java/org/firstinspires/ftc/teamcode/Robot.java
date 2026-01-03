@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.DummyClasses.EndgameServos;
+import org.firstinspires.ftc.teamcode.Modules.EndgameServos;
 import org.firstinspires.ftc.teamcode.Modules.Camera;
 import org.firstinspires.ftc.teamcode.Modules.Drivetrain;
 import org.firstinspires.ftc.teamcode.Modules.Indicator;
