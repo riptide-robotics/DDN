@@ -13,6 +13,9 @@ public class EndgameServoAngleTest extends LinearOpMode {
     public static double lift;
     public static double zero;
 
+    public static boolean dpadUpPressed = false;
+    public static boolean dpadDownPressed = false;
+
     @Override
     public void runOpMode() throws InterruptedException {
         /*
@@ -38,12 +41,24 @@ public class EndgameServoAngleTest extends LinearOpMode {
          */
 
         while(opModeIsActive()) {
+            double pos = endgameServos.getPos();
+            if (gamepad1.dpad_up && !dpadUpPressed) {
+                endgameServos.testLift(pos + 0.1);
+                dpadUpPressed = true;
+            } else if (!gamepad1.dpad_up) {
+                dpadUpPressed = false;
+            }
+            if (gamepad1.dpad_down && !dpadDownPressed) {
+                endgameServos.testLift(pos - 0.1);
+                dpadDownPressed = true;
+            } else if (!gamepad1.dpad_down) {
+                dpadDownPressed = false;
+            }
             if (gamepad1.x) {
-                endgameServos.testLift(lift);
+                endgameServos.lower();
             }
-            if (gamepad1.y) {
-                endgameServos.testLower(zero);
-            }
+            telemetry.addData("currPos", endgameServos.getPos());
+            telemetry.update();
         }
     }
 }

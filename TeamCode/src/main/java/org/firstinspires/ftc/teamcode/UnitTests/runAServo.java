@@ -15,13 +15,13 @@ public class runAServo extends LinearOpMode {
     public  static double pos = 0;
     @Override
     public void runOpMode() throws  InterruptedException{
-        s = hardwareMap.get(Servo.class, "bootkicker");
+        s = hardwareMap.get(Servo.class, "spindexServo");
         s.setDirection(Servo.Direction.REVERSE);
 
         waitForStart();
 
         while (opModeIsActive()){
-            s.setPosition(gamepad1.left_stick_x);
+            s.setPosition(pos);
         }
     }
 }

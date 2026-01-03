@@ -35,4 +35,7 @@ public class EndgameServos {
         sL.setPosition(zero);
         sR.setPosition(zero);
     }
+    public double getPos() {
+        return (sL.getPosition() + sR.getPosition()) / 2;
+    }
 }

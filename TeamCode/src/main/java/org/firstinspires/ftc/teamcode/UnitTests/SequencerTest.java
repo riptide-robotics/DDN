@@ -11,6 +11,8 @@ import org.firstinspires.ftc.teamcode.Modules.Intake;
 import org.firstinspires.ftc.teamcode.Modules.Outtake;
 import org.firstinspires.ftc.teamcode.Robot;
 
+import java.util.UUID;
+
 @Config
 @TeleOp(name = "SequencerTest")
 public class SequencerTest extends LinearOpMode {
@@ -43,6 +45,7 @@ public class SequencerTest extends LinearOpMode {
 
     public int numberXLoop = 0;
     boolean hasXRun = false;
+    int numberBumperRun = 0;
 
     boolean debounce = false;
 
@@ -119,13 +122,11 @@ public class SequencerTest extends LinearOpMode {
             robot.s.getLoopAction("loopE").killAction = true;
         }
 
-        if (gamepad1.leftBumperWasPressed()) {
-
-        }
-        if (gamepad1.rightBumperWasPressed()) {
-            robot.s.addImpulseAction(() -> {
-                robot.getOuttake().setOuttakeRPM(4000,4000);
-            }, 1);
+        telemetry.addData("numberBumperRun",numberBumperRun);
+        if (gamepad2.leftBumperWasPressed()) {
+            robot.s.addRepeatingAction(() -> {
+                numberBumperRun++;
+            }, 2, UUID.randomUUID().toString());
         }
 
         if (!(gamepad1.left_bumper || gamepad1.right_bumper)) debounce = false;

@@ -13,7 +13,7 @@ public class riptideUtil {
 
     /**
      * Table of contents:
-     * 1. General constants (things that are used generally, not specific locations)
+     * 1. General constants (things that are used gneerally, not specific locations)
      * 2. Autonomous Constants
      */
 
@@ -60,10 +60,10 @@ public class riptideUtil {
     public static final double DEGREES_TO_TICKS = 751.8 / 360;
     public static final double DEADZONE = 3;
 
-    public static final double TURNTABLE_KP = 0.002;
+    public static final double TURNTABLE_KP = 0.02;
     public static final double TURNTABLE_KI = 0.003;
     public static final double TURNTABLE_KD = 0.00005;
-    public static final double TURNTABLE_KF = 5;
+    public static final double TURNTABLE_KF = 0;
 
     /**
      * Autonomous Constants
@@ -97,20 +97,20 @@ public class riptideUtil {
     public static double LONG_DIST_TOP = 3250; // UNDETERMINED
     public static double LONG_DIST_BOT = 3730; // UNDETERMINED
 
-    public static double MID_DIST_TOP = 2650; // UNDETERMINED
-    public static double MID_DIST_BOT = 3000;// UNDETERMINED
+    public static double MID_DIST_TOP = 3750; // UNDETERMINED
+    public static double MID_DIST_BOT = 4000;// UNDETERMINED
 
     public static double SHORT_DIST_TOP = 2950; // UNDETERMINED
     public static double SHORT_DIST_BOT = 3480;// UNDETERMINED
 
-    public static double KPTop = 0.0032; //0.004
-    public static double KPBottom = 0.004; // 0.0045
+    public static double KPTop = 0.002; //0.004
+    public static double KPBottom = 0.0035; // 0.0045
 
-    public static double tolerance = 50; //?? what
+    public static double tolerance = 300; //?? what
 
     // Spindex
-    public static double SPINDEX_ARM_UP = 0.15; // UNDETERMINED
-    public static double SPINDEX_ARM_RESTING = 0; // UNDETERMINED
+    public static double SPINDEX_ARM_UP = 0.2;
+    public static double SPINDEX_ARM_RESTING = 1;
     public static double ROTATE_SPINDEX_ONCE = 60;
 
     // POS 1

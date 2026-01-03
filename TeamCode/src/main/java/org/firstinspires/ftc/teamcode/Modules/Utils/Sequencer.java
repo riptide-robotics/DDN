@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Modules.Utils;
 
 import androidx.annotation.Nullable;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Modules.Drivetrain;
@@ -17,13 +18,14 @@ import java.util.UUID;
 
 
 /** 
- * The Sequencer takes snippets of code and marks them for execution in different ways. <br>
- * These are considered Actions. Together, the define what, when, and how a task is run. <br>
- * Actions that start with T, or Trip, act as a "tripwire." They run when the bot approaches a given location. <br>
- * If it does not, it runs after a given timer. <br>
- * An impulse action will run once. <br>
+ * The Sequencer takes snippets of code and marks them for execution in different ways.
+ * These are considered Actions. Together, the define what, when, and how a task is run. <br> <br>
+ * Actions that start with T, or Trip, act as a "tripwire." They run when the bot approaches a given location.
+ * If it does not, it runs after a given timer. <br> <br>
+ * An impulse action will run once.
  * A loop action will run repeatedly, or until the action is set to be killed. <br> <br>
- * For now, the trip actions are not completed, and are completely untested. Please do not use them.
+ * For now, the trip actions are not completed, and have failed most tests. Please do not use them.
+ * The repeating actions are worse and have not been tested in any way whatsoever. They will likely crash.
  **/
 public class Sequencer { // Done by Owen
     public static final DistanceUnit unit = DistanceUnit.INCH;
@@ -33,6 +35,10 @@ public class Sequencer { // Done by Owen
     public Map<String, LoopAction> loopactions;
     public Map<String,TripImpulseAction> Timpulseactions;
     public Map<String,TripLoopAction> Tloopactions;
+    public Map<String,RepeatingAction> repeatingactions;
+
+    private Telemetry tele = null;
+
     @Nullable
     private final Drivetrain drive;
 
@@ -57,15 +63,24 @@ public class Sequencer { // Done by Owen
         loopactions = new HashMap<>();
         Timpulseactions = new HashMap<>();
         Tloopactions = new HashMap<>();
+        repeatingactions = new HashMap<>();
 
         this.drive = drive;
     }
-   // ///only intended for use in SequencerTest. Not recommended.
-   // public Sequencer(Telemetry t){
-  //      impulseactions = new HashMap<>();
-  //      loopactions = new HashMap<>();
-  //      this.t = t;
-  //  };
+    ///only intended for use in SequencerTest. Not recommended.
+    public Sequencer(Drivetrain drive, Telemetry tele){
+        impulseactions = new HashMap<>();
+        loopactions = new HashMap<>();
+        Timpulseactions = new HashMap<>();
+        Tloopactions = new HashMap<>();
+        repeatingactions = new HashMap<>();
+
+        this.drive = drive;
+        this.tele = tele;
+    }
+    private void tele(int i) {
+        if (tele != null) tele.addData("SequencerTelemetry " + i,"Reached!");
+    }
 
     /**Exists as a way to store a snippet and nothing else.*/
     public interface Action{
@@ -206,8 +221,25 @@ public class Sequencer { // Done by Owen
             this.area = area;
         }
     }
+    /**
+     * Acts similarly to an Impulse Action right up until after it has run its action.
+     * Instead of killing itself, it resets the timer and waits once again. <br> <br>
+     * Not to be confused with a Loop Action.
+     * */
+    public static class RepeatingAction extends SeqAction {
+        public boolean killAction = false;
+        public double nextStep;
 
-    /**A way to add actions with type as a parameter. Untested, outdated.*/
+        /// @param intervalDelay The starting timer is repeated, hence the name change.
+        RepeatingAction(Action a, double intervalDelay, String name) {
+            super(a, intervalDelay, name);
+            nextStep = System.currentTimeMillis() / 1000 + intervalDelay;
+        }
+    }
+
+    //-----------------------------------------------------------------------------------
+
+    /**A way to add actions with type as a parameter. Untested, extremely outdated.*/
     @Deprecated
     public void addAction(Action a, SequenceType type, double elapsedTime, String actionName, Object... params) throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
         switch (type) {
@@ -258,6 +290,8 @@ public class Sequencer { // Done by Owen
         remove = processTLoopActions();
         for (String s : remove) Tloopactions.remove(s);
 
+        remove = processRepeatingActions();
+        for (String s : remove) repeatingactions.remove(s);
     }
     /**
      * Internal helper method to process specifically Impulse Actions. <br>
@@ -327,8 +361,34 @@ public class Sequencer { // Done by Owen
         }
         return remove;
     }
+    /**
+     * Internal helper method to process specifically Trip Loop Actions. <br>
+     * THIS WILL NOT REMOVE THE ACTION ON ITS OWN!
+     * Fires actions like loop actions if delayed in any way, until "missed" actions catch up.
+     * @return The names of all actions that are to be removed.
+     * */
+    private List<String> processRepeatingActions() {
+        tele(0);
+        List<String> remove = new ArrayList<>();
 
-    
+        for (Map.Entry<String,RepeatingAction> act : repeatingactions.entrySet()) {
+            boolean overrideAction = act.getValue().killAction;
+            tele(1);
+            if (!overrideAction && act.getValue().nextStep < System.currentTimeMillis()/1000) {
+                act.getValue().a.action();
+                act.getValue().nextStep += act.getValue().elapsedTime;
+                tele(2);
+            }
+
+            else if (overrideAction) remove.add(act.getKey());
+        }
+        return remove;
+    }
+
+
+    //-----------------------------------------------------------------------------------
+
+
     /**Retrieves an impulse action based upon a name. Throws an exception if none is found.*/
     public ImpulseAction getImpulseAction(String name) {
         if (!impulseactions.containsKey(name))
@@ -356,7 +416,18 @@ public class Sequencer { // Done by Owen
             throw new RuntimeException("No trip loop action by the name of " + name + "!");
         return Tloopactions.get(name);
     }
-    
+    public RepeatingAction getRepeatingAction(String name) {
+        if (!repeatingactions.containsKey(name))
+            throw new RuntimeException("No trip loop action by the name of " + name + "!");
+        return repeatingactions.get(name);
+    }
+
+
+
+    //-----------------------------------------------------------------------------------
+
+
+
     public void addImpulseAction(ImpulseAction a) {
         impulseactions.put(a.name,a);
     }
@@ -372,6 +443,13 @@ public class Sequencer { // Done by Owen
     public void addTLoopAction(TripLoopAction a) {
         Tloopactions.put(a.name,a);
     }
+    public void addRepeatingAction(RepeatingAction a) {
+        repeatingactions.put(a.name,a);
+    }
+
+
+    //-----------------------------------------------------------------------------------
+
 
     public void addImpulseAction(Action a, double delayINSECONDS){
         addImpulseAction(new ImpulseAction(a,delayINSECONDS));
@@ -393,6 +471,15 @@ public class Sequencer { // Done by Owen
         addTLoopAction(new TripLoopAction(a,area,name));
     }
 
+    public void addRepeatingAction(Action a, double repeatingdelay, String name) {
+        addRepeatingAction(new RepeatingAction(a,repeatingdelay,name));
+    }
+
+
+    //-----------------------------------------------------------------------------------
+
+
+
     public void killLoopAction(String name, boolean kill) {
         if (!loopactions.containsKey(name)) throw new NoSuchElementException("No loop action of name: " + name + "! Make sure this is created before you delete it.");
         loopactions.get(name).killAction = kill;
@@ -400,5 +487,9 @@ public class Sequencer { // Done by Owen
     public void killTLoopAction(String name, boolean kill) {
         if (!Tloopactions.containsKey(name)) throw new NoSuchElementException("No loop action of name: " + name + "! Make sure this is created before you delete it.");
         Tloopactions.get(name).killAction = kill;
+    }
+    public void killRepeatingAction(String name, boolean kill) {
+        if (!repeatingactions.containsKey(name)) throw new NoSuchElementException("No loop action of name: " + name + "! Make sure this is created before you delete it.");
+        repeatingactions.get(name).killAction = kill;
     }
 }

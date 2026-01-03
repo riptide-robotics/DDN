@@ -32,7 +32,7 @@ public class Easy3Points extends LinearOpMode {
                             -1,
                             -1
                     );
-                    if (timer.milliseconds() > 5000) {
+                    if (timer.milliseconds() > 500) {
                         run = true;
                     }
             }

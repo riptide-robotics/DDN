@@ -22,8 +22,8 @@ public class TurntableTest extends LinearOpMode {
     }
     public void turntable() {
         if (gamepad1.x) {
-            outtake.SetTurretGoalAngle(Math.min(1,goalAngle += 0.5));
-            outtake.SetTurretGoalAngle(Math.max(-1,goalAngle -= 0.5));
+//            outtake.SetTurretGoalAngle(Math.min(1,goalAngle += 0.5));
+//            outtake.SetTurretGoalAngle(Math.max(-1,goalAngle -= 0.5));
         }
     }
 }

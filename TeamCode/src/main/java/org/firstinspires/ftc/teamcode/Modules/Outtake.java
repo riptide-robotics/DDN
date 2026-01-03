@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode.Modules;
 
 import static org.firstinspires.ftc.teamcode.riptideUtil.KPBottom;
 import static org.firstinspires.ftc.teamcode.riptideUtil.KPTop;
+import static org.firstinspires.ftc.teamcode.riptideUtil.TURNTABLE_KD;
+import static org.firstinspires.ftc.teamcode.riptideUtil.TURNTABLE_KI;
+import static org.firstinspires.ftc.teamcode.riptideUtil.TURNTABLE_KP;
 import static org.firstinspires.ftc.teamcode.riptideUtil.angularVelocity;
 import static org.firstinspires.ftc.teamcode.riptideUtil.econserved;
 import static org.firstinspires.ftc.teamcode.riptideUtil.tolerance;
@@ -38,6 +41,13 @@ public class Outtake {
     private double rpmTopGoal = 0;
     private double rpmBottomGoal = 0;
 
+    //Turntable
+
+    private double turntableAngle = 0;
+    private PIDController turntableController = new PIDController(TURNTABLE_KP, TURNTABLE_KI, TURNTABLE_KD);
+    static final double ticksToDegrees = 360/751.8;
+    static final double degreesToTicks = 751.8/360;
+    private final DcMotor turntable;
 
     public Outtake(HardwareMap hardwareMap){
         topFlywheel = hardwareMap.dcMotor.get("topFlywheel");
@@ -45,6 +55,11 @@ public class Outtake {
 
         topFlywheel.setDirection(DcMotorSimple.Direction.REVERSE);
         bottomFlywheel.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        turntable = hardwareMap.dcMotor.get("turnTable");
+        turntable.setDirection(DcMotorSimple.Direction.FORWARD);
+        turntable.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        turntable.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
 
@@ -144,8 +159,8 @@ public class Outtake {
 //        averageBottom = bottomRecords.size() >= queueSize ? (bottomRecords.get(0)+bottomRecords.get(1)+bottomRecords.get(2)+bottomRecords.get(3)+bottomRecords.get(4))/5 : currRPMBottom;
 
 
-        double wantedWheelPowerTopAverage = RPMControllerTop.calculate(averageTop - 200, rpmTop);
-        double wantedWheelPowerBottomAverage = RPMControllerBottom.calculate(averageBottom - 200, rpmBottom);
+        double wantedWheelPowerTopAverage = RPMControllerTop.calculate(averageTop-150, rpmTop);
+        double wantedWheelPowerBottomAverage = RPMControllerBottom.calculate(averageBottom-150, rpmBottom);
 
 
         setFlyWheelPower(rpmTop != 0 ? wantedWheelPowerTopAverage:0,rpmBottom != 0 ? wantedWheelPowerBottomAverage:0);
@@ -210,11 +225,21 @@ public class Outtake {
      **/
     public void setOuttakeRPM(double rpmTop, double rpmBottom){rpmTopGoal = rpmTop; rpmBottomGoal = rpmBottom;}
 
+    /**
+     * Sets the the goal for the top motor to reach in its PID. For the future.
+     **/
+    public void SetFlyWheelTopGoal(double rpm) {rpmTopGoal = rpm;}
+
+
+    /** Sets the the goal for the bottom motor to reach in its PID. For the future.
+     **/
+    public void setFlywheelBottomGoal(double rpm) {rpmBottomGoal = rpm;}
+
 
     /**
      * Completely skip tuning and run both motors at the same voltage.
      **/
-    public void start(double speed){
+    public void setFlywheelPowersNoPID(double speed){
         bottomFlywheel.setPower(speed);
         topFlywheel.setPower(speed);
     }
@@ -260,38 +285,38 @@ public class Outtake {
         return bottomFlywheel.getCurrentPosition();
     }
 
+    /**
+     * Manual override. Maps a joystick input [-1, 1] to a (-90, 90) degree PID call
+     * @param joy a double in the range of [-1, 1].
+     * @return nothing
+     */
+    public void mapJoyToAngle(double joy){
+        joy = Math.max(-1, Math.min(1, joy));
+        double angle = 90 * joy;
+        setTurntableGoalAngle(angle);
 
-    /**Sets the the goal for the top motor to reach in its PID. For the future.
-     * Placeholder, do not use except in other placeholders.
-     **/
-    @Placeholder
-    public void SetFlyWheelTopGoal(double rpm) {rpmTopGoal = rpm;}
-
-
-    /** Sets the the goal for the bottom motor to reach in its PID. For the future.
-     * Placeholder, do not use except in other placeholders.
-     **/
-    @Placeholder
-    public void setFlywheelBottomGoal(double rpm) {rpmBottomGoal = rpm;}
-
+    }
 
     /**
      * sets some internal variable that has an angle MAKE SURE THAT ANGLES ARE BOUNDED. Also not working just yet.
      **/
-    @Placeholder
-    public void SetTurretGoalAngle(double angle) {throw new UnsupportedOperationException("Not working just yet!");}
+    public void setTurntableGoalAngle(double angle){
+        turntableAngle = angle;
+    }
 
-
-    /** Attempt to set the turret to a specific angle, using a future PID.
-     * Placeholder, do not use except in other placeholders.
+    /**
+     * Pid Controller for the turntable
      **/
-    @Placeholder
-    public void SetTurretAnglePID() {throw new UnsupportedOperationException("Not working just yet!");}
+    public void updateTurntableAngle(Telemetry t) {
+        double currPos = turntable.getCurrentPosition();
+        double goalAngleInTicks = turntableAngle * 3 * degreesToTicks;
+        double power = turntableController.calculate(currPos, goalAngleInTicks);
+        turntable.setPower(power);
+        t.addData("Goal Angle", turntableAngle);
+        t.addData("Turntable angle", currPos * ticksToDegrees / 3);
+    }
 
 
-    /**Fire the turret.
-     * Placeholder, do not use except in other placeholders.
-     **/
-    @Placeholder
-    public void SetTurretPowerPID() {throw new UnsupportedOperationException("Not working just yet!");}// PID to Angle
+    public void SetTurretGoalAngle(double v) {
+    }
 }
