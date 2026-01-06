@@ -43,7 +43,7 @@ public class Outtake {
 
     //Turntable
 
-    private double turntableAngle = 0;
+    private double turntableAngle = 0; // goal
     private PIDController turntableController = new PIDController(TURNTABLE_KP, TURNTABLE_KI, TURNTABLE_KD);
     static final double ticksToDegrees = 360/751.8;
     static final double degreesToTicks = 751.8/360;
