@@ -48,8 +48,8 @@ public class Drivetrain {
     private ElapsedTime timer;
 
     private final OdometryLocalizer robotPos;
-    private final double xOdoOffsetInInches = 2.0;
-    private final double yOdoOffsetInInches = 4.0;
+    private final double xOdoOffsetInInches = 4.1;
+    private final double yOdoOffsetInInches = 3.8;
 
     // -------- AUTONOMOUS CONTROLLERS -------- //
 
@@ -98,7 +98,7 @@ public class Drivetrain {
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
         pinpoint.setOffsets(xOdoOffsetInInches, yOdoOffsetInInches, DistanceUnit.INCH);
         pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
-        pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+        pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.REVERSED);
 
         robotPos = new OdometryLocalizer(pinpoint, 10);
 
