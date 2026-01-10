@@ -65,6 +65,8 @@ public class SpindexPositions extends LinearOpMode {
 //
 //            if (!gamepad2.x) xPressedG2 = false;
 //            if (!gamepad2.y) yPressedG2 = false;
+            telemetry.addData("Angle ", robot.getIntake().spindexCurrentPosition());
+            telemetry.update();
         }
     }
 

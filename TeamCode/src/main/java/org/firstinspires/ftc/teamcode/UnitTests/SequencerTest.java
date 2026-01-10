@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.UnitTests;
 
-import static org.firstinspires.ftc.teamcode.riptideUtil.SPINDEX_ARM_RESTING;
-import static org.firstinspires.ftc.teamcode.riptideUtil.SPINDEX_ARM_UP;
+import static org.firstinspires.ftc.teamcode.riptideUtil.BOOT_KICKER_RESTING;
+import static org.firstinspires.ftc.teamcode.riptideUtil.BOOT_KICKER_UP;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -31,7 +31,9 @@ public class SequencerTest extends LinearOpMode {
         robot.getOuttake().startFlywheel();
 
         while (opModeIsActive()) {
+            telemetry.addData("Angle ", robot.getIntake().spindexCurrentPosition());
             sequencerTest();
+            telemetry.update();
         }
     }
     public boolean hasARun = false;
@@ -82,7 +84,7 @@ public class SequencerTest extends LinearOpMode {
             },1d);
 
             robot.s.addImpulseAction(() -> {
-                in.bootkick(SPINDEX_ARM_UP);
+                in.bootkick(BOOT_KICKER_UP);
             },3d);
         }
 
@@ -146,14 +148,14 @@ public class SequencerTest extends LinearOpMode {
                 }, 1);
             }
 
-            robot.getIntake().bootkick(SPINDEX_ARM_RESTING);
+            robot.getIntake().bootkick(BOOT_KICKER_RESTING);
 
             robot.s.addImpulseAction(() -> {
-                robot.getIntake().bootkick(SPINDEX_ARM_UP);
+                robot.getIntake().bootkick(BOOT_KICKER_UP);
             },4);
 
             robot.s.addImpulseAction(() -> {
-                robot.getIntake().bootkick(SPINDEX_ARM_RESTING);
+                robot.getIntake().bootkick(BOOT_KICKER_RESTING);
             },6);
         }
 

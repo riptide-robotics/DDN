@@ -2,8 +2,9 @@
 
     import static org.firstinspires.ftc.teamcode.riptideUtil.MID_DIST_BOT;
     import static org.firstinspires.ftc.teamcode.riptideUtil.MID_DIST_TOP;
-    import static org.firstinspires.ftc.teamcode.riptideUtil.SPINDEX_ARM_RESTING;
-    import static org.firstinspires.ftc.teamcode.riptideUtil.SPINDEX_ARM_UP;
+    import static org.firstinspires.ftc.teamcode.riptideUtil.BOOT_KICKER_RESTING;
+    import static org.firstinspires.ftc.teamcode.riptideUtil.BOOT_KICKER_UP;
+    import static org.firstinspires.ftc.teamcode.riptideUtil.nextShotAvailable;
 
     import com.acmerobotics.dashboard.FtcDashboard;
     import com.acmerobotics.dashboard.config.Config;
@@ -97,6 +98,7 @@
             runIntakePos = false;
             runOuttakePos = false;
             moveToNextOuttakeSlot = false;
+            resetBootKick = false;
 
             robot.getIntake().initSpindex();
             robot.getIntake().initColorSensor();
@@ -124,11 +126,12 @@
 
                 FSM();
                 tankDrive();
-                robot.getOuttake().runOuttakePID(currentTopRPMGoal, currentBottomRPMGoal, tele);
+                robot.getOuttake().runOuttakePID(tele);
 
                 double currTime = endTimer.seconds();
 //                robot.getOuttake().mapJoyToAngle(gamepad2.right_stick_x);
                 robot.getOuttake().updateTurntableAngle(tele);
+
                 if (currTime >= 80 && !didRumble){gamepad1.rumble(1, 1, 500); gamepad2.rumble(1, 1, 500);}
                 if (currTime >= 82) {didRumble = true;}
                 tele.update();
@@ -186,6 +189,8 @@
             if (!gamepad2.back){backPressedG2 = false;}
             if (!gamepad2.dpad_up) {dUpPressedG2 = false;}
             if (!gamepad2.dpad_down) {dDownPressedG2 = false;}
+            if (!gamepad2.a) {aPressedG2 = false;}
+            if (!gamepad2.b) {bPressedG2 = false;}
         }
 
         public void tankDrive() {
@@ -208,6 +213,11 @@
             if (gamepad2.dpad_down && !dDownPressedG2){
                 robot.getIntake().decreseCount();
                 dDownPressedG2 = true;
+            }
+
+            if (gamepad2.b && !bPressedG2){
+                robot.getIntake().resetCount();
+                bPressedG2 = true;
             }
             tele.addData("Current Count: ", robot.getIntake().getCount());
         }
@@ -327,27 +337,10 @@
                     }
                 }
 
-                if (gamepad2.a && robot.getOuttake().isAtGoalSpeed() && !aPressedG2 && !resetBootKick) {
-                    robot.getIntake().bootkick(SPINDEX_ARM_UP);
-                    tele.addLine("Boot Kicker Up");
-                    bootKickerDelayTimerUp.reset();
-                    bootKickerDelayTimerUp.startTime();
-                    resetBootKick = true;
-                    aPressedG2 = true;
+                if (gamepad2.a && robot.getOuttake().isAtGoalSpeed() && !aPressedG2 && nextShotAvailable) {
+                    robot.outtake(0,0,robot.getIntake().currOuttakeSlot());
+                    nextShotAvailable = false;
                 }
-                if (resetBootKick) {
-                    if (bootKickerDelayTimerUp.milliseconds() >= bootKickDelay) {
-                        robot.getIntake().bootkick(SPINDEX_ARM_RESTING);
-                        if (spindexPosOuttake == 0){Intake.SLOT_0 = 'b';}
-                        else if (spindexPosOuttake == 1){Intake.SLOT_1 = 'b';}
-                        else if (spindexPosOuttake == 2){Intake.SLOT_2 = 'b';}
-                        resetBootKick = false;
-                    }
-                    tele.addData("Boot kick reset timer ", bootKickerDelayTimerUp.milliseconds());
-                }
-
-                if (!gamepad2.a) {aPressedG2 = false;}
-                if (!gamepad2.b) {bPressedG2 = false;}
 
                 tele.addLine("Spindex is outtaking");
             }

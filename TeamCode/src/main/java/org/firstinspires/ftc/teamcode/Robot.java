@@ -1,12 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.teamcode.riptideUtil.SPINDEX_ARM_RESTING;
-import static org.firstinspires.ftc.teamcode.riptideUtil.SPINDEX_ARM_UP;
+import static org.firstinspires.ftc.teamcode.riptideUtil.BOOT_KICKER_RESTING;
+import static org.firstinspires.ftc.teamcode.riptideUtil.BOOT_KICKER_UP;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.DummyClasses.EndgameServos;
 import org.firstinspires.ftc.teamcode.Modules.Camera;
 import org.firstinspires.ftc.teamcode.Modules.Drivetrain;
@@ -14,15 +13,9 @@ import org.firstinspires.ftc.teamcode.Modules.Indicator;
 import org.firstinspires.ftc.teamcode.Modules.Intake;
 import org.firstinspires.ftc.teamcode.Modules.Outtake;
 import org.firstinspires.ftc.teamcode.Modules.Utils.Sequencer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Robot {
 
@@ -228,16 +221,20 @@ public class Robot {
             this.distance = 0;
         }
     }
-    private void outtake(double rpmupper, double rpmlower) {
+    public void outtake(double rpmupper, double rpmlower, double slotNum) {
         outtake.setOuttakeRPM(rpmupper,rpmlower);
         s.addImpulseAction(() -> {
-            intake.bootkick(SPINDEX_ARM_UP);
+            intake.bootkick(BOOT_KICKER_UP);
         }, 2);
         s.addImpulseAction(() -> {
-            intake.bootkick(SPINDEX_ARM_RESTING);
+            intake.bootkick(BOOT_KICKER_RESTING);
         },4);
         s.addImpulseAction(() -> {
             outtake.setOuttakeRPM(0,0);
+            if (slotNum == 0){Intake.SLOT_0 = 'b';}
+            if (slotNum == 1){Intake.SLOT_1 = 'b';}
+            if (slotNum == 2){Intake.SLOT_2 = 'b';}
+            riptideUtil.nextShotAvailable = true;
         },6);
     }
 }

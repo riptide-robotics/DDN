@@ -16,7 +16,7 @@ public class IndicatorTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        indicator = new Indicator(hardwareMap);
+//        indicator = new Indicator(hardwareMap);
         seq = new Sequencer(null);
 
         waitForStart();

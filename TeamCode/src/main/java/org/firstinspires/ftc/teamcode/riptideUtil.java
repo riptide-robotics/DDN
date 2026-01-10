@@ -5,7 +5,6 @@ import com.acmerobotics.dashboard.config.Config;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
 import org.firstinspires.ftc.vision.apriltag.AprilTagLibrary;
 
 @Config
@@ -109,8 +108,8 @@ public class riptideUtil {
     public static double tolerance = 300; //?? what
 
     // Spindex
-    public static double SPINDEX_ARM_UP = 0.2;
-    public static double SPINDEX_ARM_RESTING = 1;
+    public static double BOOT_KICKER_UP = 0.2;
+    public static double BOOT_KICKER_RESTING = 1;
     public static double ROTATE_SPINDEX_ONCE = 60;
 
     // POS 1
@@ -135,6 +134,8 @@ public class riptideUtil {
     public static double SLOT_THREE_PIKCUP_POS = 60;
 
     public static double SPINDEX_SPEED = 0.03;
+
+    public static boolean nextShotAvailable = true;
 
     // Vision
     public static int CAMERA_WIDTH = 640;
