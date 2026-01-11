@@ -108,7 +108,7 @@ public class Intake{
     }
 
     public void initSpindex() {
-        currAngle = 460;
+        currAngle = 450;
         setSpindexPosition(currAngle);
         ballsShot = 0;
         currentState = UnshiftedPositions.SLOT_0_RECEIVE;

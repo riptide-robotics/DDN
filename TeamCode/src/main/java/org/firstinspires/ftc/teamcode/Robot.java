@@ -221,20 +221,21 @@ public class Robot {
             this.distance = 0;
         }
     }
-    public void outtake(double rpmupper, double rpmlower, double slotNum) {
-        outtake.setOuttakeRPM(rpmupper,rpmlower);
+    public void outtake(double slotNum, Telemetry tele) {
         s.addImpulseAction(() -> {
             intake.bootkick(BOOT_KICKER_UP);
+            tele.addLine("Boot kicker up");
         }, 2);
         s.addImpulseAction(() -> {
             intake.bootkick(BOOT_KICKER_RESTING);
+            tele.addLine("Boot kicker down");
         },4);
         s.addImpulseAction(() -> {
-            outtake.setOuttakeRPM(0,0);
             if (slotNum == 0){Intake.SLOT_0 = 'b';}
             if (slotNum == 1){Intake.SLOT_1 = 'b';}
             if (slotNum == 2){Intake.SLOT_2 = 'b';}
             riptideUtil.nextShotAvailable = true;
+            tele.addLine("setting lost to blank");
         },6);
     }
 }

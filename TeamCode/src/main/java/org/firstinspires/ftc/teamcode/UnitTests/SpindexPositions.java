@@ -55,9 +55,7 @@ public class SpindexPositions extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot(hardwareMap);
-        currAngle = 450;
-
-        robot.getIntake().setSpindexPosition(currAngle);
+        robot.getIntake().initSpindex();
         waitForStart();
 
         while (opModeIsActive()) {
@@ -106,8 +104,7 @@ public class SpindexPositions extends LinearOpMode {
         if (!gamepad2.x){xPressedG2 = false;}
         if (!gamepad2.y){yPressedG2 = false;}
         if (!gamepad2.a){aPressedG2 = false;}
-        if (!gamepad2.dpad_right){
-            dRightPressedG2 = false;}
+        if (!gamepad2.dpad_right){dRightPressedG2 = false;}
         if (!gamepad2.dpad_up){dUpPressedG2 = false;}
         if(!gamepad2.b){bPressedG2 = false;}
 

@@ -338,8 +338,11 @@
                 }
 
                 if (gamepad2.a && robot.getOuttake().isAtGoalSpeed() && !aPressedG2 && nextShotAvailable) {
-                    robot.outtake(0,0,robot.getIntake().currOuttakeSlot());
+                    robot.outtake(robot.getIntake().currOuttakeSlot(), tele);
+                    spindexPosOuttake = robot.getIntake().getNextOuttakeSlot();
+                    tele.addLine("Ball shot next slot is " + spindexPosOuttake);
                     nextShotAvailable = false;
+                    aPressedG2 = true;
                 }
 
                 tele.addLine("Spindex is outtaking");
