@@ -74,6 +74,8 @@ public class Odometry extends LinearOpMode {
          * Start button clicked
          * * * * * * * * * * * * * * *
          */
+        robot.getDrivetrain().getPinpoint().recalibrateIMU();
+        robot.getDrivetrain().getPinpoint().setPosition(START_POSITION);
         telemetry.clear();
 
         /*
