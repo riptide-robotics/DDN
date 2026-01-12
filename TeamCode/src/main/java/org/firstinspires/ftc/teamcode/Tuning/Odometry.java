@@ -95,6 +95,10 @@ public class Odometry extends LinearOpMode {
             if(gamepad1.a){
                robot.getDrivetrain().getPinpoint().setPosition(START_POSITION);
             }
+            if(gamepad1.x) {
+                robot.getDrivetrain().getPinpoint().recalibrateIMU();
+                telemetry.addLine("IMU recalibrated");
+            }
 
             telemetry.addData("X Position", currPos.getX(DistanceUnit.INCH));
             telemetry.addData("Y Position", currPos.getY(DistanceUnit.INCH));

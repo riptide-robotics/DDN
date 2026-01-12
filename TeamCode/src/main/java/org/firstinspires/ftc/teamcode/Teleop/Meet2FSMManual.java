@@ -49,9 +49,9 @@
         public static double currentTopRPMGoal;
         public static double currentBottomRPMGoal;
 
+        /**            TURNTABLE            **/
 
-
-        /**            TIMERS              **/
+        /**            TIMERS               **/
         ElapsedTime bootKickerDelayTimerUp;
         ElapsedTime bootKickerDelayTimerDown;
         ElapsedTime bootKickActivateDelayTimer;
@@ -68,7 +68,7 @@
 
 
 
-        /**            DEBOUNCE              **/
+        /**            DEBOUNCE             **/
         boolean rightBumperPressedG2 = false;
         boolean backPressedG2 = false;
         boolean leftBumperPressedG2 = false;
@@ -358,5 +358,12 @@
             tele.addData("Slot 2: ", Intake.SLOT_2);
             tele.addData("Current Color: ", robot.getIntake().checkColor());
             tele.addData("Is at goal speed ", robot.getOuttake().isAtGoalSpeed());
+        }
+
+        public void setPos() {
+            //
+        }
+        public void updateTurnTablePID() {
+            //
         }
     }
