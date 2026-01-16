@@ -60,6 +60,7 @@ public class Drivetrain {
             .moveTo(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 90))
             .moveTo(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 90))
             .build();
+    private double[] wheelPowers = new double[4];
 
 
     /// ///////////////////////////////////////////
@@ -77,8 +78,8 @@ public class Drivetrain {
         blWheel = hardwareMap.dcMotor.get("blWheel");
 
         blWheel.setDirection(DcMotorSimple.Direction.REVERSE);
-        flWheel.setDirection(DcMotorSimple.Direction.REVERSE);
-        frWheel.setDirection(DcMotorSimple.Direction.FORWARD);
+        flWheel.setDirection(DcMotorSimple.Direction.FORWARD);
+        frWheel.setDirection(DcMotorSimple.Direction.REVERSE);
         brWheel.setDirection(DcMotorSimple.Direction.FORWARD);
 
         brWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -167,6 +168,10 @@ public class Drivetrain {
         return new double[]{flWheel.getPower(), frWheel.getPower(), blWheel.getPower(), brWheel.getPower()};
     }
 
+    public double[] getWheelPowersArray() {
+        return wheelPowers;
+    }
+
     // -------- Methods --------------- //
     // boolean for testing if it got to the point, temporary
     public boolean followGivenPath(double time) {
@@ -190,10 +195,15 @@ public class Drivetrain {
         double headingy = Math.sin(getRobotHeading(AngleUnit.RADIANS));
         double[] headingVect = {headingx, headingy};
         double[] pointVect = {dx / distanceToPoint, dy / distanceToPoint};
-        double fbError = headingVect[0] * pointVect[0] + headingVect[1] * pointVect[1];
+        double fbError = distanceToPoint * (headingVect[0] * pointVect[0] + headingVect[1] * pointVect[1]);
 
         double forwardPower = forwardController.calculate(0, fbError);
         double turnPower = turnController.calculate(0, headingError);
+
+        wheelPowers[0] = forwardPower - turnPower;
+        wheelPowers[1] = forwardPower + turnPower;
+        wheelPowers[2] = forwardPower + turnPower;
+        wheelPowers[3] = forwardPower - turnPower;
 
         this.setWheelPowers(
                 forwardPower - turnPower,
