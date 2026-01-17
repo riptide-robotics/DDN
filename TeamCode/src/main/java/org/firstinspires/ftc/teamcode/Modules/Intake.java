@@ -54,7 +54,7 @@ public class Intake{
 
     public boolean checkClose = false;
 
-    public static float gain = 30;
+    public static float gain = 14;
 
     private final double spindexRange = 900;
 

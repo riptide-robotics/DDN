@@ -29,7 +29,7 @@
         boolean outtake = false;
         boolean runIntakePos = true;
         boolean runOuttakePos = true;
-        public static  double spin = 1;
+        public static double spin = 1;
 
         Telemetry tele = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -303,8 +303,8 @@
             if (gamepad2.x && !xPressedG2 && !outtake) {
                 outtake = true;
                 recieve = false;
-                currentTopRPMGoal = MID_DIST_TOP;
-                currentBottomRPMGoal = MID_DIST_BOT;
+                currentTopRPMGoal = 0;
+                currentBottomRPMGoal = 0;
                 spindexPosOuttake = robot.getIntake().getNextOuttakeSlot();
                 xPressedG2 = true;
             }

@@ -52,5 +52,4 @@ public class SequenceShooting extends LinearOpMode {
             telemetry.update();
         }
     }
-
 }

@@ -22,6 +22,8 @@ public class SpindexPositions extends LinearOpMode {
     boolean dRightPressedG2 = false;
 
 
+
+
     double spindexPos;
 
     Robot robot;
@@ -60,6 +62,12 @@ public class SpindexPositions extends LinearOpMode {
 
         while (opModeIsActive()) {
             cycleSlots();
+            if (gamepad2.right_trigger > 0.1){
+                robot.getIntake().spin(1);
+            } else{
+                robot.getIntake().spin(0);
+            }
+
 //
 //            if (!gamepad2.x) xPressedG2 = false;
 //            if (!gamepad2.y) yPressedG2 = false;

@@ -21,12 +21,12 @@ public class riptideUtil {
      */
     // COLOR SENSING
     // Green
-    public static final float GREEN_R = 0.09f;
-    public static final float GREEN_R_STDEV = 0.05f;
-    public static final float GREEN_G = 0.37f;
-    public static final float GREEN_G_STDEV = 0.19f;
-    public static final float GREEN_B = 0.37f;
-    public static final float GREEN_B_STDEV = 0.11f;
+    public static final float GREEN_R = 0.16f; // 0.09f
+    public static final float GREEN_R_STDEV = 0.07f; // 0.05f
+    public static final float GREEN_G = 0.605f; // 0.37f
+    public static final float GREEN_G_STDEV = 0.256f; // 0.19f
+    public static final float GREEN_B = 0.445f; // 0.37f
+    public static final float GREEN_B_STDEV = 0.196f; // 0.11f
 
     public static final float GREEN_R_HOLE = 0.019f;
     public static final float GREEN_R_STDEV_HOLE = 0.0045f;
@@ -36,12 +36,12 @@ public class riptideUtil {
     public static final float GREEN_B_STDEV_HOLE = 0.011f;
 
     // Purple
-    public static final float PURPLE_R = 0.239f;
-    public static final float PURPLE_R_STDEV = 0.09f;
-    public static final float PURPLE_G = 0.262f;
-    public static final float PURPLE_G_STDEV = 0.1f;
-    public static final float PURPLE_B = 0.48f;
-    public static final float PURPLE_B_STDEV = 0.19f;
+    public static final float PURPLE_R = 0.37f; // 0.239
+    public static final float PURPLE_R_STDEV = 0.09f; // 0.09
+    public static final float PURPLE_G = 0.42f; // 0.262
+    public static final float PURPLE_G_STDEV = 0.11f; // 0.1
+    public static final float PURPLE_B = 0.728f; // 0.48
+    public static final float PURPLE_B_STDEV = 0.175f; // 0.19
 
     public static final float PURPLE_R_HOLE = 0.034f;
     public static final float PURPLE_R_STDEV_HOLE = 0.023f;
