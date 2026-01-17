@@ -25,15 +25,15 @@ public class Indicator {
     /**Already defined colors to represent the status of the bot. Not final.*/
     public enum statusLights {
         EMPTY(0.301),
-        SEMI_OPEN(0.389),
+        SEMI_OPEN_WITHOUT_MOTIF(0.389),
         @Deprecated
         SEMI_OPEN_AND_NONE_REQUESTED(0.501),
-        SEMI_OPEN_WITHOUT_MOTIF(0.501),
+        SEMI_OPEN(0.501),
 
         FULL_SPINDEXER(0.612),
         @Deprecated
         FULL_SPINDEXER_AND_NONE_REQUESTED(0.700),
-        FULL_SPINDEXER_WITHOUT_MOTIF(0.700);
+        FULL_SPINDEXER_WITHOUT_MOTIF(0.900);
 
 
         /**The position the "servo" the RGB indicator is set to, in order to set it to a specific color.*/
