@@ -15,8 +15,8 @@ import org.firstinspires.ftc.teamcode.Robot;
 public class SpindexArmTuner extends LinearOpMode {
     Robot robot;
 
-    public static double up = 0.2;
-    public static double resting = 1;
+    public static double up = 1;
+    public static double resting = 0;
 
     public static double spindexPosfull = 0;
     public static  double spindexPosNormal = 0;

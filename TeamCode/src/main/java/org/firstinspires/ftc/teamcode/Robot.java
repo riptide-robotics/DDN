@@ -239,6 +239,6 @@ public class Robot {
             if (slotNum == 2){Intake.SLOT_2 = 'b';}
             riptideUtil.nextShotAvailable = true;
             tele.addLine("setting lost to blank");
-        },6);
+        },5);
     }
 }

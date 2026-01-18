@@ -129,13 +129,14 @@
                 tankDrive();
                 robot.getOuttake().runOuttakePID(tele);
                 robot.s.loop();
+                robot.setStatus((byte) Intake.ballsShot);
 
-                double currTime = endTimer.seconds();
+//                double currTime = endTimer.seconds();
 //                robot.getOuttake().mapJoyToAngle(gamepad2.right_stick_x);
                 robot.getOuttake().updateTurntableAngle(tele);
-
-                if (currTime >= 80 && !didRumble){gamepad1.rumble(1, 1, 500); gamepad2.rumble(1, 1, 500);}
-                if (currTime >= 82) {didRumble = true;}
+//
+//                if (currTime >= 80 && !didRumble){gamepad1.rumble(1, 1, 500); gamepad2.rumble(1, 1, 500);}
+//                if (currTime >= 82) {didRumble = true;}
                 tele.update();
             }
         }

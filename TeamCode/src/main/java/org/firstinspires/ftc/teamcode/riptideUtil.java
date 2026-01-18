@@ -108,8 +108,8 @@ public class riptideUtil {
     public static double tolerance = 300; //?? what
 
     // Spindex
-    public static double BOOT_KICKER_UP = 0.2;
-    public static double BOOT_KICKER_RESTING = 1;
+    public static double BOOT_KICKER_UP = 1;
+    public static double BOOT_KICKER_RESTING = 0;
     public static double ROTATE_SPINDEX_ONCE = 60;
 
     // POS 1
