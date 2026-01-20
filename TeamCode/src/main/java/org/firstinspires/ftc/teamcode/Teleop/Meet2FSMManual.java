@@ -13,6 +13,8 @@
     import com.qualcomm.robotcore.util.ElapsedTime;
 
     import org.firstinspires.ftc.robotcore.external.Telemetry;
+    import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+    import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
     import org.firstinspires.ftc.teamcode.Modules.Intake;
     import org.firstinspires.ftc.teamcode.Robot;
 
@@ -153,6 +155,12 @@
     //                    currentState = states.ENDGAME;
     //                    hasrun = false;
     //                }
+
+                    /*
+                    * if (locked on) {
+                    *     lockOnGoal(robot.getDrivetrain().getRobotHeading(AngleUnit.DEGREES), robot.getDrivetrain().getCurrPos().getX(DistanceUnit.INCH), robot.getDrivetrain().getCurrPos().getY(DistanceUnit.INCH));
+                    * }
+                    */
 
                     break;
                 case ENDGAME:

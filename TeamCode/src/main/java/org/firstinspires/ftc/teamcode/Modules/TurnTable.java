@@ -10,6 +10,9 @@ import static org.firstinspires.ftc.teamcode.riptideUtil.TURNTABLE_KP;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 public class TurnTable {
     static DcMotor motor;
 
@@ -39,5 +42,18 @@ public class TurnTable {
         double currPosTicks = motor.getCurrentPosition();
         double setPower = motorController.calculate(currPosTicks, goalTicks) + TURNTABLE_KF;
         motor.setPower(setPower);
+    }
+    public void lockOnGoal(double h, double x, double y) {
+        double d = Math.atan2(y, x) - h;
+        if (d < -90) {
+            d = -90;
+        } else if (d > 90) {
+            d = 90;
+        }
+        setGoalAngle(d);
+        goToGoalAngle();
+    }
+    public double getAngle() {
+        return motor.getCurrentPosition() * TICKS_TO_DEGREES;
     }
 }
