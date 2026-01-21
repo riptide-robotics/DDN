@@ -59,7 +59,7 @@ public class Robot {
     public Robot (HardwareMap map){
         hardwareMap = map;
 
-        indicator = new Indicator(hardwareMap);
+        indicator = new Indicator(hardwareMap,true);
         drivetrain = new Drivetrain(hardwareMap);
         s = new Sequencer(drivetrain);
         intake = new Intake(hardwareMap);

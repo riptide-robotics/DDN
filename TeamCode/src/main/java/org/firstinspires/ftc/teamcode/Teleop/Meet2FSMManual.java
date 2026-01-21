@@ -66,6 +66,7 @@
         boolean didRumble = false;
         boolean startedDelay = false;
         boolean moveToNextOuttakeSlot = false;
+        int ballsintrough = 0;
 
 
 
@@ -140,6 +141,9 @@
 
 
         private void FSM(){
+            processTroughCounter();
+            robot.setStatus((byte) ballsintrough);
+
             switch(currentState) {
                 case TELEOP:
                     if (!hasrun) {
@@ -354,5 +358,11 @@
             tele.addData("Slot 2: ", Intake.SLOT_2);
             tele.addData("Current Color: ", robot.getIntake().checkColor());
             tele.addData("Is at goal speed ", robot.getOuttake().isAtGoalSpeed());
+        }
+
+        public void processTroughCounter() {
+            if (gamepad1.leftBumperWasPressed()) ballsintrough--;
+            if (gamepad1.rightBumperWasPressed()) ballsintrough++;
+            if (ballsintrough < 0) ballsintrough = 0;
         }
     }
