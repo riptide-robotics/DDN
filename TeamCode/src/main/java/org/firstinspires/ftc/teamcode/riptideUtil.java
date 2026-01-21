@@ -80,9 +80,9 @@ public class riptideUtil {
     public static double MAX_WHEEL_POWER = 1;       // Probably always going to be 1
 
     // Forward
-    public static double FORWARD_KP = 0.065;               // UNDETERMINED
-    public static double FORWARD_KI = 0.03;               // UNDETERMINED
-    public static double FORWARD_KD = 0.003;               // UNDETERMINED
+    public static double FORWARD_KP = 0.0365;               // UNDETERMINED
+    public static double FORWARD_KI = 0.0075;               // UNDETERMINED
+    public static double FORWARD_KD = 0.0005;               // UNDETERMINED
     // Turn
     public static double TURN_KP = 0.03;
     public static double TURN_KI = 0.02;

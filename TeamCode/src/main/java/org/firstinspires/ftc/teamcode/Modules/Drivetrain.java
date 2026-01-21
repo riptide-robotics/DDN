@@ -61,6 +61,12 @@ public class Drivetrain {
             .moveTo(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 90))
             .build();
     private double[] wheelPowers = new double[4];
+    private double fbPower;
+    private double fbDist;
+    private double fbVectNorm;
+    private double anglePower;
+    private double angleDiff;
+    private double angleATan;
 
 
     /// ///////////////////////////////////////////
@@ -138,8 +144,8 @@ public class Drivetrain {
     }
 
     public void resetCurrPos(){
-       getPinpoint().resetPosAndIMU();
-       getPinpoint().setPosition(START_POSITION);
+       //getPinpoint().resetPosAndIMU();
+       pinpoint.setPosition(START_POSITION);
     }
 
     // ------------ GETTERS ------------ //
@@ -172,6 +178,30 @@ public class Drivetrain {
         return wheelPowers;
     }
 
+    public double getFbPower() {
+        return fbPower;
+    }
+
+    public double getFbDist() {
+        return fbDist;
+    }
+
+    public double getFbVectNorm() {
+        return fbVectNorm;
+    }
+
+    public double getAngleDiff() {
+        return angleDiff;
+    }
+
+    public double getAnglePower() {
+        return anglePower;
+    }
+
+    public double getAngleATan() {
+        return angleATan;
+    }
+
     // -------- Methods --------------- //
     // boolean for testing if it got to the point, temporary
     public boolean followGivenPath(double time) {
@@ -189,16 +219,27 @@ public class Drivetrain {
         double dy = goal.getY(DistanceUnit.INCH) - pinpoint.getPosY(DistanceUnit.INCH);
         double distanceToPoint = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
 
-        double headingError = shortestAngleDiff(this.getRobotHeading(AngleUnit.RADIANS), Math.atan2(dy, dx));
+        double headingError = shortestAngleDiff(this.getRobotHeading(AngleUnit.DEGREES), Math.toDegrees(Math.atan2(dy, dx)));
 
-        double headingx = Math.cos(getRobotHeading(AngleUnit.RADIANS));
-        double headingy = Math.sin(getRobotHeading(AngleUnit.RADIANS));
+        angleATan = Math.toDegrees(Math.atan2(dy, dx));
+
+        double headingx = Math.cos(pinpoint.getHeading(AngleUnit.RADIANS));
+        double headingy = Math.sin(pinpoint.getHeading(AngleUnit.RADIANS));
         double[] headingVect = {headingx, headingy};
         double[] pointVect = {dx / distanceToPoint, dy / distanceToPoint};
         double fbError = distanceToPoint * (headingVect[0] * pointVect[0] + headingVect[1] * pointVect[1]);
 
-        double forwardPower = forwardController.calculate(0, fbError);
+        fbPower = fbError;
+        fbDist = distanceToPoint;
+        fbVectNorm = headingVect[0] * pointVect[0] + headingVect[1] * pointVect[1];
+
+        angleDiff = headingError;
+
+
+        double forwardPower = 0;//forwardController.calculate(0, fbError);
         double turnPower = turnController.calculate(0, headingError);
+
+        anglePower = turnPower;
 
         wheelPowers[0] = forwardPower - turnPower;
         wheelPowers[1] = forwardPower + turnPower;
