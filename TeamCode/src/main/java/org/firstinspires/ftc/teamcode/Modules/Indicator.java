@@ -37,7 +37,7 @@ public class Indicator {
 
 
         /**The position the "servo" the RGB indicator is set to, in order to set it to a specific color.*/
-       final double pos;
+        final double pos;
         statusLights(double pos) {
             this.pos = pos;
         }
