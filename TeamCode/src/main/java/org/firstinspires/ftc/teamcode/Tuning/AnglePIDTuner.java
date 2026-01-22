@@ -5,8 +5,6 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -22,16 +20,23 @@ import org.firstinspires.ftc.teamcode.riptideUtil;
 public class AnglePIDTuner extends LinearOpMode {
     public static double goalAngle = 0;
     private double prevGoalAngle = goalAngle;
-    private static Pose2D goal = new Pose2D(DistanceUnit.INCH, 1000 * Math.cos(Math.toRadians(goalAngle)), 1000 * Math.sin(Math.toRadians(goalAngle)), AngleUnit.DEGREES, 0);
+    private static Pose2D goal = new Pose2D(DistanceUnit.INCH, 100000 * Math.cos(Math.toRadians(goalAngle)), 100000 * Math.sin(Math.toRadians(goalAngle)), AngleUnit.DEGREES, 0);
 
     Robot robot;
 
-    public static double kp = 0.0;
-    public static double ki = 0.0;
-    public static double kd = 0.0;
-    private double prevkp = kp;
-    private double prevki = ki;
-    private double prevkd = kd;
+    public static double kpCCW = 0.0175;
+    public static double kiCCW = 0.0;
+    public static double kdCCW = 0.0;
+    private double prevkpCCW = kpCCW;
+    private double prevkiCCW = kiCCW;
+    private double prevkdCCW = kdCCW;
+
+    public static double kpCW = 0.0175;
+    public static double kiCW = 0.0;
+    public static double kdCW = 0.0;
+    private double prevkpCW = kpCW;
+    private double prevkiCW = kiCW;
+    private double prevkdCW = kdCW;
 
     Telemetry t = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -42,7 +47,8 @@ public class AnglePIDTuner extends LinearOpMode {
         robot.getDrivetrain().startOdometry();
         robot.getDrivetrain().getPinpoint().setPosition(riptideUtil.START_POSITION);
 
-        robot.getDrivetrain().setTurnController(kp, ki, kd);
+        robot.getDrivetrain().setTurnControllerCCW(kpCCW, kiCCW, kdCCW);
+        robot.getDrivetrain().setTurnControllerCCW(kpCW, kiCW, kdCW);
 
         telemetry.addData("Robot status", "successfully initiated");
         telemetry.update();
@@ -54,14 +60,20 @@ public class AnglePIDTuner extends LinearOpMode {
             if(gamepad1.a) {robot.getDrivetrain().getPinpoint().setHeading(0, AngleUnit.DEGREES);}
 
             if(prevGoalAngle != goalAngle) {
-                goal = new Pose2D(DistanceUnit.INCH, 1000*Math.cos(Math.toRadians(goalAngle)), 1000*Math.sin(Math.toRadians(goalAngle)), AngleUnit.DEGREES, 0);
+                goal = new Pose2D(DistanceUnit.INCH, 100000 * Math.cos(Math.toRadians(goalAngle)), 100000 * Math.sin(Math.toRadians(goalAngle)), AngleUnit.DEGREES, 0);
                 prevGoalAngle = goalAngle;
             }
-            if (prevkp != kp || prevki != ki || prevkd != kd) {
-                robot.getDrivetrain().setTurnController(kp, ki, kd);
-                prevkp = kp;
-                prevki = ki;
-                prevkd = kd;
+            if (prevkpCCW != kpCCW || prevkiCCW != kiCCW || prevkdCCW != kdCCW) {
+                robot.getDrivetrain().setTurnControllerCCW(kpCCW, kiCCW, kdCCW);
+                prevkpCCW = kpCCW;
+                prevkiCCW = kiCCW;
+                prevkdCCW = kdCCW;
+            }
+            if (prevkpCW != kpCW || prevkiCW != kiCW || prevkdCW != kdCW) {
+                robot.getDrivetrain().setTurnControllerCW(kpCW, kiCW, kdCW);
+                prevkpCCW = kpCW;
+                prevkiCCW = kiCW;
+                prevkdCCW = kdCW;
             }
             robot.getDrivetrain().goToPosPID(goal);
 
@@ -77,10 +89,10 @@ public class AnglePIDTuner extends LinearOpMode {
         t.addData("Angle PID Value", robot.getDrivetrain().getAnglePower());
         t.addData("Angle atan2(dy, dx)", robot.getDrivetrain().getAngleATan());
         t.addData("Goal Angle: ", goalAngle);
-        t.addData("Goal X: ", goal.getX(DistanceUnit.INCH));
-        t.addData("Goal Y: ", goal.getY(DistanceUnit.INCH));
-        t.addData("Bot X: ", robot.getDrivetrain().getPinpoint().getPosX(DistanceUnit.INCH));
-        t.addData("Bot Y: ", robot.getDrivetrain().getPinpoint().getPosY(DistanceUnit.INCH));
+//        t.addData("Goal X: ", goal.getX(DistanceUnit.INCH));
+//        t.addData("Goal Y: ", goal.getY(DistanceUnit.INCH));
+//        t.addData("Bot X: ", robot.getDrivetrain().getPinpoint().getPosX(DistanceUnit.INCH));
+//        t.addData("Bot Y: ", robot.getDrivetrain().getPinpoint().getPosY(DistanceUnit.INCH));
         t.addData("Left Wheel Powers", robot.getDrivetrain().getWheelPowersArray()[0]);
         t.addData("Right Wheel Powers", robot.getDrivetrain().getWheelPowersArray()[1]);
         t.update();

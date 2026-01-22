@@ -84,9 +84,12 @@ public class riptideUtil {
     public static double FORWARD_KI = 0.0075;               // UNDETERMINED
     public static double FORWARD_KD = 0.0005;               // UNDETERMINED
     // Turn
-    public static double TURN_KP = 0.03;
-    public static double TURN_KI = 0.02;
-    public static double TURN_KD = 0.0015;
+    public static double TURN_KP_CCW = 0.03;
+    public static double TURN_KI_CCW = 0.02;
+    public static double TURN_KD_CCW = 0.0015;
+    public static double TURN_KP_CW = 0.03;
+    public static double TURN_KI_CW = 0.02;
+    public static double TURN_KD_CW = 0.0015;
 
     // Speed relationships
     public static double MAX_A = 72;                 // UNDETERMINED
