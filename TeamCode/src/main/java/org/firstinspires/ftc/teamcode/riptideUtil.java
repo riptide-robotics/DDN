@@ -145,6 +145,8 @@ public class riptideUtil {
     public static double SPINDEX_SPEED = 0.03;
 
     public static boolean nextShotAvailable = true;
+    public static boolean moveToNextSlot = false;
+    public static boolean startedDelay = false;
 
     // Vision
     public static int CAMERA_WIDTH = 640;

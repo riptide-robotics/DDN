@@ -12,6 +12,8 @@ import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_G;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_G_STDEV;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R_STDEV;
+import static org.firstinspires.ftc.teamcode.riptideUtil.moveToNextSlot;
+import static org.firstinspires.ftc.teamcode.riptideUtil.startedDelay;
 
 // Imports to sync
 
@@ -25,6 +27,7 @@ import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.hardware.SwitchableLight;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -259,7 +262,90 @@ public class Intake{
 
     }
 
+    /**
+     * Sets the spindex servo position based on the variable set to getCurrOuttakeSlot()
+     * @param slot
+     */
+    public void cycleOuttakeSlot(double slot) {
+        if (slot != -1) {
+            if (slot == 0) {
+                goTo(UnshiftedPositions.SLOT_0_SHOOT);
+            }
 
+            if (slot == 1) {
+                goTo(UnshiftedPositions.SLOT_1_SHOOT);
+            }
+
+            if (slot == 2) {
+                goTo(UnshiftedPositions.SLOT_2_SHOOT);
+            }
+        }
+    }
+    /**
+     * Physically moves the servo based on the variable set to getNextIntakeSlot()
+     * @param slot
+     */
+    public void moveToNextIntakeSlot(double slot){
+        if (slot == 0) {
+            goTo(Intake.UnshiftedPositions.SLOT_0_RECEIVE);
+        } else if (slot == 1) {
+            goTo(Intake.UnshiftedPositions.SLOT_1_RECEIVE );
+        } else if (slot == 2) {
+            goTo(Intake.UnshiftedPositions.SLOT_2_RECEIVE);
+        }
+    }
+
+    /**
+     * Sets a delay to let the spindex move to the next slot before reading color again to avoid the color sensor reading the same ball
+     * @param delayTimer
+     * @param delay
+     * @param tele
+     */
+    public void delayMovementToNextSlot(ElapsedTime delayTimer, double delay, Telemetry tele){
+        if (!startedDelay) {
+            delayTimer.reset();
+            startedDelay = true;
+        }
+
+        if (delayTimer.milliseconds() >= delay) {
+            tele.addData("spindex delay active ", delayTimer.milliseconds());
+            moveToNextSlot = false;
+            startedDelay = false;
+        }
+    }
+
+    /**
+     * Stores the color of the ball (if there is one) to the current slot the spindex is at.
+     * @param slot
+     */
+    public void setSlotColor(double slot){
+        if (slot != -1 && !moveToNextSlot) {
+            if (slot == 0) {
+                if (Intake.SLOT_0 == 'b') {
+                    Intake.SLOT_0 = checkColor();
+                    moveToNextSlot = true;
+                }
+            }
+
+            if (slot == 1) {
+                if (Intake.SLOT_1 == 'b') {
+                    Intake.SLOT_1 = checkColor();
+                    moveToNextSlot = true;
+                }
+            }
+
+            if (slot == 2) {
+                if (Intake.SLOT_2 == 'b') {
+                    Intake.SLOT_2 = checkColor();
+                    moveToNextSlot = true;
+                }
+            }
+        }
+    }
+    /**
+     * Used to get the next empty slot the spindex should turn to but doesn't physically move the spindex servo
+     * To physically move the servo set a variable to this method and set the servo to the Unshifted receive positions based on the value of the variable.
+     */
     public double getNextIntakeSlot() {
         if (SLOT_0 == 'b') return 0;
         if (SLOT_1 == 'b') return 1;
@@ -269,6 +355,11 @@ public class Intake{
         }
     }
 
+
+    /**
+     * Used to get the next slot with a ball but doesnt physically move the spindex servo.
+     * To physically move the servo set a variable to this method and set the servo to the Unshifted shoot positions based on the value of the variable.
+     */
     public int getNextOuttakeSlot() {
         if (SLOT_0 != 'b') return 0;
         if (SLOT_1 != 'b') return 1;
