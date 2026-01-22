@@ -14,6 +14,8 @@
     import com.qualcomm.robotcore.util.ElapsedTime;
 
     import org.firstinspires.ftc.robotcore.external.Telemetry;
+    import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+    import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
     import org.firstinspires.ftc.teamcode.Modules.Intake;
     import org.firstinspires.ftc.teamcode.Robot;
 
@@ -52,7 +54,7 @@
 
 
 
-        /**            TIMERS              **/
+        /**            TIMERS               **/
         ElapsedTime bootKickerDelayTimerUp;
         ElapsedTime bootKickerDelayTimerDown;
         ElapsedTime bootKickActivateDelayTimer;
@@ -69,7 +71,7 @@
 
 
 
-        /**            DEBOUNCE              **/
+        /**            DEBOUNCE             **/
         boolean rightBumperPressedG2 = false;
         boolean backPressedG2 = false;
         boolean leftBumperPressedG2 = false;
@@ -192,8 +194,6 @@
             if (!gamepad2.back){backPressedG2 = false;}
             if (!gamepad2.dpad_up) {dUpPressedG2 = false;}
             if (!gamepad2.dpad_down) {dDownPressedG2 = false;}
-            if (!gamepad2.a) {aPressedG2 = false;}
-            if (!gamepad2.b) {bPressedG2 = false;}
         }
 
         public void tankDrive() {

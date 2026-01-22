@@ -6,7 +6,8 @@ import static org.firstinspires.ftc.teamcode.riptideUtil.BOOT_KICKER_UP;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.DummyClasses.EndgameServos;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.Modules.EndgameServos;
 import org.firstinspires.ftc.teamcode.Modules.Camera;
 import org.firstinspires.ftc.teamcode.Modules.Drivetrain;
 import org.firstinspires.ftc.teamcode.Modules.Indicator;
@@ -47,12 +48,12 @@ public class Robot {
         shootlookupblue[0] = new VelocityStorage();
         shootlookupblue[1] = new VelocityStorage();
         shootlookupblue[2] = new VelocityStorage();
-      
+
 
         shootlookupred[0] = new VelocityStorage();
         shootlookupred[1] = new VelocityStorage();
         shootlookupred[2] = new VelocityStorage();
-       
+
 
     }
 
@@ -205,8 +206,8 @@ public class Robot {
         }
         return returned;
     }
-    
-    
+
+
     /**Only access outside of Robot for the purposes of reading data from it.*/
     private static class VelocityStorage {
         public double upperRPM;
