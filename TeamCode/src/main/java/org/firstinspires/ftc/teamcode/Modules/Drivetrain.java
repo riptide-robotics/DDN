@@ -228,8 +228,8 @@ public class Drivetrain {
         angleDiff = headingError;
 
 
-        double forwardPower = 0;//forwardController.calculate(0, fbError);
-        double turnPower = (headingError >= 0) ? turnControllerCCW.calculate(0, headingError) : turnControllerCW.calculate(0, headingError);
+        double forwardPower = forwardController.calculate(0, fbError);
+        double turnPower = 0;//(headingError >= 0) ? turnControllerCCW.calculate(0, headingError) : turnControllerCW.calculate(0, headingError);
 
         anglePower = turnPower;
 
