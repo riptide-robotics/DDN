@@ -54,7 +54,7 @@ public class Intake{
 
     public boolean checkClose = false;
 
-    public static float gain = 30;
+    public static float gain = 14;
 
     private final double spindexRange = 900;
 
@@ -110,6 +110,7 @@ public class Intake{
     public void initSpindex() {
         currAngle = 450;
         setSpindexPosition(currAngle);
+        ballsShot = 0;
         currentState = UnshiftedPositions.SLOT_0_RECEIVE;
         SLOT_0 = 'b';
         SLOT_1 = 'b';
@@ -129,6 +130,9 @@ public class Intake{
         return ballsShot;
     }
 
+    public void resetCount() {
+        ballsShot = 0;
+    }
     /**
      * Gain is...
      */
@@ -242,11 +246,11 @@ public class Intake{
             diff -= 360;
         }
 
-        int newAngle = currAngle + diff;
+        int newAngle = currAngle + diff ;
         if (newAngle < 0) {
             newAngle += 360;
         }
-        if (newAngle > spindexRange) {
+        if (newAngle >= spindexRange) {
             newAngle -= 360;
         }
         currAngle = newAngle;
@@ -312,6 +316,13 @@ public class Intake{
        spindexServo.setPosition(0.5);
        currAngle = (int)spindexRange / 2;
        currentState = UnshiftedPositions.SLOT_0_RECEIVE;
+    }
+
+    public double currOuttakeSlot(){
+        if (spindexCurrentPosition() == UnshiftedPositions.SLOT_0_SHOOT.posUnshifted) {return 0;}
+        if (spindexCurrentPosition() == UnshiftedPositions.SLOT_1_SHOOT.posUnshifted) {return 1;}
+        if (spindexCurrentPosition() == UnshiftedPositions.SLOT_2_SHOOT.posUnshifted) {return 2;}
+        else {return -1;}
     }
 
     public double spindexCurrentPosition() {

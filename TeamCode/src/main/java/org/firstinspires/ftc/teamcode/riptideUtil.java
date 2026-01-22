@@ -5,7 +5,6 @@ import com.acmerobotics.dashboard.config.Config;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
 import org.firstinspires.ftc.vision.apriltag.AprilTagLibrary;
 
 @Config
@@ -22,12 +21,12 @@ public class riptideUtil {
      */
     // COLOR SENSING
     // Green
-    public static final float GREEN_R = 0.09f;
-    public static final float GREEN_R_STDEV = 0.05f;
-    public static final float GREEN_G = 0.37f;
-    public static final float GREEN_G_STDEV = 0.19f;
-    public static final float GREEN_B = 0.37f;
-    public static final float GREEN_B_STDEV = 0.11f;
+    public static final float GREEN_R = 0.16f; // 0.09f
+    public static final float GREEN_R_STDEV = 0.07f; // 0.05f
+    public static final float GREEN_G = 0.605f; // 0.37f
+    public static final float GREEN_G_STDEV = 0.256f; // 0.19f
+    public static final float GREEN_B = 0.445f; // 0.37f
+    public static final float GREEN_B_STDEV = 0.196f; // 0.11f
 
     public static final float GREEN_R_HOLE = 0.019f;
     public static final float GREEN_R_STDEV_HOLE = 0.0045f;
@@ -37,12 +36,12 @@ public class riptideUtil {
     public static final float GREEN_B_STDEV_HOLE = 0.011f;
 
     // Purple
-    public static final float PURPLE_R = 0.239f;
-    public static final float PURPLE_R_STDEV = 0.09f;
-    public static final float PURPLE_G = 0.262f;
-    public static final float PURPLE_G_STDEV = 0.1f;
-    public static final float PURPLE_B = 0.48f;
-    public static final float PURPLE_B_STDEV = 0.19f;
+    public static final float PURPLE_R = 0.37f; // 0.239
+    public static final float PURPLE_R_STDEV = 0.09f; // 0.09
+    public static final float PURPLE_G = 0.42f; // 0.262
+    public static final float PURPLE_G_STDEV = 0.11f; // 0.1
+    public static final float PURPLE_B = 0.728f; // 0.48
+    public static final float PURPLE_B_STDEV = 0.175f; // 0.19
 
     public static final float PURPLE_R_HOLE = 0.034f;
     public static final float PURPLE_R_STDEV_HOLE = 0.023f;
@@ -81,9 +80,9 @@ public class riptideUtil {
     public static double MAX_WHEEL_POWER = 1;       // Probably always going to be 1
 
     // Forward
-    public static double FORWARD_KP = 0.065;               // UNDETERMINED
-    public static double FORWARD_KI = 0.03;               // UNDETERMINED
-    public static double FORWARD_KD = 0.003;               // UNDETERMINED
+    public static double FORWARD_KP = 0.0365;               // UNDETERMINED
+    public static double FORWARD_KI = 0.0075;               // UNDETERMINED
+    public static double FORWARD_KD = 0.0005;               // UNDETERMINED
     // Turn
     public static double TURN_KP = 0.03;
     public static double TURN_KI = 0.02;
@@ -109,8 +108,8 @@ public class riptideUtil {
     public static double tolerance = 300; //?? what
 
     // Spindex
-    public static double SPINDEX_ARM_UP = 0.2;
-    public static double SPINDEX_ARM_RESTING = 1;
+    public static double BOOT_KICKER_UP = 0.2;
+    public static double BOOT_KICKER_RESTING = 1;
     public static double ROTATE_SPINDEX_ONCE = 60;
 
     // POS 1
@@ -135,6 +134,8 @@ public class riptideUtil {
     public static double SLOT_THREE_PIKCUP_POS = 60;
 
     public static double SPINDEX_SPEED = 0.03;
+
+    public static boolean nextShotAvailable = true;
 
     // Vision
     public static int CAMERA_WIDTH = 640;

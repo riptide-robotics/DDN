@@ -47,7 +47,7 @@ import org.firstinspires.ftc.teamcode.Robot;
 public class ColorSensorTuner extends LinearOpMode {
     Robot robot;
     Telemetry t = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-    public static float gain = 30;
+    public static float gain = 14;
 
     public static char currColor;
 

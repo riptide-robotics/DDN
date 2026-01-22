@@ -1,11 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.teamcode.riptideUtil.SPINDEX_ARM_RESTING;
-import static org.firstinspires.ftc.teamcode.riptideUtil.SPINDEX_ARM_UP;
+import static org.firstinspires.ftc.teamcode.riptideUtil.BOOT_KICKER_RESTING;
+import static org.firstinspires.ftc.teamcode.riptideUtil.BOOT_KICKER_UP;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.DummyClasses.EndgameServos;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Modules.EndgameServos;
 import org.firstinspires.ftc.teamcode.Modules.Camera;
@@ -14,15 +15,9 @@ import org.firstinspires.ftc.teamcode.Modules.Indicator;
 import org.firstinspires.ftc.teamcode.Modules.Intake;
 import org.firstinspires.ftc.teamcode.Modules.Outtake;
 import org.firstinspires.ftc.teamcode.Modules.Utils.Sequencer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Robot {
 
@@ -180,7 +175,10 @@ public class Robot {
     /***/
     public void setStatus(byte artifactsInTrough) {
         char[] badChar = {'b','b','b'};
-        if (Arrays.equals(motifOrder, badChar)) motifOrder = camera.scanMotifOrder();
+
+        if (Arrays.equals(motifOrder, badChar)) motifOrder = camera.scanMotifOrder(); //is there a problem
+        if (!Arrays.equals(motifOrder, badChar)) return; //is there still a problem
+
         setStatus(motifOrder[artifactsInTrough % 3]);
     }
 
@@ -228,16 +226,21 @@ public class Robot {
             this.distance = 0;
         }
     }
-    private void outtake(double rpmupper, double rpmlower) {
-        outtake.setOuttakeRPM(rpmupper,rpmlower);
+    public void outtake(double slotNum, Telemetry tele) {
         s.addImpulseAction(() -> {
-            intake.bootkick(SPINDEX_ARM_UP);
+            intake.bootkick(BOOT_KICKER_UP);
+            tele.addLine("Boot kicker up");
         }, 2);
         s.addImpulseAction(() -> {
-            intake.bootkick(SPINDEX_ARM_RESTING);
+            intake.bootkick(BOOT_KICKER_RESTING);
+            tele.addLine("Boot kicker down");
         },4);
         s.addImpulseAction(() -> {
-            outtake.setOuttakeRPM(0,0);
+            if (slotNum == 0){Intake.SLOT_0 = 'b';}
+            if (slotNum == 1){Intake.SLOT_1 = 'b';}
+            if (slotNum == 2){Intake.SLOT_2 = 'b';}
+            riptideUtil.nextShotAvailable = true;
+            tele.addLine("setting lost to blank");
         },6);
     }
 }
