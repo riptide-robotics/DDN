@@ -6,7 +6,6 @@ import static org.firstinspires.ftc.teamcode.riptideUtil.BOOT_KICKER_UP;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.DummyClasses.EndgameServos;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Modules.EndgameServos;
 import org.firstinspires.ftc.teamcode.Modules.Camera;
