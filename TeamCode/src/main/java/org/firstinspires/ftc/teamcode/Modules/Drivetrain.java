@@ -3,9 +3,9 @@ package org.firstinspires.ftc.teamcode.Modules;
 import static org.firstinspires.ftc.teamcode.riptideUtil.FORWARD_KD;
 import static org.firstinspires.ftc.teamcode.riptideUtil.POINT_TOLERANCE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.START_POSITION;
-import static org.firstinspires.ftc.teamcode.riptideUtil.TURN_KD;
-import static org.firstinspires.ftc.teamcode.riptideUtil.TURN_KI;
-import static org.firstinspires.ftc.teamcode.riptideUtil.TURN_KP;
+import static org.firstinspires.ftc.teamcode.riptideUtil.TURN_KD_CCW;
+import static org.firstinspires.ftc.teamcode.riptideUtil.TURN_KI_CCW;
+import static org.firstinspires.ftc.teamcode.riptideUtil.TURN_KP_CCW;
 import static org.firstinspires.ftc.teamcode.riptideUtil.FORWARD_KI;
 import static org.firstinspires.ftc.teamcode.riptideUtil.FORWARD_KP;
 import static org.firstinspires.ftc.teamcode.riptideUtil.shortestAngleDiff;
@@ -23,13 +23,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Autonomous.Utils.Trajectories.LinearTrajectoryBuilder;
 import org.firstinspires.ftc.teamcode.Autonomous.Utils.Trajectories.Trajectory;
-import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
 import org.firstinspires.ftc.teamcode.Modules.Utils.GoBildaPinpointDriver;
-import org.firstinspires.ftc.teamcode.Placeholder;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 // ----- READY TO TRANSFER ----- //
 
@@ -53,7 +47,8 @@ public class Drivetrain {
 
     // -------- AUTONOMOUS CONTROLLERS -------- //
 
-    private final PIDController turnController = new PIDController(TURN_KP, TURN_KI, TURN_KD);
+    private final PIDController turnControllerCW = new PIDController(TURN_KP_CW, TURN_KI_CW, TURN_KD_CW);
+    private final PIDController turnControllerCCW = new PIDController(TURN_KP_CCW, TURN_KI_CCW, TURN_KD_CCW);
     private final PIDController forwardController = new PIDController(FORWARD_KP, FORWARD_KI, FORWARD_KD);
     // !!! ADD PATH HERE !!! //
     private final Trajectory path = new LinearTrajectoryBuilder()
@@ -138,8 +133,13 @@ public class Drivetrain {
         forwardController.reset();
     }
 
-    public void setTurnController(double kp, double ki, double kd) {
-        turnController.setPID(kp, ki, kd);
+    public void setTurnControllerCW(double kp, double ki, double kd) {
+        turnControllerCW.setPID(kp, ki, kd);
+        forwardController.reset();
+    }
+
+    public void setTurnControllerCCW(double kp, double ki, double kd) {
+        turnControllerCCW.setPID(kp, ki, kd);
         forwardController.reset();
     }
 
@@ -237,7 +237,7 @@ public class Drivetrain {
 
 
         double forwardPower = 0;//forwardController.calculate(0, fbError);
-        double turnPower = turnController.calculate(0, headingError);
+        double turnPower = (headingError >= 0) ? turnControllerCCW.calculate(0, headingError) : turnControllerCW.calculate(0, headingError);
 
         anglePower = turnPower;
 

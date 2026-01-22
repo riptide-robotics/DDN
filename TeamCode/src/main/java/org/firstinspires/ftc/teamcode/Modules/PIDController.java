@@ -96,7 +96,7 @@ public class PIDController {
         }
 
         iError += elapsedTime * (pError);
-        iError = Math.abs(iError) > integralCeil ? integralCeil : iError;
+        iError = Math.abs(iError) > integralCeil ? integralCeil * Math.signum(iError) : iError;
 
         return kp * pError + kd * dError + ki * iError;
     }
@@ -115,5 +115,7 @@ public class PIDController {
     public void resetIntegral(){
         iError = 0;
     }
+
+    public void setIntegralCeil() {}
 
 }
