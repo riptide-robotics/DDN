@@ -20,6 +20,7 @@ public class TurnTableLockTester extends LinearOpMode {
     Robot robot;
     DcMotor frWheel, flWheel, brWheel, blWheel;
     TurnTable turnTable;
+    boolean lockOn = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -91,13 +92,20 @@ public class TurnTableLockTester extends LinearOpMode {
                 robot.getDrivetrain().getPinpoint().recalibrateIMU();
                 telemetry.addLine("IMU recalibrated");
             }
-            if (gamepad1.y) {
-                turnTable.lockOnGoal(
+            if (gamepad1.y && !lockOn) {
+                turnTable.setGoalAngle(
                         robot.getDrivetrain().getRobotHeading(AngleUnit.DEGREES),
                         robot.getDrivetrain().getCurrPos().getX(DistanceUnit.INCH),
-                        robot.getDrivetrain().getCurrPos().getY(DistanceUnit.INCH));
-                telemetry.addLine("locking on goal");
+                        robot.getDrivetrain().getCurrPos().getY(DistanceUnit.INCH)
+                );
+                telemetry.addLine("locking on goal: " + turnTable.getGoalDeg());
                 // I need the position of the goal ToT
+                lockOn = true;
+            } else if (gamepad1.y && lockOn) {
+                lockOn = false;
+            }
+            if (lockOn) {
+                turnTable.lockOnGoal();
             }
             telemetry.addData("turnTable angle", turnTable.getAngle());
 
