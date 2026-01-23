@@ -235,7 +235,8 @@ public class Drivetrain {
 
 
         double forwardPower = (fbError >= FB_CLOSE_THRESHOLD) ? forwardControllerFar.calculate(0, fbError) : forwardControllerClose.calculate(0, fbError);
-        double turnPower = 0;//(headingError >= 0) ? turnControllerCCW.calculate(0, headingError) : turnControllerCW.calculate(0, headingError);
+        double turnPower = (headingError >= 0) ? turnControllerCCW.calculate(0, headingError) : turnControllerCW.calculate(0, headingError);
+        if(distanceToPoint <= TURN_THRESHOLD) {turnPower = 0;}
 
         anglePower = turnPower;
 
