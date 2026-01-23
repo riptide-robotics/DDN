@@ -27,14 +27,19 @@ public class FBPIDTuner extends LinearOpMode {
 
     Robot robot;
 
-    public static double kp = 0.0365;
-    public static double ki = 0.0075;
-    public static double kd = 0.0005;
-    private double prevkp = kp;
-    private double prevki = ki;
-    private double prevkd = kd;
+    public static double kpFar = 0.0365;
+    public static double kiFar = 0.0075;
+    public static double kdFar = 0.0005;
+    private double prevkpFar = kpFar;
+    private double prevkiFar = kiFar;
+    private double prevkdFar = kdFar;
 
-    //PIDController controller = new PIDController(kp, ki, kd);
+    public static double kpClose = 0.0675;
+    public static double kiClose = 0.1;
+    public static double kdClose = 0.0005;
+    private double prevkpClose = kpClose;
+    private double prevkiClose = kiClose;
+    private double prevkdClose = kdClose;
 
     Telemetry t = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -45,7 +50,7 @@ public class FBPIDTuner extends LinearOpMode {
         robot.getDrivetrain().startOdometry();
         robot.getDrivetrain().getPinpoint().setPosition(riptideUtil.START_POSITION);
 
-        robot.getDrivetrain().setForwardController(kp, ki, kd);
+        robot.getDrivetrain().setForwardControllerFar(kpFar, kiFar, kdFar);
 
         telemetry.addData("Robot status", "successfully initiated");
         telemetry.update();
@@ -63,12 +68,19 @@ public class FBPIDTuner extends LinearOpMode {
                 prevx = x;
                 prevy = y;
             }
-            if (prevkp != kp || prevki != ki || prevkd != kd) {
-                robot.getDrivetrain().setForwardController(kp, ki, kd);
-                prevkp = kp;
-                prevki = ki;
-                prevkd = kd;
+            if (prevkpFar != kpFar || prevkiFar != kiFar || prevkdFar != kdFar) {
+                robot.getDrivetrain().setForwardControllerFar(kpFar, kiFar, kdFar);
+                prevkpFar = kpFar;
+                prevkiFar = kiFar;
+                prevkdFar = kdFar;
             }
+            if (prevkpClose != kpClose || prevkiClose != kiClose || prevkdClose != kdClose) {
+                robot.getDrivetrain().setForwardControllerClose(kpClose, kiClose, kdClose);
+                prevkpFar = kpClose;
+                prevkiFar = kiClose;
+                prevkdFar = kdClose;
+            }
+
             robot.getDrivetrain().goToPosPID(goal);
 
             telem();

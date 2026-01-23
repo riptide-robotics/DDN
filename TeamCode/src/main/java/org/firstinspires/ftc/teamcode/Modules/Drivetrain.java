@@ -41,7 +41,8 @@ public class Drivetrain {
 
     private final PIDController turnControllerCW = new PIDController(TURN_KP_CW, TURN_KI_CW, TURN_KD_CW);
     private final PIDController turnControllerCCW = new PIDController(TURN_KP_CCW, TURN_KI_CCW, TURN_KD_CCW);
-    private final PIDController forwardController = new PIDController(FORWARD_KP, FORWARD_KI, FORWARD_KD);
+    private final PIDController forwardControllerFar = new PIDController(FORWARD_KP_FAR, FORWARD_KI_FAR, FORWARD_KD_FAR);
+    private final PIDController forwardControllerClose = new PIDController(FORWARD_KP_CLOSE, FORWARD_KI_CLOSE, FORWARD_KD_CLOSE);
     // !!! ADD PATH HERE !!! //
     private final Trajectory path = new LinearTrajectoryBuilder()
             .moveTo(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 90))
@@ -92,7 +93,7 @@ public class Drivetrain {
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
         pinpoint.setOffsets(xOdoOffsetInInches, yOdoOffsetInInches, DistanceUnit.INCH);
         pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
-        pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.REVERSED);
+        pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.REVERSED);
 
         robotPos = new OdometryLocalizer(pinpoint, 10);
 
@@ -120,19 +121,24 @@ public class Drivetrain {
         blWheel.setPower(blWheelPower);
     }
 
-    public void setForwardController(double kp, double ki, double kd) {
-        forwardController.setPID(kp, ki, kd);
-        forwardController.reset();
+    public void setForwardControllerFar(double kp, double ki, double kd) {
+        forwardControllerFar.setPID(kp, ki, kd);
+        forwardControllerFar.reset();
+    }
+
+    public void setForwardControllerClose(double kp, double ki, double kd) {
+        forwardControllerClose.setPID(kp, ki, kd);
+        forwardControllerClose.reset();
     }
 
     public void setTurnControllerCW(double kp, double ki, double kd) {
         turnControllerCW.setPID(kp, ki, kd);
-        forwardController.reset();
+        forwardControllerFar.reset();
     }
 
     public void setTurnControllerCCW(double kp, double ki, double kd) {
         turnControllerCCW.setPID(kp, ki, kd);
-        forwardController.reset();
+        forwardControllerFar.reset();
     }
 
     public void resetCurrPos(){
@@ -228,7 +234,7 @@ public class Drivetrain {
         angleDiff = headingError;
 
 
-        double forwardPower = forwardController.calculate(0, fbError);
+        double forwardPower = (fbError >= FB_CLOSE_THRESHOLD) ? forwardControllerFar.calculate(0, fbError) : forwardControllerClose.calculate(0, fbError);
         double turnPower = 0;//(headingError >= 0) ? turnControllerCCW.calculate(0, headingError) : turnControllerCW.calculate(0, headingError);
 
         anglePower = turnPower;
