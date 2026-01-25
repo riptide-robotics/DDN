@@ -1,14 +1,7 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
-import static org.firstinspires.ftc.teamcode.riptideUtil.FORWARD_KD;
-import static org.firstinspires.ftc.teamcode.riptideUtil.POINT_TOLERANCE;
-import static org.firstinspires.ftc.teamcode.riptideUtil.START_POSITION;
-import static org.firstinspires.ftc.teamcode.riptideUtil.TURN_KD_CCW;
-import static org.firstinspires.ftc.teamcode.riptideUtil.TURN_KI_CCW;
-import static org.firstinspires.ftc.teamcode.riptideUtil.TURN_KP_CCW;
-import static org.firstinspires.ftc.teamcode.riptideUtil.FORWARD_KI;
-import static org.firstinspires.ftc.teamcode.riptideUtil.FORWARD_KP;
 import static org.firstinspires.ftc.teamcode.riptideUtil.shortestAngleDiff;
+import static org.firstinspires.ftc.teamcode.riptideUtil.*;
 import static java.lang.Thread.sleep;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;

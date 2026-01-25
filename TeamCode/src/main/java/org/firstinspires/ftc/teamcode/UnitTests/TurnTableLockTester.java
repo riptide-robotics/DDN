@@ -93,20 +93,22 @@ public class TurnTableLockTester extends LinearOpMode {
                 telemetry.addLine("IMU recalibrated");
             }
             if (gamepad1.y && !lockOn) {
+                // I need the position of the goal ToT
+                lockOn = true;
+            } else if (gamepad1.b && lockOn) {
+                lockOn = false;
+                turnTable.shutOffMotors();
+            }
+            if (lockOn) {
                 turnTable.setGoalAngle(
-                        robot.getDrivetrain().getRobotHeading(AngleUnit.DEGREES),
+                        robot.getDrivetrain().getCurrPos().getHeading(AngleUnit.DEGREES),
                         robot.getDrivetrain().getCurrPos().getX(DistanceUnit.INCH),
                         robot.getDrivetrain().getCurrPos().getY(DistanceUnit.INCH)
                 );
-                telemetry.addLine("locking on goal: " + turnTable.getGoalDeg());
-                // I need the position of the goal ToT
-                lockOn = true;
-            } else if (gamepad1.y && lockOn) {
-                lockOn = false;
-            }
-            if (lockOn) {
                 turnTable.lockOnGoal();
             }
+
+            telemetry.addLine("locking on goal: " + turnTable.getGoalDeg() + " lockOn = " + lockOn);
             telemetry.addData("turnTable angle", turnTable.getAngle());
 
             telemetry.addData("X Position", currPos.getX(DistanceUnit.INCH));
