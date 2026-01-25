@@ -25,14 +25,14 @@ public class AnglePIDTuner extends LinearOpMode {
     Robot robot;
 
     public static double kpCCW = 0.0175;
-    public static double kiCCW = 0.0;
+    public static double kiCCW = 0.3;
     public static double kdCCW = 0.0;
     private double prevkpCCW = kpCCW;
     private double prevkiCCW = kiCCW;
     private double prevkdCCW = kdCCW;
 
-    public static double kpCW = 0.0175;
-    public static double kiCW = 0.0;
+    public static double kpCW = 0.025;
+    public static double kiCW = 0.0005;
     public static double kdCW = 0.0;
     private double prevkpCW = kpCW;
     private double prevkiCW = kiCW;

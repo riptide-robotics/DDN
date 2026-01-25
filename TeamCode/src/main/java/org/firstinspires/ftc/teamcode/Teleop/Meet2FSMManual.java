@@ -4,6 +4,7 @@
     import static org.firstinspires.ftc.teamcode.riptideUtil.MID_DIST_TOP;
     import static org.firstinspires.ftc.teamcode.riptideUtil.BOOT_KICKER_RESTING;
     import static org.firstinspires.ftc.teamcode.riptideUtil.BOOT_KICKER_UP;
+    import static org.firstinspires.ftc.teamcode.riptideUtil.moveToNextSlot;
     import static org.firstinspires.ftc.teamcode.riptideUtil.nextShotAvailable;
 
     import com.acmerobotics.dashboard.FtcDashboard;
@@ -29,7 +30,6 @@
         boolean hasrun = false;
         boolean recieve = false;
         boolean outtake = false;
-        boolean runIntakePos = true;
         boolean runOuttakePos = true;
         public static double spin = 1;
 
@@ -97,10 +97,12 @@
             endTimer = new ElapsedTime();
             recieve = true;
             outtake = false;
-            runIntakePos = false;
+            moveToNextSlot = false;
             runOuttakePos = false;
             moveToNextOuttakeSlot = false;
             resetBootKick = false;
+            nextShotAvailable = true;
+            spindexPosIntake = robot.getIntake().getNextIntakeSlot();
 
             robot.getIntake().initSpindex();
             robot.getIntake().initColorSensor();
@@ -128,14 +130,16 @@
 
                 FSM();
                 tankDrive();
-                robot.getOuttake().runOuttakePID(tele);
+                robot.getOuttake().runOuttakePID(currentTopRPMGoal,currentBottomRPMGoal,tele);
+                robot.s.loop();
+                robot.setStatus((byte) Intake.ballsShot);
 
-                double currTime = endTimer.seconds();
+//                double currTime = endTimer.seconds();
 //                robot.getOuttake().mapJoyToAngle(gamepad2.right_stick_x);
                 robot.getOuttake().updateTurntableAngle(tele);
-
-                if (currTime >= 80 && !didRumble){gamepad1.rumble(1, 1, 500); gamepad2.rumble(1, 1, 500);}
-                if (currTime >= 82) {didRumble = true;}
+//
+//                if (currTime >= 80 && !didRumble){gamepad1.rumble(1, 1, 500); gamepad2.rumble(1, 1, 500);}
+//                if (currTime >= 82) {didRumble = true;}
                 tele.update();
             }
         }
@@ -223,6 +227,13 @@
         }
 
         public void cycleSlots(){
+            // idle spin
+            if (gamepad2.back){
+                robot.getIntake().spin(-1);
+            } else{
+                robot.getIntake().spin(spin);
+            }
+
             if (gamepad2.y && !yPressedG2 && !recieve) {
                 currentTopRPMGoal = 0;
                 currentBottomRPMGoal = 0;
@@ -236,75 +247,32 @@
                 spindexPosIntake = robot.getIntake().getNextIntakeSlot();
                 yPressedG2 = true;
             }
+//
+//            if (gamepad2.y && !yPressedG2 && recieve){
+//                currentTopRPMGoal = 0;
+//                currentBottomRPMGoal = 0;
+//                recieve = false;
+//                yPressedG2 = true;
+//            }
 
-            if (gamepad2.y && !yPressedG2 && recieve){
-                currentTopRPMGoal = 0;
-                currentBottomRPMGoal = 0;
-                recieve = false;
-                yPressedG2 = true;
-            }
-
-            // idle spin
-            if (gamepad2.back){
-                robot.getIntake().spin(-1);
-            } else{
-                robot.getIntake().spin(spin);
-            }
             if (recieve){
                 //              CYCLE AUTOMATIC
                 spindexPosOuttake = -1;
-                if (spindexPosIntake != -1 && !runIntakePos) {
-                    if (spindexPosIntake == 0) {
-                        if (Intake.SLOT_0 == 'b') {
-                            Intake.SLOT_0 = robot.getIntake().checkColor();
-                            runIntakePos = true;
-                        }
-                    }
-
-                    if (spindexPosIntake == 1) {
-                        if (Intake.SLOT_1 == 'b') {
-                            Intake.SLOT_1 = robot.getIntake().checkColor();
-                            runIntakePos = true;
-                        }
-                    }
-
-                    if (spindexPosIntake == 2) {
-                        if (Intake.SLOT_2 == 'b') {
-                            Intake.SLOT_2 = robot.getIntake().checkColor();
-                            runIntakePos = true;
-                        }
-                    }
-                }
-                if (runIntakePos) {
+                robot.getIntake().setSlotColor(spindexPosIntake);
+                if (moveToNextSlot) {
                     spindexPosIntake = robot.getIntake().getNextIntakeSlot();
-                    if (spindexPosIntake == 0) {
-                        robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_0_RECEIVE);
-                    } else if (spindexPosIntake == 1) {
-                        robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_1_RECEIVE );
-                    } else if (spindexPosIntake == 2) {
-                        robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_2_RECEIVE);
-                    }
-
-                    if (!startedDelay) {
-                        spindexDelayTimer.reset();
-                        startedDelay = true;
-                    }
-
-                    if (spindexDelayTimer.milliseconds() >= spindexDelay) {
-                        tele.addData("spindex delay active ", spindexDelayTimer.milliseconds());
-                        runIntakePos = false;
-                        startedDelay = false;
-                    }
+                    robot.getIntake().moveToNextIntakeSlot(spindexPosIntake);
+                    robot.getIntake().delayMovementToNextSlot(spindexDelayTimer, spindexDelay, tele);
                 }
                 tele.addLine("Spindex is Receiving");
-                tele.addData("RunIntakePos: ", runIntakePos);
+                tele.addData("moveToNextSlot: ", moveToNextSlot);
             }
 
             if (gamepad2.x && !xPressedG2 && !outtake) {
                 outtake = true;
                 recieve = false;
-                currentTopRPMGoal = 0;
-                currentBottomRPMGoal = 0;
+                currentTopRPMGoal = MID_DIST_TOP;
+                currentBottomRPMGoal = MID_DIST_BOT;
                 spindexPosOuttake = robot.getIntake().getNextOuttakeSlot();
                 xPressedG2 = true;
             }
@@ -312,37 +280,21 @@
             if (gamepad2.x && !xPressedG2 && outtake){
                 currentTopRPMGoal = 0;
                 currentBottomRPMGoal = 0;
-                outtake = false;
+//                outtake = false;
                 xPressedG2 = true;
             }
 
             if (outtake){
-                if (gamepad2.b && !bPressedG2){
-                    spindexPosOuttake = robot.getIntake().getNextOuttakeSlot();
-                    bPressedG2 = true;
-                }
                 spindexPosIntake = -1;
-
-                if (spindexPosOuttake != -1) {
-                    if (spindexPosOuttake == 0) {
-                        robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_0_SHOOT);
-                    }
-
-                    if (spindexPosOuttake == 1) {
-                        robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_1_SHOOT);
-                    }
-
-                    if (spindexPosOuttake == 2) {
-                        robot.getIntake().goTo(Intake.UnshiftedPositions.SLOT_2_SHOOT);
-                    }
+                robot.getIntake().cycleOuttakeSlot(spindexPosOuttake);
+                if (gamepad2.a && !aPressedG2 && nextShotAvailable) {
+                    nextShotAvailable = false;
+                    robot.outtake(spindexPosOuttake, tele);
+                    aPressedG2 = true;
                 }
 
-                if (gamepad2.a && robot.getOuttake().isAtGoalSpeed() && !aPressedG2 && nextShotAvailable) {
-                    robot.outtake(robot.getIntake().currOuttakeSlot(), tele);
+                if (nextShotAvailable) {
                     spindexPosOuttake = robot.getIntake().getNextOuttakeSlot();
-                    tele.addLine("Ball shot next slot is " + spindexPosOuttake);
-                    nextShotAvailable = false;
-                    aPressedG2 = true;
                 }
 
                 tele.addLine("Spindex is outtaking");
@@ -354,5 +306,6 @@
             tele.addData("Slot 2: ", Intake.SLOT_2);
             tele.addData("Current Color: ", robot.getIntake().checkColor());
             tele.addData("Is at goal speed ", robot.getOuttake().isAtGoalSpeed());
+            tele.addData("Next Slot Available ", nextShotAvailable);
         }
     }

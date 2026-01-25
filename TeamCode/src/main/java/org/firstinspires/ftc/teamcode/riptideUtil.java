@@ -79,17 +79,23 @@ public class riptideUtil {
 
     public static double MAX_WHEEL_POWER = 1;       // Probably always going to be 1
 
-    // Forward
-    public static double FORWARD_KP = 0.0365;               // UNDETERMINED
-    public static double FORWARD_KI = 0.0075;               // UNDETERMINED
-    public static double FORWARD_KD = 0.0005;               // UNDETERMINED
-    // Turn
-    public static double TURN_KP_CCW = 0.03;
-    public static double TURN_KI_CCW = 0.02;
-    public static double TURN_KD_CCW = 0.0015;
-    public static double TURN_KP_CW = 0.03;
-    public static double TURN_KI_CW = 0.02;
-    public static double TURN_KD_CW = 0.0015;
+    // ----- Forward ----- //
+    public static double FORWARD_KP_FAR = 0.0365;
+    public static double FORWARD_KI_FAR = 0.0075;
+    public static double FORWARD_KD_FAR = 0.0005;
+    public static double FORWARD_KP_CLOSE = 0.0675;
+    public static double FORWARD_KI_CLOSE = 0.1;
+    public static double FORWARD_KD_CLOSE = 0.0005;
+    public static double FB_CLOSE_THRESHOLD = 20;
+
+    // ----- Turn ----- //
+    public static double TURN_KP_CCW = 0.0175;
+    public static double TURN_KI_CCW = 0.3;
+    public static double TURN_KD_CCW = 0.0;
+    public static double TURN_KP_CW = 0.025;
+    public static double TURN_KI_CW = 0.0005;
+    public static double TURN_KD_CW = 0.0;
+    public static double TURN_THRESHOLD = 2.5;
 
     // Speed relationships
     public static double MAX_A = 72;                 // UNDETERMINED
@@ -111,8 +117,8 @@ public class riptideUtil {
     public static double tolerance = 300; //?? what
 
     // Spindex
-    public static double BOOT_KICKER_UP = 0.2;
-    public static double BOOT_KICKER_RESTING = 1;
+    public static double BOOT_KICKER_UP = 1;
+    public static double BOOT_KICKER_RESTING = 0;
     public static double ROTATE_SPINDEX_ONCE = 60;
 
     // POS 1
@@ -139,6 +145,8 @@ public class riptideUtil {
     public static double SPINDEX_SPEED = 0.03;
 
     public static boolean nextShotAvailable = true;
+    public static boolean moveToNextSlot = false;
+    public static boolean startedDelay = false;
 
     // Vision
     public static int CAMERA_WIDTH = 640;
