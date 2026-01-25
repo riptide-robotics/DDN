@@ -36,20 +36,20 @@ public class TurnTable {
         goalTicks = goalDeg * DEGREES_TO_TICKS;
     }
     public void setGoalAngle(double h, double x, double y) {
-        double d = -1 * (Math.atan2(y, x) - h);
+        double d = (Math.toDegrees(Math.atan2(y, x)) - h);
         if (d < -60) {
             d = -60;
-        } else if (d > 100) {
-            d = 100;
+        } else if (d > 60) {
+            d = 60;
         }
         setGoalAngle(d);
     }
     public void goToGoalAngle() {
 
-        double goalTicks = goalDeg * DEGREES_TO_TICKS * 3; // gear ratio 1:3
+        double localGoalTicks = goalTicks * 3; // gear ratio 1:3
 
         double currPosTicks = motor.getCurrentPosition();
-        double setPower = motorController.calculate(currPosTicks, goalTicks) + TURNTABLE_KF;
+        double setPower = motorController.calculate(currPosTicks, localGoalTicks) + TURNTABLE_KF;
         motor.setPower(setPower);
     }
     public void lockOnGoal() {
@@ -60,5 +60,14 @@ public class TurnTable {
     }
     public double getGoalDeg() {
         return goalDeg;
+    }
+    public void shutOffMotors() {
+        motor.setPower(0);
+    }
+
+
+    // tmp func
+    public PIDController getPIDController() {
+        return motorController;
     }
 }
