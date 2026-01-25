@@ -1,17 +1,29 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
 import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_B;
+import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_B_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_B_STDEV;
+import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_B_STDEV_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_G;
+import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_G_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_G_STDEV;
+import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_G_STDEV_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_R;
+import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_R_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_R_STDEV;
+import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_R_STDEV_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_B;
+import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_B_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_B_STDEV;
+import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_B_STDEV_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_G;
+import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_G_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_G_STDEV;
+import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_G_STDEV_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R;
+import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R_STDEV;
+import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R_STDEV_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.moveToNextSlot;
 import static org.firstinspires.ftc.teamcode.riptideUtil.startedDelay;
 
@@ -67,8 +79,8 @@ public class Intake{
 
     public enum UnshiftedPositions {
         SLOT_0_SHOOT(180),
-        SLOT_1_SHOOT(60),
-        SLOT_2_SHOOT(-60),
+        SLOT_1_SHOOT(-60),
+        SLOT_2_SHOOT(60),
         SLOT_0_RECEIVE(0),
         SLOT_1_RECEIVE(120),
         SLOT_2_RECEIVE(-120);
@@ -180,6 +192,36 @@ public class Intake{
             currColor = 'g';
         } else {
             checkClose = true;
+        }
+        if (checkClose){
+            if ((colors.red < PURPLE_R_HOLE + PURPLE_R_STDEV_HOLE
+                    &&
+                    colors.red > PURPLE_R_HOLE - PURPLE_R_STDEV_HOLE)
+                    &&
+                    (colors.green < PURPLE_G_HOLE + PURPLE_G_STDEV_HOLE
+                            &&
+                            colors.green > PURPLE_G_HOLE - PURPLE_G_STDEV_HOLE)
+                    &&
+                    (colors.blue < PURPLE_B_HOLE + PURPLE_B_STDEV_HOLE
+                            &&
+                            colors.blue > PURPLE_B_HOLE - PURPLE_B_STDEV_HOLE)) {
+                currColor = 'p';
+            } else if ((colors.red < GREEN_R_HOLE + GREEN_R_STDEV_HOLE
+                    &&
+                    colors.red > GREEN_R_HOLE - GREEN_R_STDEV_HOLE)
+                    &&
+                    (colors.green < GREEN_G_HOLE + GREEN_G_STDEV_HOLE
+                            &&
+                            colors.green > GREEN_G_HOLE - GREEN_G_STDEV_HOLE)
+                    &&
+                    (colors.blue < GREEN_B_HOLE + GREEN_B_STDEV_HOLE
+                            &&
+                            colors.blue > GREEN_B_HOLE - GREEN_B_STDEV_HOLE)) {
+                currColor = 'g';
+            } else{
+                currColor = 'b';
+            }
+            checkClose = false;
         }
 
         return currColor;

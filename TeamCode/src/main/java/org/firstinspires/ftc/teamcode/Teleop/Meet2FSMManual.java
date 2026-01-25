@@ -55,15 +55,12 @@
 
 
         /**            TIMERS               **/
-        ElapsedTime bootKickerDelayTimerUp;
-        ElapsedTime bootKickerDelayTimerDown;
-        ElapsedTime bootKickActivateDelayTimer;
         ElapsedTime spindexDelayTimer;
         ElapsedTime endTimer;
-        public static double spindexDelay = 1000; // IN MS
-        public static double bootKickDelay = 500; // IN MS
-        public static double bootKickActivateDelay = 1500;
+        ElapsedTime scanDelayTimer;
+        public static double spindexDelay = 500; // IN MS
         boolean resetBootKick = false;
+        public static double scanDelay = 500;
 
         boolean didRumble = false;
         boolean startedDelay = false;
@@ -83,6 +80,7 @@
         boolean aPressedG2 = false;
         boolean dUpPressedG2 = false;
         boolean dDownPressedG2 = false;
+        boolean isOuttakeOn = false;
 
 
 
@@ -90,11 +88,9 @@
         public void runOpMode() throws InterruptedException {
             hasrun = false;
             robot = new Robot(hardwareMap);
-            bootKickerDelayTimerUp = new ElapsedTime();
-            bootKickerDelayTimerDown = new ElapsedTime();
             spindexDelayTimer = new ElapsedTime();
-            bootKickActivateDelayTimer= new ElapsedTime();
             endTimer = new ElapsedTime();
+            scanDelayTimer = new ElapsedTime();
             recieve = true;
             outtake = false;
             moveToNextSlot = false;
@@ -102,6 +98,7 @@
             moveToNextOuttakeSlot = false;
             resetBootKick = false;
             nextShotAvailable = true;
+            isOuttakeOn = false;
             spindexPosIntake = robot.getIntake().getNextIntakeSlot();
 
             robot.getIntake().initSpindex();
@@ -118,8 +115,6 @@
             endTimer.reset();
             endTimer.startTime();
 
-            bootKickActivateDelayTimer.reset();
-            bootKickActivateDelayTimer.startTime();
             telemetry.clear();
             telemetry.addData("Robot status", "Started!");
             telemetry.update();
@@ -137,9 +132,6 @@
 //                double currTime = endTimer.seconds();
 //                robot.getOuttake().mapJoyToAngle(gamepad2.right_stick_x);
                 robot.getOuttake().updateTurntableAngle(tele);
-//
-//                if (currTime >= 80 && !didRumble){gamepad1.rumble(1, 1, 500); gamepad2.rumble(1, 1, 500);}
-//                if (currTime >= 82) {didRumble = true;}
                 tele.update();
             }
         }
@@ -195,6 +187,7 @@
             if (!gamepad2.back){backPressedG2 = false;}
             if (!gamepad2.dpad_up) {dUpPressedG2 = false;}
             if (!gamepad2.dpad_down) {dDownPressedG2 = false;}
+            if (!gamepad2.a){aPressedG2 = false;}
         }
 
         public void tankDrive() {
@@ -227,64 +220,61 @@
         }
 
         public void cycleSlots(){
-            // idle spin
-            if (gamepad2.back){
-                robot.getIntake().spin(-1);
-            } else{
-                robot.getIntake().spin(spin);
-            }
-
             if (gamepad2.y && !yPressedG2 && !recieve) {
+                scanDelayTimer.reset();
+                scanDelayTimer.startTime();
+
+                isOuttakeOn = false;
                 currentTopRPMGoal = 0;
                 currentBottomRPMGoal = 0;
-//                CYCLE MANUALLY
-//                if (spindexPosIntake == -1) spindexPosIntake = 0;
-//                else if (spindexPosIntake == 0) spindexPosIntake = 1;
-//                else if (spindexPosIntake == 1) spindexPosIntake = 2;
-//                else if (spindexPosIntake == 2) spindexPosIntake = 0;
                 outtake = false;
                 recieve = true;
+
                 spindexPosIntake = robot.getIntake().getNextIntakeSlot();
                 yPressedG2 = true;
             }
-//
-//            if (gamepad2.y && !yPressedG2 && recieve){
-//                currentTopRPMGoal = 0;
-//                currentBottomRPMGoal = 0;
-//                recieve = false;
-//                yPressedG2 = true;
-//            }
 
             if (recieve){
-                //              CYCLE AUTOMATIC
+                if (scanDelayTimer.milliseconds() >= scanDelay){
+                    robot.getIntake().setSlotColor(spindexPosIntake);
+                }
                 spindexPosOuttake = -1;
-                robot.getIntake().setSlotColor(spindexPosIntake);
                 if (moveToNextSlot) {
                     spindexPosIntake = robot.getIntake().getNextIntakeSlot();
                     robot.getIntake().moveToNextIntakeSlot(spindexPosIntake);
                     robot.getIntake().delayMovementToNextSlot(spindexDelayTimer, spindexDelay, tele);
                 }
+
+                if (gamepad2.back){
+                    robot.getIntake().spin(-1);
+                } else{
+                    robot.getIntake().spin(spin);
+                }
+
                 tele.addLine("Spindex is Receiving");
                 tele.addData("moveToNextSlot: ", moveToNextSlot);
             }
 
-            if (gamepad2.x && !xPressedG2 && !outtake) {
+            if (gamepad2.x && !xPressedG2 && !outtake && !isOuttakeOn) {
                 outtake = true;
                 recieve = false;
                 currentTopRPMGoal = MID_DIST_TOP;
                 currentBottomRPMGoal = MID_DIST_BOT;
                 spindexPosOuttake = robot.getIntake().getNextOuttakeSlot();
                 xPressedG2 = true;
+                isOuttakeOn = true;
             }
 
-            if (gamepad2.x && !xPressedG2 && outtake){
+            if (gamepad2.x && !xPressedG2 && isOuttakeOn){
                 currentTopRPMGoal = 0;
                 currentBottomRPMGoal = 0;
-//                outtake = false;
+                outtake = true;
                 xPressedG2 = true;
+                isOuttakeOn = false;
             }
 
             if (outtake){
+                robot.getIntake().spin(0);
                 spindexPosIntake = -1;
                 robot.getIntake().cycleOuttakeSlot(spindexPosOuttake);
                 if (gamepad2.a && !aPressedG2 && nextShotAvailable) {
@@ -297,7 +287,10 @@
                     spindexPosOuttake = robot.getIntake().getNextOuttakeSlot();
                 }
 
-                tele.addLine("Spindex is outtaking");
+                /*************************************************
+                                Add turntable stuff here
+                 *************************************************/
+
             }
             tele.addData("Intake Slot: ", spindexPosIntake);
             tele.addData("Outtake Slot: ", spindexPosOuttake);
