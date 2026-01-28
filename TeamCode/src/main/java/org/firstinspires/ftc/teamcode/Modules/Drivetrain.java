@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Modules;
 import static org.firstinspires.ftc.teamcode.riptideUtil.*;
 import static java.lang.Thread.sleep;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -10,6 +11,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
@@ -219,8 +221,15 @@ public class Drivetrain {
     }
 
     public boolean goToPosPID(Pose2D goal) {
+        return this.goToPosPID(goal, FtcDashboard.getInstance().getTelemetry());
+    }
+
+    public boolean goToPosPID(Pose2D goal, Telemetry t) {
         pinpoint.update();
-        if(atPoint(goal)) {return true;}
+        if (atPoint(goal)) {
+            this.setWheelPowers(0, 0, 0, 0);
+            return true;
+        }
         double dx = goal.getX(DistanceUnit.INCH) - pinpoint.getPosX(DistanceUnit.INCH);
         double dy = goal.getY(DistanceUnit.INCH) - pinpoint.getPosY(DistanceUnit.INCH);
         double distanceToPoint = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
@@ -229,12 +238,13 @@ public class Drivetrain {
 
         angleATan = Math.toDegrees(Math.atan2(dy, dx));
 
-        double headingx = Math.cos(getCurrPos().getHeading(AngleUnit.DEGREES));
-        double headingy = Math.sin(getCurrPos().getHeading(AngleUnit.DEGREES));
+        double headingx = Math.cos(getCurrPos().getHeading(AngleUnit.RADIANS)); // William you jerk
+        double headingy = Math.sin(getCurrPos().getHeading(AngleUnit.RADIANS)); // These are supposed to be in radians dummy
         double[] headingVect = {headingx, headingy};
         double[] pointVect = {dx / distanceToPoint, dy / distanceToPoint};
         double dotProd = headingVect[0] * pointVect[0] + headingVect[1] * pointVect[1];
-        if(dotProd < 0) {dotProd = 0;}
+        // I was typing this line out and was like; wait a minute, something ain't right
+        //double dotProd = 1 * Math.sqrt(pointVect[0] * pointVect[0] + pointVect[1] * pointVect[1]) * Math.cos(Math.toRadians(headingError));
         double fbError = distanceToPoint * (dotProd);
 
         fbPower = fbError;
@@ -243,10 +253,20 @@ public class Drivetrain {
 
         angleDiff = headingError;
 
-
         double forwardPower = (fbError >= FB_CLOSE_THRESHOLD) ? forwardControllerFar.calculate(0, fbError) : forwardControllerClose.calculate(0, fbError);
+       // to avoid deathspirals
+        // A little overtuned rn have to work out how to make forward power scale based on heading more.
+        double alignmentScalar = Math.max(0, Math.cos(headingError));
+
+        forwardPower *= Math.pow(alignmentScalar, 2);
+
+        t.addData("forward power", forwardPower);
+
         double turnPower = (headingError >= 0) ? turnControllerCCW.calculate(0, headingError) : turnControllerCW.calculate(0, headingError);
-        if(distanceToPoint <= TURN_THRESHOLD) {turnPower = 0;}
+        t.addData("Turn Power", turnPower);
+        if (distanceToPoint <= TURN_THRESHOLD) {
+            turnPower = 0;
+        }
 
         anglePower = turnPower;
 
@@ -255,11 +275,13 @@ public class Drivetrain {
         wheelPowers[2] = forwardPower + turnPower;
         wheelPowers[3] = forwardPower - turnPower;
 
+        double maxWheelPower = Math.max(Math.abs(forwardPower) + Math.abs(turnPower), 1);
+
         this.setWheelPowers(
-                forwardPower - turnPower,
-                forwardPower + turnPower,
-                forwardPower + turnPower,
-                forwardPower - turnPower
+                (forwardPower - turnPower) / maxWheelPower,
+                (forwardPower + turnPower) / maxWheelPower,
+                (forwardPower + turnPower) / maxWheelPower,
+                (forwardPower - turnPower) / maxWheelPower
         );
 
         return atPoint(goal);
