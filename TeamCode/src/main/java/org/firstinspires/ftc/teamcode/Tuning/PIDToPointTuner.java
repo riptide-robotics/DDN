@@ -35,7 +35,7 @@ public class PIDToPointTuner extends LinearOpMode {
         robot = new Robot(hardwareMap);
 
         robot.getDrivetrain().startOdometry();
-        robot.getDrivetrain().getPinpoint().setPosition(riptideUtil.START_POSITION);
+        //robot.getDrivetrain().setPinpointPos(riptideUtil.START_POSITION);
 
         telemetry.addData("Robot status", "successfully initiated");
         telemetry.update();
@@ -44,7 +44,7 @@ public class PIDToPointTuner extends LinearOpMode {
         if (isStopRequested()) return;
 
         while(opModeIsActive()) {
-            if(gamepad1.a) {robot.getDrivetrain().resetCurrPos();}
+            //if(gamepad1.a) {robot.getDrivetrain().resetCurrPos();}
 
             if(prevx != x || prevy != y) {
                 goal = new Pose2D(DistanceUnit.INCH, x, y, AngleUnit.DEGREES, 0);
@@ -53,6 +53,7 @@ public class PIDToPointTuner extends LinearOpMode {
             }
 
             if(goToPoint) {robot.getDrivetrain().goToPosPID(goal);}
+            else {robot.getDrivetrain().setWheelPowers(0, 0, 0, 0);}
 
             telem();
         }
@@ -61,7 +62,7 @@ public class PIDToPointTuner extends LinearOpMode {
     public void telem() {
         t.addData("Robot X", robot.getDrivetrain().getCurrPos().getX(DistanceUnit.INCH));
         t.addData("Robot Y", robot.getDrivetrain().getCurrPos().getY(DistanceUnit.INCH));
-        t.addData("Robot Heading", robot.getDrivetrain().getRobotHeading(AngleUnit.DEGREES));
+        t.addData("Robot Heading", robot.getDrivetrain().getCurrPos().getHeading(AngleUnit.DEGREES));
         t.addData("Goal X", x);
         t.addData("Goal Y", y);
         t.addData("Distance", robot.getDrivetrain().getFbDist());

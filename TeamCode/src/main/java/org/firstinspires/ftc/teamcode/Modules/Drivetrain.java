@@ -105,6 +105,8 @@ public class Drivetrain {
         imu.resetYaw();
         imu.initialize(parameters);
 
+        pinpoint.setPosition(START_POSITION);
+
     }
 
     // ----------- START/STOP ----------- //
@@ -141,10 +143,15 @@ public class Drivetrain {
         forwardControllerFar.reset();
     }
 
-    public void resetCurrPos(){
-       //getPinpoint().resetPosAndIMU();
-       pinpoint.setPosition(START_POSITION);
-    }
+//    public void setPinpointPos(Pose2D pos) {
+//        pinpoint.setPosition(pos);
+//        pinpoint.setHeading(pos.getHeading(AngleUnit.DEGREES), AngleUnit.DEGREES);
+//    }
+
+//    public void resetCurrPos(){
+//       //getPinpoint().resetPosAndIMU();
+//       setPinpointPos(START_POSITION);
+//    }
 
     // ------------ GETTERS ------------ //
     public Pose2D getCurrPos() {
@@ -213,23 +220,26 @@ public class Drivetrain {
 
     public boolean goToPosPID(Pose2D goal) {
         pinpoint.update();
+        if(atPoint(goal)) {return true;}
         double dx = goal.getX(DistanceUnit.INCH) - pinpoint.getPosX(DistanceUnit.INCH);
         double dy = goal.getY(DistanceUnit.INCH) - pinpoint.getPosY(DistanceUnit.INCH);
         double distanceToPoint = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
 
-        double headingError = shortestAngleDiff(this.getRobotHeading(AngleUnit.DEGREES), Math.toDegrees(Math.atan2(dy, dx)));
+        double headingError = shortestAngleDiff(getCurrPos().getHeading(AngleUnit.DEGREES), Math.toDegrees(Math.atan2(dy, dx)));
 
         angleATan = Math.toDegrees(Math.atan2(dy, dx));
 
-        double headingx = Math.cos(pinpoint.getHeading(AngleUnit.RADIANS));
-        double headingy = Math.sin(pinpoint.getHeading(AngleUnit.RADIANS));
+        double headingx = Math.cos(getCurrPos().getHeading(AngleUnit.DEGREES));
+        double headingy = Math.sin(getCurrPos().getHeading(AngleUnit.DEGREES));
         double[] headingVect = {headingx, headingy};
         double[] pointVect = {dx / distanceToPoint, dy / distanceToPoint};
-        double fbError = distanceToPoint * (headingVect[0] * pointVect[0] + headingVect[1] * pointVect[1]);
+        double dotProd = headingVect[0] * pointVect[0] + headingVect[1] * pointVect[1];
+        if(dotProd < 0) {dotProd = 0;}
+        double fbError = distanceToPoint * (dotProd);
 
         fbPower = fbError;
         fbDist = distanceToPoint;
-        fbVectNorm = headingVect[0] * pointVect[0] + headingVect[1] * pointVect[1];
+        fbVectNorm = dotProd;
 
         angleDiff = headingError;
 
