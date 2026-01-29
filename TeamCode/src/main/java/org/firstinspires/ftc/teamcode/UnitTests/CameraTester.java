@@ -7,6 +7,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.Modules.Camera;
+import org.firstinspires.ftc.teamcode.Modules.Drivetrain;
+import org.firstinspires.ftc.teamcode.Modules.Outtake;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.riptideUtil.TEAM_COLOR;
 
@@ -17,31 +20,37 @@ public class CameraTester extends LinearOpMode {
     Double error;
     double absoluteError;
     Double dist;
+    Outtake outtake;
+    Camera camera;
+    Drivetrain drivetrain;
 
     public void runOpMode() {
-        robot = new Robot(hardwareMap);
-        robot.setTeamColor(TEAM_COLOR.RED);
+        outtake = new Outtake(hardwareMap);
+        camera = new Camera(hardwareMap, TEAM_COLOR.RED);
+        drivetrain = new Drivetrain(hardwareMap);
+        //robot = new Robot(hardwareMap);
+        //robot.setTeamColor(TEAM_COLOR.RED);
 
         waitForStart();
 
         while (opModeIsActive()) {
-            error = robot.getCamera().getGoalAngleError();
+            error = camera.getGoalAngleError();
             t.addData("Calculated error", error);
             if (error == null) {
                 t.addData("Absolute error", "Null");
             } else {
-                absoluteError = robot.getCamera().getAbsoluteAngleError(robot.getDrivetrain().getRobotHeading(AngleUnit.DEGREES), error);
+                absoluteError = camera.getAbsoluteAngleError(drivetrain.getRobotHeading(AngleUnit.DEGREES), error);
                 t.addData("Absolute error", absoluteError);
             }
-            int len = robot.getCamera().getTagDetections().size();
+            int len = camera.getTagDetections().size();
             String s = "";
             for (int i = 0; i < len; i++) {
-                s = s + robot.getCamera().getTagDetections().get(0) + ", ";
+                s = s + camera.getTagDetections().get(0) + ", ";
             }
             t.addData("Tag(s) detected", s);
-            dist = robot.getCamera().getGoalDistance();
+            dist = camera.getGoalDistance();
             t.addData("Distance", dist);
-            char[] motifOrder = robot.getCamera().scanMotifOrder();
+            char[] motifOrder = camera.scanMotifOrder();
             t.addData("Scanned Motif Order", new String(motifOrder));
             t.update();
         }

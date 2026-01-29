@@ -6,7 +6,8 @@ import static org.firstinspires.ftc.teamcode.riptideUtil.BOOT_KICKER_UP;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.DummyClasses.EndgameServos;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.Modules.EndgameServos;
 import org.firstinspires.ftc.teamcode.Modules.Camera;
 import org.firstinspires.ftc.teamcode.Modules.Drivetrain;
 import org.firstinspires.ftc.teamcode.Modules.Indicator;
@@ -47,12 +48,12 @@ public class Robot {
         shootlookupblue[0] = new VelocityStorage();
         shootlookupblue[1] = new VelocityStorage();
         shootlookupblue[2] = new VelocityStorage();
-      
+
 
         shootlookupred[0] = new VelocityStorage();
         shootlookupred[1] = new VelocityStorage();
         shootlookupred[2] = new VelocityStorage();
-       
+
 
     }
 
@@ -205,8 +206,8 @@ public class Robot {
         }
         return returned;
     }
-    
-    
+
+
     /**Only access outside of Robot for the purposes of reading data from it.*/
     private static class VelocityStorage {
         public double upperRPM;
@@ -228,17 +229,17 @@ public class Robot {
         s.addImpulseAction(() -> {
             intake.bootkick(BOOT_KICKER_UP);
             tele.addLine("Boot kicker up");
-        }, 2);
+        }, 1);
         s.addImpulseAction(() -> {
             intake.bootkick(BOOT_KICKER_RESTING);
             tele.addLine("Boot kicker down");
-        },4);
+        },2);
         s.addImpulseAction(() -> {
             if (slotNum == 0){Intake.SLOT_0 = 'b';}
             if (slotNum == 1){Intake.SLOT_1 = 'b';}
             if (slotNum == 2){Intake.SLOT_2 = 'b';}
             riptideUtil.nextShotAvailable = true;
             tele.addLine("setting lost to blank");
-        },6);
+        },3);
     }
 }

@@ -18,7 +18,8 @@ import org.firstinspires.ftc.teamcode.riptideUtil;
 @TeleOp(name="Forward Backward PID Tuner")
 public class FBPIDTuner extends LinearOpMode {
     // this should be 10 inches parallel to the robot
-    public static double x = 50;
+    // tune for 40 inches
+    public static double x = 0;
     public static double y = 0;
     private double prevx = x;
     private double prevy = y;
@@ -26,14 +27,19 @@ public class FBPIDTuner extends LinearOpMode {
 
     Robot robot;
 
-    public static double kp = 0.2;
-    public static double ki = 0.03;
-    public static double kd = 0.003;
-    private double prevkp = kp;
-    private double prevki = ki;
-    private double prevkd = kd;
+    public static double kpFar = 0.0365;
+    public static double kiFar = 0.0075;
+    public static double kdFar = 0.0005;
+    private double prevkpFar = kpFar;
+    private double prevkiFar = kiFar;
+    private double prevkdFar = kdFar;
 
-    //PIDController controller = new PIDController(kp, ki, kd);
+    public static double kpClose = 0.0675;
+    public static double kiClose = 0.1;
+    public static double kdClose = 0.0005;
+    private double prevkpClose = kpClose;
+    private double prevkiClose = kiClose;
+    private double prevkdClose = kdClose;
 
     Telemetry t = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -44,7 +50,7 @@ public class FBPIDTuner extends LinearOpMode {
         robot.getDrivetrain().startOdometry();
         robot.getDrivetrain().getPinpoint().setPosition(riptideUtil.START_POSITION);
 
-        robot.getDrivetrain().setForwardController(kp, ki, kd);
+        robot.getDrivetrain().setForwardControllerFar(kpFar, kiFar, kdFar);
 
         telemetry.addData("Robot status", "successfully initiated");
         telemetry.update();
@@ -53,6 +59,8 @@ public class FBPIDTuner extends LinearOpMode {
         if (isStopRequested()) return;
 
         while(opModeIsActive()) {
+            //if(gamepad1.a) {robot.getDrivetrain().resetCurrPos();}
+
             robot.getDrivetrain().getPinpoint().update();
             robot.getDrivetrain().getPinpoint().getCurrPos();
             if(prevx != x || prevy != y) {
@@ -60,12 +68,19 @@ public class FBPIDTuner extends LinearOpMode {
                 prevx = x;
                 prevy = y;
             }
-            if (prevkp != kp || prevki != ki || prevkd != kd) {
-                robot.getDrivetrain().setForwardController(kp, ki, kd);
-                prevkp = kp;
-                prevki = ki;
-                prevkd = kd;
+            if (prevkpFar != kpFar || prevkiFar != kiFar || prevkdFar != kdFar) {
+                robot.getDrivetrain().setForwardControllerFar(kpFar, kiFar, kdFar);
+                prevkpFar = kpFar;
+                prevkiFar = kiFar;
+                prevkdFar = kdFar;
             }
+            if (prevkpClose != kpClose || prevkiClose != kiClose || prevkdClose != kdClose) {
+                robot.getDrivetrain().setForwardControllerClose(kpClose, kiClose, kdClose);
+                prevkpFar = kpClose;
+                prevkiFar = kiClose;
+                prevkdFar = kdClose;
+            }
+
             robot.getDrivetrain().goToPosPID(goal);
 
             telem();
@@ -80,6 +95,9 @@ public class FBPIDTuner extends LinearOpMode {
         t.addData("Robot Heading", robot.getDrivetrain().getRobotHeading(AngleUnit.DEGREES));
         t.addData("Left Wheel Powers", robot.getDrivetrain().getWheelPowersArray()[0]);
         t.addData("Right Wheel Powers", robot.getDrivetrain().getWheelPowersArray()[1]);
+        t.addData("FB Error", robot.getDrivetrain().getFbPower());
+        t.addData("FB Distance", robot.getDrivetrain().getFbDist());
+        t.addData("FB Dot Product", robot.getDrivetrain().getFbVectNorm());
         t.update();
     }
 }

@@ -1,7 +1,8 @@
-package org.firstinspires.ftc.teamcode.Tuning;
+package org.firstinspires.ftc.teamcode.UnitTests;
 
 import static org.firstinspires.ftc.teamcode.riptideUtil.START_POSITION;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -10,29 +11,19 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.Modules.Drivetrain;
-import org.firstinspires.ftc.teamcode.Modules.Utils.EditablePose2D;
+import org.firstinspires.ftc.teamcode.Modules.TurnTable;
 import org.firstinspires.ftc.teamcode.Robot;
 
-/**
- * For the 3 wheel setup refer to the Meet 2 repo for the Into the Deep season.
- * Uses Tank Drive
- */
-@TeleOp(name = "Odometry Test")
-public class Odometry extends LinearOpMode {
-
+@Config
+@TeleOp(name = "Turntable Lock Tester")
+public class TurnTableLockTester extends LinearOpMode {
     Robot robot;
     DcMotor frWheel, flWheel, brWheel, blWheel;
+    TurnTable turnTable;
+    boolean lockOn = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
-
-        /*
-         * * * * * * * * * * * * * * *
-         * INITIALIZATION
-         * * * * * * * * * * * * * * *
-         */
-
         robot = new Robot(hardwareMap);
 
 
@@ -62,6 +53,8 @@ public class Odometry extends LinearOpMode {
 
         robot.getDrivetrain().getPinpoint().setPosition(START_POSITION);
         robot.getDrivetrain().getPinpoint().update();
+
+        turnTable = new TurnTable(hardwareMap);
 
         telemetry.addData("Robot status", "succesfully initiated");
         telemetry.update();
@@ -93,12 +86,30 @@ public class Odometry extends LinearOpMode {
             telemetry.addLine(currPos.toString() + '\n');
 
             if(gamepad1.a){
-               robot.getDrivetrain().getPinpoint().setPosition(START_POSITION);
+                robot.getDrivetrain().getPinpoint().setPosition(START_POSITION);
             }
             if(gamepad1.x) {
                 robot.getDrivetrain().getPinpoint().recalibrateIMU();
                 telemetry.addLine("IMU recalibrated");
             }
+            if (gamepad1.y && !lockOn) {
+                // I need the position of the goal ToT
+                lockOn = true;
+            } else if (gamepad1.b && lockOn) {
+                lockOn = false;
+                turnTable.shutOffMotors();
+            }
+            if (lockOn) {
+                turnTable.setGoalAngle(
+                        robot.getDrivetrain().getCurrPos().getHeading(AngleUnit.DEGREES),
+                        robot.getDrivetrain().getCurrPos().getX(DistanceUnit.INCH),
+                        robot.getDrivetrain().getCurrPos().getY(DistanceUnit.INCH)
+                );
+                turnTable.lockOnGoal();
+            }
+
+            telemetry.addLine("locking on goal: " + turnTable.getGoalDeg() + " lockOn = " + lockOn);
+            telemetry.addData("turnTable angle", turnTable.getAngle());
 
             telemetry.addData("X Position", currPos.getX(DistanceUnit.INCH));
             telemetry.addData("Y Position", currPos.getY(DistanceUnit.INCH));

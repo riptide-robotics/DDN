@@ -59,9 +59,9 @@ public class riptideUtil {
     public static final double DEGREES_TO_TICKS = 751.8 / 360;
     public static final double DEADZONE = 3;
 
-    public static final double TURNTABLE_KP = 0.02;
-    public static final double TURNTABLE_KI = 0.003;
-    public static final double TURNTABLE_KD = 0.00005;
+    public static final double TURNTABLE_KP = 0.01;
+    public static final double TURNTABLE_KI = 0.01;
+    public static final double TURNTABLE_KD = 0.0002;
     public static final double TURNTABLE_KF = 0;
 
     /**
@@ -79,18 +79,27 @@ public class riptideUtil {
 
     public static double MAX_WHEEL_POWER = 1;       // Probably always going to be 1
 
-    // Forward
-    public static double FORWARD_KP = 0.065;               // UNDETERMINED
-    public static double FORWARD_KI = 0.03;               // UNDETERMINED
-    public static double FORWARD_KD = 0.003;               // UNDETERMINED
-    // Turn
-    public static double TURN_KP = 0.03;
-    public static double TURN_KI = 0.02;
-    public static double TURN_KD = 0.0015;
+    // ----- Forward ----- //
+    public static double FORWARD_KP_FAR = 0.0365;
+    public static double FORWARD_KI_FAR = 0.0075;
+    public static double FORWARD_KD_FAR = 0.0005;
+    public static double FORWARD_KP_CLOSE = 0.0675;
+    public static double FORWARD_KI_CLOSE = 0.1;
+    public static double FORWARD_KD_CLOSE = 0.0005;
+    public static double FB_CLOSE_THRESHOLD = 20;
+
+    // ----- Turn ----- //
+    public static double TURN_KP_CCW = 0.0175;
+    public static double TURN_KI_CCW = 0.3;
+    public static double TURN_KD_CCW = 0.0;
+    public static double TURN_KP_CW = 0.025;
+    public static double TURN_KI_CW = 0.0005;
+    public static double TURN_KD_CW = 0.0;
+    public static double TURN_THRESHOLD = 2.5;
 
     // Speed relationships
-    public static double MAX_A = 72;                 // UNDETERMINED
-    public static double MAX_V = 96;                 // UNDETERMINED
+    public static double MAX_A = 36;                 // UNDETERMINED
+    public static double MAX_V = 12;                 // UNDETERMINED
 
 
     public static double LONG_DIST_TOP = 3250; // UNDETERMINED
@@ -108,8 +117,8 @@ public class riptideUtil {
     public static double tolerance = 300; //?? what
 
     // Spindex
-    public static double BOOT_KICKER_UP = 0.2;
-    public static double BOOT_KICKER_RESTING = 1;
+    public static double BOOT_KICKER_UP = 1;
+    public static double BOOT_KICKER_RESTING = 0;
     public static double ROTATE_SPINDEX_ONCE = 60;
 
     // POS 1
@@ -136,6 +145,8 @@ public class riptideUtil {
     public static double SPINDEX_SPEED = 0.03;
 
     public static boolean nextShotAvailable = true;
+    public static boolean moveToNextSlot = false;
+    public static boolean startedDelay = false;
 
     // Vision
     public static int CAMERA_WIDTH = 640;

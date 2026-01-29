@@ -5,6 +5,7 @@ import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.har
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+//import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.matrices.MatrixF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -85,6 +86,7 @@ public class Camera extends OpenCvPipeline {
     int blueGoalID = 20;
     int redGoalID = 24;
     boolean isRed = true;
+//    ExposureControl exposureControl;
 
     public Camera(double v, double v1, double v2, double v3, double v4) {
     }
@@ -157,6 +159,9 @@ public class Camera extends OpenCvPipeline {
                 //.enableCameraMonitoring(true)
                 .setAutoStopLiveView(true)
                 .build();
+
+//        exposureControl = vuforia.getCamera().getControl(ExposureControl.class);
+//        Vuforia
     }
 
     public void setGoalTag(String goalTag) {
@@ -261,10 +266,7 @@ public class Camera extends OpenCvPipeline {
         detections = getTagDetections();
         for (AprilTagDetection detection : detections) {
             if (detection.id == redGoalID) {
-                double x = detection.robotPose.getPosition().x;
-                double y = detection.robotPose.getPosition().y;
-                //double z = detection.robotPose.getPosition().z;
-                return Math.sqrt(x * x + y * y/* + z * z*/);
+                return getAprilTagDistance(detection);
             }
         }
         return -1;
@@ -462,9 +464,10 @@ public class Camera extends OpenCvPipeline {
 
         double x = goalDetection.robotPose.getPosition().x;
         double y = goalDetection.robotPose.getPosition().y;
-        //double z = goalDetection.robotPose.getPosition().z;
+        double z = goalDetection.robotPose.getPosition().z;
+        // 29.5 - 18 = 11.5
 
-        return Math.sqrt(x * x + y * y/* + z * z*/) /* 0.03937008*/ /* convert from mm to inches*/; // I think it already returns in inches...?
+        return Math.sqrt(Math.pow(Math.sqrt(x * x + y * y + z * z), 2) - 11.5 * 11.5) * 2.3 /* 0.03937008*/ /* convert from mm to inches*/; // I think it already returns in inches...?
     }
 
     public Double getGoalAngleError() {
