@@ -157,18 +157,24 @@ public class Robot {
 
         if (colorRequested == ' ') contains = true;
 
+
         byte amount = (byte) (
                 (order[0] != ' ' ? 1:0) +
                 (order[1] != ' ' ? 1:0) +
                 (order[2] != ' ' ? 1:0) );
 
-        if (amount == 0) indicator.setStatusColor(Indicator.statusLights.EMPTY);
 
-        if ((amount == 1 || amount == 2) && contains) indicator.setStatusColor(Indicator.statusLights.SEMI_OPEN);
-        if ((amount == 1 || amount == 2) && !contains) indicator.setStatusColor(Indicator.statusLights.SEMI_OPEN_WITHOUT_MOTIF);
 
-        if (amount == 3 && contains) indicator.setStatusColor(Indicator.statusLights.FULL_SPINDEXER);
-        if (amount == 3 && !contains) indicator.setStatusColor(Indicator.statusLights.FULL_SPINDEXER_WITHOUT_MOTIF);
+             if (amount == 0)                        indicator.setRGB(Indicator.IndColor.ORANGE);
+        else if (amount == 3 && !contains)           indicator.setRGB(Indicator.IndColor.RED);
+
+        else if (!contains && colorRequested == 'p') indicator.setRGB(Indicator.IndColor.BLUE);
+        else if (!contains && colorRequested == 'g') indicator.setRGB(Indicator.IndColor.YELLOW);
+        else if ( contains && colorRequested == 'p') indicator.setRGB(Indicator.IndColor.INDIGO);
+        else if ( contains && colorRequested == 'g') indicator.setRGB(Indicator.IndColor.GREEN);
+
+        else indicator.setRGB(Indicator.IndColor.NONE); //err
+
     }
 
     /***/
