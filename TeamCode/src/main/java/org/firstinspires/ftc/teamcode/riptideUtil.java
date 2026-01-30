@@ -111,7 +111,7 @@ public class riptideUtil {
     public static double SHORT_DIST_TOP = 2950; // UNDETERMINED
     public static double SHORT_DIST_BOT = 3480;// UNDETERMINED
 
-    public static double KPTop = 0.002; //0.004
+    public static double KPTop = 0.00021; //0.002
     public static double KPBottom = 0.0035; // 0.0045
 
     public static double tolerance = 300; //?? what
