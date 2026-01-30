@@ -2,10 +2,9 @@
 
     import static org.firstinspires.ftc.teamcode.riptideUtil.MID_DIST_BOT;
     import static org.firstinspires.ftc.teamcode.riptideUtil.MID_DIST_TOP;
-    import static org.firstinspires.ftc.teamcode.riptideUtil.BOOT_KICKER_RESTING;
-    import static org.firstinspires.ftc.teamcode.riptideUtil.BOOT_KICKER_UP;
     import static org.firstinspires.ftc.teamcode.riptideUtil.moveToNextSlot;
     import static org.firstinspires.ftc.teamcode.riptideUtil.nextShotAvailable;
+    import static org.firstinspires.ftc.teamcode.riptideUtil.endgameServosUp;
 
     import com.acmerobotics.dashboard.FtcDashboard;
     import com.acmerobotics.dashboard.config.Config;
@@ -15,8 +14,6 @@
     import com.qualcomm.robotcore.util.ElapsedTime;
 
     import org.firstinspires.ftc.robotcore.external.Telemetry;
-    import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-    import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
     import org.firstinspires.ftc.teamcode.Modules.Intake;
     import org.firstinspires.ftc.teamcode.Robot;
 
@@ -32,6 +29,7 @@
         boolean outtake = false;
         boolean runOuttakePos = true;
         public static double spin = 1;
+        boolean shake = false;
 
         Telemetry tele = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -58,13 +56,18 @@
         ElapsedTime spindexDelayTimer;
         ElapsedTime endTimer;
         ElapsedTime scanDelayTimer;
+        ElapsedTime shakeTimer;
+        public static double shakeDelay = 250;
         public static double spindexDelay = 500; // IN MS
+        public static int shakeOffset = 1;
+                ;
         boolean resetBootKick = false;
         public static double scanDelay = 500;
 
         boolean didRumble = false;
         boolean startedDelay = false;
         boolean moveToNextOuttakeSlot = false;
+        boolean resetShakeTimer = false;
 
 
 
@@ -91,6 +94,7 @@
             spindexDelayTimer = new ElapsedTime();
             endTimer = new ElapsedTime();
             scanDelayTimer = new ElapsedTime();
+            shakeTimer = new ElapsedTime();
             recieve = true;
             outtake = false;
             moveToNextSlot = false;
@@ -99,7 +103,9 @@
             resetBootKick = false;
             nextShotAvailable = true;
             isOuttakeOn = false;
+            shake = false;
             spindexPosIntake = robot.getIntake().getNextIntakeSlot();
+            resetShakeTimer = false;
 
             robot.getIntake().initSpindex();
             robot.getIntake().initColorSensor();
@@ -131,7 +137,7 @@
 
 //                double currTime = endTimer.seconds();
 //                robot.getOuttake().mapJoyToAngle(gamepad2.right_stick_x);
-                robot.getOuttake().updateTurntableAngle(tele);
+//                robot.getOuttake().updateTurntableAngle(tele);
                 tele.update();
             }
         }
@@ -158,7 +164,7 @@
                     break;
                 case ENDGAME:
                     if (!hasrun){
-                        robot.getEndgameServos().lift();
+                        robot.getEndgameServos().lift(endgameServosUp);
                         hasrun = true;
                     }
 
@@ -188,6 +194,7 @@
             if (!gamepad2.dpad_up) {dUpPressedG2 = false;}
             if (!gamepad2.dpad_down) {dDownPressedG2 = false;}
             if (!gamepad2.a){aPressedG2 = false;}
+            if (!gamepad2.b){bPressedG2 = false;}
         }
 
         public void tankDrive() {
@@ -211,11 +218,11 @@
                 robot.getIntake().decreseCount();
                 dDownPressedG2 = true;
             }
-
-            if (gamepad2.b && !bPressedG2){
-                robot.getIntake().resetCount();
-                bPressedG2 = true;
-            }
+//
+//            if (gamepad2.b && !bPressedG2){
+//                robot.getIntake().resetCount();
+//                bPressedG2 = true;
+//            }
             tele.addData("Current Count: ", robot.getIntake().getCount());
         }
 
@@ -244,15 +251,23 @@
                     robot.getIntake().moveToNextIntakeSlot(spindexPosIntake);
                     robot.getIntake().delayMovementToNextSlot(spindexDelayTimer, spindexDelay, tele);
                 }
+//
+//                if (gamepad2.b){
+//                    robot.getIntake().shakeSpindex(shakeTimer, shakeDelay, shakeOffset, resetShakeTimer, tele);
+//                }
 
+                if (gamepad2.b && !bPressedG2){
+                    resetShakeTimer = false;
+                    bPressedG2 = true;
+                }
+
+
+                // Idle spin
                 if (gamepad2.back){
                     robot.getIntake().spin(-1);
                 } else{
                     robot.getIntake().spin(spin);
                 }
-
-                tele.addLine("Spindex is Receiving");
-                tele.addData("moveToNextSlot: ", moveToNextSlot);
             }
 
             if (gamepad2.x && !xPressedG2 && !outtake && !isOuttakeOn) {
@@ -269,6 +284,7 @@
                 currentTopRPMGoal = 0;
                 currentBottomRPMGoal = 0;
                 outtake = true;
+                spindexPosOuttake = robot.getIntake().getNextOuttakeSlot();
                 xPressedG2 = true;
                 isOuttakeOn = false;
             }

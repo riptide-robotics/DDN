@@ -105,8 +105,8 @@ public class riptideUtil {
     public static double LONG_DIST_TOP = 3250; // UNDETERMINED
     public static double LONG_DIST_BOT = 3730; // UNDETERMINED
 
-    public static double MID_DIST_TOP = 3750; // UNDETERMINED
-    public static double MID_DIST_BOT = 4000;// UNDETERMINED
+    public static double MID_DIST_TOP = 500; // UNDETERMINED
+    public static double MID_DIST_BOT = 500;// UNDETERMINED
 
     public static double SHORT_DIST_TOP = 2950; // UNDETERMINED
     public static double SHORT_DIST_BOT = 3480;// UNDETERMINED
@@ -147,6 +147,8 @@ public class riptideUtil {
     public static boolean nextShotAvailable = true;
     public static boolean moveToNextSlot = false;
     public static boolean startedDelay = false;
+
+    public static double endgameServosUp = 0.18;
 
     // Vision
     public static int CAMERA_WIDTH = 640;

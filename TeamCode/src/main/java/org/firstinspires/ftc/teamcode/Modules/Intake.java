@@ -69,9 +69,15 @@ public class Intake{
 
     public boolean checkClose = false;
 
+    public boolean shakeNormal = false;
+    public boolean shakeOpposite = false;
     public static float gain = 14;
 
     private final double spindexRange = 900;
+
+    public static int offset = 0;
+
+    public boolean returnToPos = false;
 
     public enum slotStatus {
         BLANK, GREEN, PURPLE
@@ -291,7 +297,7 @@ public class Intake{
             diff -= 360;
         }
 
-        int newAngle = currAngle + diff ;
+        int newAngle = currAngle + diff + offset;
         if (newAngle < 0) {
             newAngle += 360;
         }
@@ -407,6 +413,71 @@ public class Intake{
         if (SLOT_1 != 'b') return 1;
         if (SLOT_2 != 'b') return 2;
         return -1;
+    }
+
+    /**
+     * Used when the color sensor is lined up with one of the holes on a ball and reading it as blank
+     * Shakes the spindex to re-orient the ball
+     */
+    public void shakeSpindex(ElapsedTime shakeTimer, double shakeTime, int offset, boolean resetShakeTimer, Telemetry tele){
+        if (!resetShakeTimer){
+            shakeTimer.reset();
+            shakeTimer.startTime();
+            shakeNormal = false;
+            shakeOpposite = false;
+            resetShakeTimer = true;
+            tele.addLine("Shake timers reset");
+        }
+        if (shakeTimer.milliseconds() <= shakeTime && resetShakeTimer == true) {
+            if (shakeTimer.milliseconds() <= shakeTime/2){
+                if (getNextIntakeSlot() == 0 && !shakeNormal){
+                    this.offset = offset;
+                    goTo(UnshiftedPositions.SLOT_0_RECEIVE);
+                    shakeNormal = true;
+                }
+
+                if (getNextIntakeSlot() == 1 && !shakeNormal){
+                    this.offset = offset;
+                    goTo(UnshiftedPositions.SLOT_1_RECEIVE);
+                    shakeNormal = true;
+                }
+
+                if (getNextIntakeSlot() == 2 && !shakeNormal){
+                    this.offset = offset;
+                    goTo(UnshiftedPositions.SLOT_2_RECEIVE);
+                    shakeNormal = true;
+                }
+                tele.addLine("Shaking normal");
+            } else if (shakeTimer.milliseconds() >= shakeTime/2){
+                if (getNextIntakeSlot() == 0 && !shakeOpposite){
+                    this.offset = -offset;
+                    goTo(UnshiftedPositions.SLOT_0_RECEIVE);
+                    shakeOpposite = true;
+                }
+
+                if (getNextIntakeSlot() == 1 && !shakeOpposite){
+                    this.offset = -offset;
+                    goTo(UnshiftedPositions.SLOT_1_RECEIVE);
+                    shakeOpposite = true;
+                }
+
+                if (getNextIntakeSlot() == 2 && !shakeOpposite){
+                    this.offset = -offset;
+                    goTo(UnshiftedPositions.SLOT_2_RECEIVE);
+                    shakeOpposite = true;
+                }
+
+                tele.addLine("Shaking opposite");
+            }
+            returnToPos = true;
+        } else if (returnToPos && shakeTimer.milliseconds() > shakeTime){
+            this.offset = 0;
+            if (getNextIntakeSlot() == 0){goTo(UnshiftedPositions.SLOT_0_RECEIVE);}
+            if (getNextIntakeSlot() == 1){goTo(UnshiftedPositions.SLOT_1_RECEIVE);}
+            if (getNextIntakeSlot() == 2){goTo(UnshiftedPositions.SLOT_2_RECEIVE);}
+            returnToPos = false;
+            tele.addLine("returned to original position");
+        }
     }
 
     @Deprecated
