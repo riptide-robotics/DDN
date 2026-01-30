@@ -132,8 +132,8 @@ public class OuttakePIDTuner extends LinearOpMode {
         telemetry.addData("top", averageTop);
         telemetry.addData("bottom", averageBottom);
 
-        double wantedWheelPowerTopAverage = RPMControllerTop.calculate(averageTop, rpmTop);
-        double wantedWheelPowerBottomAverage = RPMControllerBottom.calculate(averageBottom, rpmBottom);
+        double wantedWheelPowerTopAverage = RPMControllerTop.calculate(averageTop - 1250, rpmTop);
+        double wantedWheelPowerBottomAverage = RPMControllerBottom.calculate(averageBottom - 50, rpmBottom);
 
 
         if (gamepad1.y){outtake.setFlyWheelPower(0.25, 0.25);}

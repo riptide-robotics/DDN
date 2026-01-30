@@ -59,7 +59,7 @@
         ElapsedTime scanDelayTimer;
         public static double spindexDelay = 500; // IN MS
         boolean resetBootKick = false;
-        public static double scanDelay = 500;
+        public static double scanDelay = 1000;
 
         boolean didRumble = false;
         boolean startedDelay = false;
@@ -131,7 +131,7 @@
 
 //                double currTime = endTimer.seconds();
 //                robot.getOuttake().mapJoyToAngle(gamepad2.right_stick_x);
-                robot.getOuttake().updateTurntableAngle(tele);
+//                robot.getOuttake().updateTurntableAngle(tele);
                 tele.update();
             }
         }
@@ -277,6 +277,8 @@
             }
 
             if (outtake){
+                currentTopRPMGoal = MID_DIST_TOP;
+                currentBottomRPMGoal = MID_DIST_BOT;
                 robot.getIntake().spin(0);
                 spindexPosIntake = -1;
                 robot.getIntake().cycleOuttakeSlot(spindexPosOuttake);
