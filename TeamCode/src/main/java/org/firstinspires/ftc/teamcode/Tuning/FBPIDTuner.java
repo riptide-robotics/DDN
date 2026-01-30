@@ -59,7 +59,7 @@ public class FBPIDTuner extends LinearOpMode {
         if (isStopRequested()) return;
 
         while(opModeIsActive()) {
-            if(gamepad1.a) {robot.getDrivetrain().resetCurrPos();}
+            //if(gamepad1.a) {robot.getDrivetrain().resetCurrPos();}
 
             robot.getDrivetrain().getPinpoint().update();
             robot.getDrivetrain().getPinpoint().getCurrPos();

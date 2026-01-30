@@ -98,8 +98,8 @@ public class riptideUtil {
     public static double TURN_THRESHOLD = 2.5;
 
     // Speed relationships
-    public static double MAX_A = 72;                 // UNDETERMINED
-    public static double MAX_V = 96;                 // UNDETERMINED
+    public static double MAX_A = 36;                 // UNDETERMINED
+    public static double MAX_V = 12;                 // UNDETERMINED
 
 
     public static double LONG_DIST_TOP = 3250; // UNDETERMINED

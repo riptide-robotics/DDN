@@ -45,7 +45,7 @@ public class AnglePIDTuner extends LinearOpMode {
         robot = new Robot(hardwareMap);
 
         robot.getDrivetrain().startOdometry();
-        robot.getDrivetrain().getPinpoint().setPosition(riptideUtil.START_POSITION);
+        //robot.getDrivetrain().getPinpoint().setPosition(riptideUtil.START_POSITION);
 
         robot.getDrivetrain().setTurnControllerCCW(kpCCW, kiCCW, kdCCW);
         robot.getDrivetrain().setTurnControllerCCW(kpCW, kiCW, kdCW);
@@ -85,14 +85,15 @@ public class AnglePIDTuner extends LinearOpMode {
     public void telem() {
         t.addData("Robot Heading", robot.getDrivetrain().getCurrPos().getHeading(AngleUnit.DEGREES));
         t.addData("Robot Heading 2nd Value", robot.getDrivetrain().getRobotHeading(AngleUnit.DEGREES));
+        t.addData("Robot Heading 3rdd Value", robot.getDrivetrain().getPinpoint().getHeading(AngleUnit.DEGREES));
         t.addData("Angle Difference", robot.getDrivetrain().getAngleDiff());
         t.addData("Angle PID Value", robot.getDrivetrain().getAnglePower());
         t.addData("Angle atan2(dy, dx)", robot.getDrivetrain().getAngleATan());
         t.addData("Goal Angle: ", goalAngle);
-//        t.addData("Goal X: ", goal.getX(DistanceUnit.INCH));
-//        t.addData("Goal Y: ", goal.getY(DistanceUnit.INCH));
-//        t.addData("Bot X: ", robot.getDrivetrain().getPinpoint().getPosX(DistanceUnit.INCH));
-//        t.addData("Bot Y: ", robot.getDrivetrain().getPinpoint().getPosY(DistanceUnit.INCH));
+        t.addData("Goal X: ", goal.getX(DistanceUnit.INCH));
+        t.addData("Goal Y: ", goal.getY(DistanceUnit.INCH));
+        t.addData("Bot X: ", robot.getDrivetrain().getPinpoint().getPosX(DistanceUnit.INCH));
+        t.addData("Bot Y: ", robot.getDrivetrain().getPinpoint().getPosY(DistanceUnit.INCH));
         t.addData("Left Wheel Powers", robot.getDrivetrain().getWheelPowersArray()[0]);
         t.addData("Right Wheel Powers", robot.getDrivetrain().getWheelPowersArray()[1]);
         t.update();

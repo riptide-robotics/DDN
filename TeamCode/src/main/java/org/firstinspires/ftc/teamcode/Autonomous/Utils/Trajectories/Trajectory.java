@@ -22,8 +22,8 @@ public class Trajectory {
      */
     public static class PathSample {
         public final double time;      // seconds
-        public final double x;         // field frame
-        public final double y;         // field frame
+        public final double x;         // inches
+        public final double y;         // inches
         public final double heading;   // deg, field-centric
 
         // optional but super useful for feedforward
@@ -46,7 +46,10 @@ public class Trajectory {
         }
     }
 
-
+    /**
+     * @param time the current time in the trajectory in seconds.
+     * @return A path sample that contains the expected position calculated.
+     */
     public PathSample getExpectedPosition(double time) {
         if (path == null || path.isEmpty()) {
             throw new IllegalStateException("Trajectory has no samples");
