@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.Placeholder;
 public class Indicator {
     private final HardwareMap hardwareMap;
     private final Servo rgbLightServo;
+    private final PwmControl rgbLight2;
     private Servo rgbLightServo2;
     private final PwmControl rgbLight;
 
@@ -22,20 +23,30 @@ public class Indicator {
         this.rgbLightServo = hardwareMap.servo.get("indicator");
         this.rgbLight = (PwmControl) rgbLightServo;
         rgbLightServo2 = null;
+        rgbLight2 = rgbLight;
         istwo = false;
 
         rgbLight.setPwmRange(new PwmControl.PwmRange(500,2500));
+        rgbLight2.setPwmRange(new PwmControl.PwmRange(500,2500));
+
     }
 
     public Indicator(HardwareMap hardwareMap, boolean createSecond) {
         this.hardwareMap = hardwareMap;
         this.rgbLightServo = hardwareMap.servo.get("indicator");
         this.rgbLight = (PwmControl) rgbLightServo;
-        if (createSecond)
+
+
+        if (createSecond) {
             rgbLightServo2 = hardwareMap.servo.get("indicatorSecondary");
+            this.rgbLight2 = (PwmControl) rgbLightServo2;
+        } else this.rgbLight2 = this.rgbLight;
+
         istwo = createSecond;
 
         rgbLight.setPwmRange(new PwmControl.PwmRange(500,2500));
+        rgbLight2.setPwmRange(new PwmControl.PwmRange(500,2500));
+
     }
 
     /**Already defined colors to represent the status of the bot. Not final.*/
