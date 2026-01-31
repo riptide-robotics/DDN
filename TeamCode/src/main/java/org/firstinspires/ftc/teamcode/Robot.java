@@ -42,7 +42,9 @@ public class Robot {
     /**TODO we're going to have to loop this*/
     public Sequencer s;
 
-    char[] motifOrder = {'b','b','b'};
+    char[] motifOrder;
+    final char[] badChar = {'b','b','b'};
+
     static {
 
         shootlookupblue[0] = new VelocityStorage();
@@ -177,13 +179,15 @@ public class Robot {
 
     }
 
-    /***/
+    /**Set the indicator status of the robot, with respect to the number of artifacts in the trough.*/
     public void setStatus(byte artifactsInTrough) {
-        if (artifactsInTrough < 0) artifactsInTrough = 0;
-        char[] badChar = {'b','b','b'};
+        if (artifactsInTrough < 0) artifactsInTrough = 0; //warn the driver??
 
         if (Arrays.equals(motifOrder, badChar)) motifOrder = camera.scanMotifOrder(); //is there a problem
-        if (!Arrays.equals(motifOrder, badChar)) return; //is there still a problem
+        if (Arrays.equals(motifOrder, badChar)) { //is there still a problem
+            indicator.setRGB(Indicator.IndColor.NONE);
+            return;
+        }
 
         setStatus(motifOrder[artifactsInTrough % 3]);
     }
