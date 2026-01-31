@@ -155,7 +155,6 @@ public class Meet2FSMManual extends LinearOpMode {
 
     private void FSM() {
         processTroughCounter();
-        robot.setStatus((byte) ballsintrough);
 
         switch (currentState) {
             case TELEOP:
@@ -174,7 +173,7 @@ public class Meet2FSMManual extends LinearOpMode {
                 cycleSlots();
                 count();
 
-                if (gamepad2.dpad_up){
+                if (gamepad1.dpad_up){
                     currentState = states.ENDGAME;
                 }
                 // ENDGAME
@@ -190,15 +189,15 @@ public class Meet2FSMManual extends LinearOpMode {
                     hasrun = true;
                 }
 
-                if (gamepad2.dpad_down) {
+                if (gamepad1.dpad_down) {
                     robot.getEndgameServos().lower();
                 }
 
-                if (gamepad2.dpad_up) {
+                if (gamepad1.dpad_up) {
                     hasrun = false;
                 }
 
-                if (gamepad2.b) {
+                if (gamepad1.b) {
                     currentState = states.TELEOP;
                     robot.getEndgameServos().lower();
                     hasrun = false;
@@ -260,7 +259,7 @@ public class Meet2FSMManual extends LinearOpMode {
             dDownPressedG2 = true;
         }
 
-            if (gamepad2.left_bumper){
+            if (gamepad2.back){
                 robot.getIntake().resetCount();
             }
             tele.addData("Current Count: ", robot.getIntake().getCount());
@@ -378,7 +377,7 @@ public class Meet2FSMManual extends LinearOpMode {
 
         public void idleSpin(){
             if (gamepad2.back){
-                robot.getIntake().spin(-1);
+                ballsintrough = 0;
             } else if (gamepad2.right_trigger > 0.1 || outtake || delayIntake) {
                 robot.getIntake().spin(0);
             }else{
