@@ -106,6 +106,7 @@
             telemetry.update();
 
             robot.getOuttake().startFlywheel();
+            robot.getDrivetrain().startOdometry();
 
             while(opModeIsActive()){
 
@@ -114,6 +115,7 @@
                 robot.getOuttake().runOuttakePID(currentTopRPMGoal,currentBottomRPMGoal,tele);
                 robot.s.loop();
                 robot.setStatus((byte) Intake.ballsShot);
+                robot.getTurntable().goToGoalAngle();
 
 //                double currTime = endTimer.seconds();
 //                robot.getOuttake().mapJoyToAngle(gamepad2.right_stick_x);
@@ -221,6 +223,8 @@
                 spindexPosIntake = robot.getIntake().getNextIntakeSlot();
                 robot.getIntake().moveToNextIntakeSlot(spindexPosIntake);
                 yPressedG2 = true;
+
+                robot.getTurntable().setGoalAngle(0.0);
             }
 
             if (scanDelayTimer.milliseconds() >= scanDelay){
@@ -245,6 +249,10 @@
                 } else{
                     robot.getIntake().spin(spin);
                 }
+
+
+                tele.addLine("Spindex is Receiving");
+                tele.addData("moveToNextSlot: ", moveToNextSlot);
             }
 
             if (gamepad2.x && !xPressedG2 && !outtake && !isOuttakeOn) {
@@ -286,6 +294,13 @@
                                 Add turntable stuff here
                  *************************************************/
 
+
+               if(gamepad2.left_trigger > 0){
+                  robot.getTurntable().lockOnGoal();
+               }
+               else{
+                  robot.getTurntable().setGoalAngle(0.0);
+               }
 
             }
             tele.addData("Intake Slot: ", spindexPosIntake);

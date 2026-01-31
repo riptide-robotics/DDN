@@ -243,6 +243,7 @@ public class Drivetrain {
         double[] headingVect = {headingx, headingy};
         double[] pointVect = {dx / distanceToPoint, dy / distanceToPoint};
         double dotProd = headingVect[0] * pointVect[0] + headingVect[1] * pointVect[1];
+        dotProd = Math.pow(dotProd, 2);
         // I was typing this line out and was like; wait a minute, something ain't right
         //double dotProd = 1 * Math.sqrt(pointVect[0] * pointVect[0] + pointVect[1] * pointVect[1]) * Math.cos(Math.toRadians(headingError));
         double fbError = distanceToPoint * (dotProd);
@@ -256,9 +257,9 @@ public class Drivetrain {
         double forwardPower = (fbError >= FB_CLOSE_THRESHOLD) ? forwardControllerFar.calculate(0, fbError) : forwardControllerClose.calculate(0, fbError);
        // to avoid deathspirals
         // A little overtuned rn have to work out how to make forward power scale based on heading more.
-        double alignmentScalar = Math.max(0, Math.cos(headingError));
+        //double alignmentScalar = Math.max(0, Math.cos(headingError));
 
-        forwardPower *= Math.pow(alignmentScalar, 2);
+        //forwardPower *= Math.pow(alignmentScalar, 2);
 
         t.addData("forward power", forwardPower);
 

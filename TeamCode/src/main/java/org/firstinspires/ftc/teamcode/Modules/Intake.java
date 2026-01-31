@@ -73,7 +73,7 @@ public class Intake{
     public boolean shakeOpposite = false;
     public static float gain = 14;
 
-    private final double spindexRange = 900;
+    private final double spindexRange = 666.666666667;
 
     public static int offset = 0;
 
