@@ -246,7 +246,9 @@
                 // Idle spin
                 if (gamepad2.back){
                     robot.getIntake().spin(-1);
-                } else{
+                } else if (gamepad2.right_trigger > 0.1) {
+                    robot.getIntake().spin(0);
+                }else{
                     robot.getIntake().spin(spin);
                 }
 
