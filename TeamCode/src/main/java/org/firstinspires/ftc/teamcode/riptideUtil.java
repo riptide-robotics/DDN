@@ -93,7 +93,7 @@ public class riptideUtil {
     public static double FORWARD_KP_CLOSE = 0.0675;
     public static double FORWARD_KI_CLOSE = 0.1;
     public static double FORWARD_KD_CLOSE = 0.0005;
-    public static double FB_CLOSE_THRESHOLD = 20;
+    public static double FB_CLOSE_THRESHOLD = 30;
 
     // ----- Turn ----- //
     public static double TURN_KP_CCW = 0.0175;

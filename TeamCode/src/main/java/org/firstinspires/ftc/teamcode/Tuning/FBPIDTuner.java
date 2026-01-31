@@ -51,6 +51,7 @@ public class FBPIDTuner extends LinearOpMode {
         robot.getDrivetrain().getPinpoint().setPosition(riptideUtil.START_POSITION);
 
         robot.getDrivetrain().setForwardControllerFar(kpFar, kiFar, kdFar);
+        robot.getDrivetrain().tuningFB();
 
         telemetry.addData("Robot status", "successfully initiated");
         telemetry.update();
@@ -96,7 +97,7 @@ public class FBPIDTuner extends LinearOpMode {
         t.addData("Left Wheel Powers", robot.getDrivetrain().getWheelPowersArray()[0]);
         t.addData("Right Wheel Powers", robot.getDrivetrain().getWheelPowersArray()[1]);
         t.addData("FB Error", robot.getDrivetrain().getFbPower());
-        t.addData("FB Distance", robot.getDrivetrain().getFbDist());
+        t.addData("Distance", robot.getDrivetrain().getFbDist());
         t.addData("FB Dot Product", robot.getDrivetrain().getFbVectNorm());
         t.update();
     }

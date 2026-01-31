@@ -57,6 +57,8 @@ public class Drivetrain {
     private double anglePower;
     private double angleDiff;
     private double angleATan;
+    private boolean tuningFB = false;
+    private boolean tuningAngle = false;
 
 
     /// ///////////////////////////////////////////
@@ -210,6 +212,15 @@ public class Drivetrain {
     }
 
     // -------- Methods --------------- //
+
+    public void tuningFB() {
+        tuningFB = true;
+    }
+
+    public void tuningAngle() {
+        tuningAngle = true;
+    }
+
     // boolean for testing if it got to the point, temporary
     public boolean followGivenPath(double time) {
         Trajectory.PathSample goal = path.getExpectedPosition(time);
@@ -255,13 +266,13 @@ public class Drivetrain {
         angleDiff = headingError;
 
         double forwardPower = (fbError >= FB_CLOSE_THRESHOLD) ? forwardControllerFar.calculate(0, fbError) : forwardControllerClose.calculate(0, fbError);
-       // to avoid deathspirals
+        // to avoid deathspirals
         // A little overtuned rn have to work out how to make forward power scale based on heading more.
         //double alignmentScalar = Math.max(0, Math.cos(headingError));
 
         //forwardPower *= Math.pow(alignmentScalar, 2);
 
-        t.addData("forward power", forwardPower);
+        t.addData("Forward Power", forwardPower);
 
         double turnPower = (headingError >= 0) ? turnControllerCCW.calculate(0, headingError) : turnControllerCW.calculate(0, headingError);
         t.addData("Turn Power", turnPower);
@@ -270,6 +281,9 @@ public class Drivetrain {
         }
 
         anglePower = turnPower;
+
+        if(tuningFB) {turnPower = 0;}
+        if(tuningAngle) {forwardPower = 0;}
 
         wheelPowers[0] = forwardPower - turnPower;
         wheelPowers[1] = forwardPower + turnPower;

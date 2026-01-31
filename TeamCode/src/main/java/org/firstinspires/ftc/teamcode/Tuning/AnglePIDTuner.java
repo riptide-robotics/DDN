@@ -50,6 +50,8 @@ public class AnglePIDTuner extends LinearOpMode {
         robot.getDrivetrain().setTurnControllerCCW(kpCCW, kiCCW, kdCCW);
         robot.getDrivetrain().setTurnControllerCCW(kpCW, kiCW, kdCW);
 
+        robot.getDrivetrain().tuningAngle();
+
         telemetry.addData("Robot status", "successfully initiated");
         telemetry.update();
 

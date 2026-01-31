@@ -78,6 +78,7 @@ public class PIDToPointTuner extends LinearOpMode {
         t.addData("FB Error", robot.getDrivetrain().getFbPower());
         t.addData("FB Dot Product", robot.getDrivetrain().getFbVectNorm());
         t.addData("Angle Difference", robot.getDrivetrain().getAngleDiff());
+        t.addData("Angle atan2(dy, dx)", robot.getDrivetrain().getAngleATan());
         t.addData("Left Wheel Powers", robot.getDrivetrain().getWheelPowersArray()[0]);
         t.addData("Right Wheel Powers", robot.getDrivetrain().getWheelPowersArray()[1]);
         t.update();
