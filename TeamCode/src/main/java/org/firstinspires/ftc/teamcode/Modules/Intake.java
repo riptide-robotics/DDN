@@ -290,6 +290,12 @@ public class Intake{
         return SLOT_2;
     }
 
+    public void setSlotColors(char slot0, char slot1, char slot2){
+        SLOT_0 = slot0;
+        SLOT_1 = slot1;
+        SLOT_2 = slot2;
+    }
+
     public void goTo(UnshiftedPositions goal) {
         diff = goal.posUnshifted - currentState.posUnshifted;
 

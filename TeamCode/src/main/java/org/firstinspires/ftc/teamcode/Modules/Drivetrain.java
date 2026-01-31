@@ -302,6 +302,18 @@ public class Drivetrain {
         return atPoint(goal);
     }
 
+    public boolean turnOnPointPID(double goal) {
+        double headingError = shortestAngleDiff(getCurrPos().getHeading(AngleUnit.DEGREES), goal);
+        double turnPower = (headingError >= 0) ? turnControllerCCW.calculate(0, headingError) : turnControllerCW.calculate(0, headingError);
+        this.setWheelPowers(
+                -turnPower,
+                turnPower,
+                turnPower,
+                -turnPower
+        );
+        return headingError < 5;
+    }
+
     public boolean atPoint(Pose2D point) {
         double dx = point.getX(DistanceUnit.INCH) - getCurrPos().getX(DistanceUnit.INCH);
         double dy = point.getY(DistanceUnit.INCH) - getCurrPos().getY(DistanceUnit.INCH);
