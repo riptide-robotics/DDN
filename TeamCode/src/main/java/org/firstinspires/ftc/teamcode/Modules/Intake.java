@@ -71,7 +71,7 @@ public class Intake{
 
     public static float gain = 14;
 
-    private final double spindexRange = 900;
+    private final double spindexRange = 666.666666667;
 
     public enum slotStatus {
         BLANK, GREEN, PURPLE
