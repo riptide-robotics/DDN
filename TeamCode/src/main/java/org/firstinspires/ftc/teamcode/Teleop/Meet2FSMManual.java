@@ -1,13 +1,6 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 
-import static org.firstinspires.ftc.teamcode.riptideUtil.MID_DIST_BOT;
-import static org.firstinspires.ftc.teamcode.riptideUtil.MID_DIST_TOP;
-import static org.firstinspires.ftc.teamcode.riptideUtil.BOOT_KICKER_RESTING;
-import static org.firstinspires.ftc.teamcode.riptideUtil.BOOT_KICKER_UP;
-import static org.firstinspires.ftc.teamcode.riptideUtil.START_POSITION;
-import static org.firstinspires.ftc.teamcode.riptideUtil.moveToNextSlot;
-import static org.firstinspires.ftc.teamcode.riptideUtil.nextShotAvailable;
-import static org.firstinspires.ftc.teamcode.riptideUtil.endgameServosUp;
+    import static org.firstinspires.ftc.teamcode.riptideUtil.*;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -66,38 +59,34 @@ public class Meet2FSMManual extends LinearOpMode {
     int ballsintrough = 0;
     boolean checkGhostScan = false;
 
-
-    /**
-     * DEBOUNCE
-     **/
-    boolean rightBumperPressedG2 = false;
-    boolean backPressedG2 = false;
-    boolean leftBumperPressedG2 = false;
-    boolean leftTriggerPressedG2 = false;
-    boolean xPressedG2 = false;
-    boolean rightPressedG2 = false;
-    boolean yPressedG2 = false;
-    boolean bPressedG2 = false;
-    boolean aPressedG2 = false;
-    boolean dUpPressedG2 = false;
-    boolean dDownPressedG2 = false;
-    boolean isOuttakeOn = false;
+        /**            DEBOUNCE             **/
+        boolean rightBumperPressedG2 = false;
+        boolean backPressedG2 = false;
+        boolean leftBumperPressedG2 = false;
+        boolean leftTriggerPressedG2 = false;
+        boolean xPressedG2 = false;
+        boolean rightPressedG2 = false;
+        boolean yPressedG2 = false;
+        boolean bPressedG2 = false;
+        boolean aPressedG2 = false;
+        boolean dUpPressedG2 = false;
+        boolean dDownPressedG2 = false;
 
 
-    @Override
-    public void runOpMode() throws InterruptedException {
-        hasrun = false;
-        robot = new Robot(hardwareMap);
-        spindexDelayTimer = new ElapsedTime();
-        scanDelayTimer = new ElapsedTime();
-        recieve = true;
-        outtake = false;
-        moveToNextSlot = false;
-        moveToNextOuttakeSlot = false;
-        nextShotAvailable = true;
-        isOuttakeOn = false;
-        checkGhostScan = false;
-        spindexPosIntake = robot.getIntake().getNextIntakeSlot();
+
+        @Override
+        public void runOpMode() throws InterruptedException {
+            hasrun = false;
+            robot = new Robot(hardwareMap);
+            spindexDelayTimer = new ElapsedTime();
+            scanDelayTimer = new ElapsedTime();
+            recieve = true;
+            outtake = false;
+            moveToNextSlot = false;
+            moveToNextOuttakeSlot = false;
+            nextShotAvailable = true;
+            checkGhostScan = false;
+            spindexPosIntake = robot.getIntake().getNextIntakeSlot();
 
         robot.getIntake().initSpindex();
         robot.getIntake().initColorSensor();
@@ -268,20 +257,18 @@ public class Meet2FSMManual extends LinearOpMode {
             dDownPressedG2 = true;
         }
 
-        if (gamepad2.b && !bPressedG2) {
-            robot.getIntake().resetCount();
-            bPressedG2 = true;
+            if (gamepad2.left_bumper){
+                robot.getIntake().resetCount();
+            }
+            tele.addData("Current Count: ", robot.getIntake().getCount());
         }
-        tele.addData("Current Count: ", robot.getIntake().getCount());
-    }
 
     public void cycleSlots() {
         if (gamepad2.y && !yPressedG2) {
             scanDelayTimer.reset();
             scanDelayTimer.startTime();
 
-            isOuttakeOn = false;
-            checkGhostScan = false;
+                checkGhostScan = false;
 //                recieve = true;
             currentTopRPMGoal = 0;
             currentBottomRPMGoal = 0;
@@ -299,56 +286,66 @@ public class Meet2FSMManual extends LinearOpMode {
             checkGhostScan = true;
         }
 
-        if (recieve) {
-            robot.getIntake().setSlotColor(spindexPosIntake);
-            spindexPosOuttake = -1;
-            if (moveToNextSlot) {
-                spindexPosIntake = robot.getIntake().getNextIntakeSlot();
-                robot.getIntake().moveToNextIntakeSlot(spindexPosIntake);
-                robot.getIntake().delayMovementToNextSlot(spindexDelayTimer, spindexDelay, tele);
-            }
+            if (recieve){
+                robot.getIntake().setSlotColor(spindexPosIntake);
+                if (robot.getIntake().checkColor() != 'b' && !delayIntake){
+                    delayIntake = true;
+                    robot.s.addImpulseAction(() -> {
+                        delayIntake = false;
+                    }, 0.5);
+                }
+                spindexPosOuttake = -1;
+                if (moveToNextSlot) {
+                    spindexPosIntake = robot.getIntake().getNextIntakeSlot();
+                    robot.getIntake().moveToNextIntakeSlot(spindexPosIntake);
+                    robot.getIntake().delayMovementToNextSlot(spindexDelayTimer, spindexDelay, tele);
+                }
 
             tele.addLine("Spindex is Receiving");
             tele.addData("moveToNextSlot: ", moveToNextSlot);
         }
 
-        if (gamepad2.x && !xPressedG2 && !outtake && !isOuttakeOn) {
-            outtake = true;
-            recieve = false;
-//                currentTopRPMGoal = MID_DIST_TOP;
-//                currentBottomRPMGoal = MID_DIST_BOT;
-            spindexPosOuttake = robot.getIntake().getNextOuttakeSlot();
-            xPressedG2 = true;
-            isOuttakeOn = true;
-        }
-//
-//            if (gamepad2.x && !xPressedG2 && isOuttakeOn){
-//                currentTopRPMGoal = 0;
-//                currentBottomRPMGoal = 0;
-//                outtake = true;
-//                spindexPosOuttake = robot.getIntake().getNextOuttakeSlot();
-//                xPressedG2 = true;
-//                isOuttakeOn = false;
-//            }
-
-        if (outtake) {
-            currentTopRPMGoal = MID_DIST_TOP;
-            currentBottomRPMGoal = MID_DIST_BOT;
-            spindexPosIntake = -1;
-            robot.getIntake().cycleOuttakeSlot(spindexPosOuttake);
-            if (gamepad2.a && !aPressedG2 && nextShotAvailable) {
-                nextShotAvailable = false;
-                robot.outtake(spindexPosOuttake, tele);
-                aPressedG2 = true;
+            if (gamepad2.x && !xPressedG2) {
+                outtake = true;
+                recieve = false;
+                currentTopRPMGoal = MID_DIST_TOP;
+                currentBottomRPMGoal = MID_DIST_BOT;
+                spindexPosOuttake = robot.getIntake().getNextOuttakeSlot();
+                xPressedG2 = true;
             }
+
+            if (gamepad2.b && !bPressedG2) {
+                outtake = true;
+                recieve = false;
+                currentTopRPMGoal = SHORT_DIST_TOP;
+                currentBottomRPMGoal = SHORT_DIST_BOT;
+                spindexPosOuttake = robot.getIntake().getNextOuttakeSlot();
+            }
+
+            if(gamepad2.right_bumper){
+                outtake = true;
+                recieve = false;
+                currentTopRPMGoal = LONG_DIST_TOP;
+                currentBottomRPMGoal = LONG_DIST_BOT;
+                spindexPosOuttake = robot.getIntake().getNextOuttakeSlot();
+            }
+
+            if (outtake){
+                spindexPosIntake = -1;
+                robot.getIntake().cycleOuttakeSlot(spindexPosOuttake);
+                if (gamepad2.a && !aPressedG2 && nextShotAvailable) {
+                    nextShotAvailable = false;
+                    robot.outtake(spindexPosOuttake, tele);
+                    aPressedG2 = true;
+                }
 
             if (nextShotAvailable) {
                 spindexPosOuttake = robot.getIntake().getNextOuttakeSlot();
             }
 
-            /*************************************************
-             Add turntable stuff here
-             *************************************************/
+                /*************************************************
+                                Add turntable stuff here
+                 *************************************************/
 
 
             if (gamepad2.left_trigger > 0) {
@@ -369,17 +366,17 @@ public class Meet2FSMManual extends LinearOpMode {
         tele.addData("Robot Y", robot.getDrivetrain().getCurrPos().getY(DistanceUnit.INCH));
 //            tele.addData("Is at goal speed ", robot.getOuttake().isAtGoalSpeed());
 //            tele.addData("Next Slot Available ", nextShotAvailable);
-    }
-
-    public void idleSpin() {
-        if (gamepad2.back) {
-            robot.getIntake().spin(-1);
-        } else if (gamepad2.right_trigger > 0.1 || outtake) {
-            robot.getIntake().spin(0);
-        } else {
-            robot.getIntake().spin(spin);
         }
-    }
+
+        public void idleSpin(){
+            if (gamepad2.back){
+                robot.getIntake().spin(-1);
+            } else if (gamepad2.right_trigger > 0.1 || outtake || delayIntake) {
+                robot.getIntake().spin(0);
+            }else{
+                robot.getIntake().spin(spin);
+            }
+        }
 
     public void processTroughCounter() {
         if (gamepad1.leftBumperWasPressed()) ballsintrough--;

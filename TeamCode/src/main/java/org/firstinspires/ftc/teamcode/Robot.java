@@ -43,9 +43,7 @@ public class Robot {
 
     riptideUtil.TEAM_COLOR alliance = riptideUtil.TEAM_COLOR.RED; // change based on alliance
 
-    /**
-     * TODO we're going to have to loop this
-     */
+    /**TODO we're going to have to loop this*/
     public Sequencer s;
 
     char[] motifOrder;
@@ -186,16 +184,16 @@ public class Robot {
 
         boolean contains =
                 order[0] == colorRequested ||
-                        order[1] == colorRequested ||
-                        order[2] == colorRequested;
+                order[1] == colorRequested ||
+                order[2] == colorRequested ;
 
         if (colorRequested == ' ') contains = true;
 
 
         byte amount = (byte) (
-                (order[0] != ' ' ? 1 : 0) +
-                        (order[1] != ' ' ? 1 : 0) +
-                        (order[2] != ' ' ? 1 : 0));
+                (order[0] != ' ' ? 1:0) +
+                (order[1] != ' ' ? 1:0) +
+                (order[2] != ' ' ? 1:0) );
 
 
         if (amount == 0) indicator.setRGB(Indicator.IndColor.ORANGE);
@@ -286,7 +284,7 @@ public class Robot {
         s.addImpulseAction(() -> {
             intake.bootkick(BOOT_KICKER_RESTING);
             tele.addLine("Boot kicker down");
-        }, 2);
+        },1);
         s.addImpulseAction(() -> {
             if (slotNum == 0) {
                 Intake.SLOT_0 = 'b';
@@ -299,6 +297,6 @@ public class Robot {
             }
             riptideUtil.nextShotAvailable = true;
             tele.addLine("setting lost to blank");
-        }, 3);
+        },1);
     }
 }
