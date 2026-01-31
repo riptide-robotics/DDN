@@ -29,7 +29,6 @@
         boolean hasrun = false;
         boolean recieve = false;
         boolean outtake = false;
-        boolean runOuttakePos = true;
         public static double spin = 1;
 
         Telemetry tele = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -43,9 +42,6 @@
         /**            SPINDEX              **/
         public static double spindexPosIntake = 1;
         public static double spindexPosOuttake = -1;
-        public char currColor = 'b';
-        boolean resetBootKicker;
-        boolean idleSpinOverride = false;
 
         /**            OUTTAKE              **/
         public static double currentTopRPMGoal;
@@ -55,16 +51,12 @@
 
         /**            TIMERS               **/
         ElapsedTime spindexDelayTimer;
-        ElapsedTime endTimer;
         ElapsedTime scanDelayTimer;
-        public static double spindexDelay = 500; // IN MS
-        boolean resetBootKick = false;
+        public static double spindexDelay = 750; // IN MS
         public static double scanDelay = 1000;
-
-        boolean didRumble = false;
-        boolean startedDelay = false;
         boolean moveToNextOuttakeSlot = false;
         int ballsintrough = 0;
+        boolean checkGhostScan = false;
 
 
 
@@ -89,16 +81,14 @@
             hasrun = false;
             robot = new Robot(hardwareMap);
             spindexDelayTimer = new ElapsedTime();
-            endTimer = new ElapsedTime();
             scanDelayTimer = new ElapsedTime();
             recieve = true;
             outtake = false;
             moveToNextSlot = false;
-            runOuttakePos = false;
             moveToNextOuttakeSlot = false;
-            resetBootKick = false;
             nextShotAvailable = true;
             isOuttakeOn = false;
+            checkGhostScan = false;
             spindexPosIntake = robot.getIntake().getNextIntakeSlot();
 
             robot.getIntake().initSpindex();
@@ -112,14 +102,13 @@
 
             waitForStart();
             if (isStopRequested()) return;
-            endTimer.reset();
-            endTimer.startTime();
 
             telemetry.clear();
             telemetry.addData("Robot status", "Started!");
             telemetry.update();
 
             robot.getOuttake().startFlywheel();
+            robot.getDrivetrain().startOdometry();
 
             while(opModeIsActive()){
 
@@ -128,6 +117,7 @@
                 robot.getOuttake().runOuttakePID(currentTopRPMGoal,currentBottomRPMGoal,tele);
                 robot.s.loop();
                 robot.setStatus((byte) Intake.ballsShot);
+                robot.getTurntable().goToGoalAngle();
 
 //                double currTime = endTimer.seconds();
 //                robot.getOuttake().mapJoyToAngle(gamepad2.right_stick_x);
@@ -148,7 +138,7 @@
                         currentBottomRPMGoal = 0;
                         hasrun = true;
                     }
-
+                    idleSpin();
                     cycleSlots();
                     count();
 
@@ -196,8 +186,8 @@
         public void tankDrive() {
             double slowdown = gamepad1.right_trigger > 0 ? 0.25 : 1;
             robot.getDrivetrain().setWheelPowers(
-                    gamepad1.left_stick_y * slowdown,
-                    gamepad1.right_stick_y * slowdown,
+                    -gamepad1.left_stick_y * slowdown,
+                    -gamepad1.right_stick_y * slowdown,
                     -gamepad1.right_stick_y * slowdown,
                     -gamepad1.left_stick_y * slowdown
             );
@@ -223,24 +213,31 @@
         }
 
         public void cycleSlots(){
-            if (gamepad2.y && !yPressedG2 && !recieve) {
+            if (gamepad2.y && !yPressedG2) {
                 scanDelayTimer.reset();
                 scanDelayTimer.startTime();
 
                 isOuttakeOn = false;
+                checkGhostScan = false;
+//                recieve = true;
                 currentTopRPMGoal = 0;
                 currentBottomRPMGoal = 0;
                 outtake = false;
-                recieve = true;
-
+//                recieve = true;
                 spindexPosIntake = robot.getIntake().getNextIntakeSlot();
+                robot.getIntake().moveToNextIntakeSlot(spindexPosIntake);
                 yPressedG2 = true;
+
+                robot.getTurntable().setGoalAngle(0.0);
+            }
+
+            if (!checkGhostScan && scanDelayTimer.milliseconds() >= scanDelay && !outtake) {
+                recieve = true;
+                checkGhostScan = true;
             }
 
             if (recieve){
-                if (scanDelayTimer.milliseconds() >= scanDelay){
-                    robot.getIntake().setSlotColor(spindexPosIntake);
-                }
+                robot.getIntake().setSlotColor(spindexPosIntake);
                 spindexPosOuttake = -1;
                 if (moveToNextSlot) {
                     spindexPosIntake = robot.getIntake().getNextIntakeSlot();
@@ -248,38 +245,32 @@
                     robot.getIntake().delayMovementToNextSlot(spindexDelayTimer, spindexDelay, tele);
                 }
 
-
-                // Idle spin
-                if (gamepad2.back){
-                    robot.getIntake().spin(-1);
-                } else{
-                    robot.getIntake().spin(spin);
-                }
+                tele.addLine("Spindex is Receiving");
+                tele.addData("moveToNextSlot: ", moveToNextSlot);
             }
 
             if (gamepad2.x && !xPressedG2 && !outtake && !isOuttakeOn) {
                 outtake = true;
                 recieve = false;
-                currentTopRPMGoal = MID_DIST_TOP;
-                currentBottomRPMGoal = MID_DIST_BOT;
+//                currentTopRPMGoal = MID_DIST_TOP;
+//                currentBottomRPMGoal = MID_DIST_BOT;
                 spindexPosOuttake = robot.getIntake().getNextOuttakeSlot();
                 xPressedG2 = true;
                 isOuttakeOn = true;
             }
-
-            if (gamepad2.x && !xPressedG2 && isOuttakeOn){
-                currentTopRPMGoal = 0;
-                currentBottomRPMGoal = 0;
-                outtake = true;
-                spindexPosOuttake = robot.getIntake().getNextOuttakeSlot();
-                xPressedG2 = true;
-                isOuttakeOn = false;
-            }
+//
+//            if (gamepad2.x && !xPressedG2 && isOuttakeOn){
+//                currentTopRPMGoal = 0;
+//                currentBottomRPMGoal = 0;
+//                outtake = true;
+//                spindexPosOuttake = robot.getIntake().getNextOuttakeSlot();
+//                xPressedG2 = true;
+//                isOuttakeOn = false;
+//            }
 
             if (outtake){
                 currentTopRPMGoal = MID_DIST_TOP;
                 currentBottomRPMGoal = MID_DIST_BOT;
-                robot.getIntake().spin(0);
                 spindexPosIntake = -1;
                 robot.getIntake().cycleOuttakeSlot(spindexPosOuttake);
                 if (gamepad2.a && !aPressedG2 && nextShotAvailable) {
@@ -297,6 +288,13 @@
                  *************************************************/
 
 
+               if(gamepad2.left_trigger > 0){
+                  robot.getTurntable().lockOnGoal();
+               }
+               else{
+                  robot.getTurntable().setGoalAngle(0.0);
+               }
+
             }
             tele.addData("Intake Slot: ", spindexPosIntake);
             tele.addData("Outtake Slot: ", spindexPosOuttake);
@@ -304,8 +302,19 @@
             tele.addData("Slot 1: ", Intake.SLOT_1);
             tele.addData("Slot 2: ", Intake.SLOT_2);
             tele.addData("Current Color: ", robot.getIntake().checkColor());
-            tele.addData("Is at goal speed ", robot.getOuttake().isAtGoalSpeed());
-            tele.addData("Next Slot Available ", nextShotAvailable);
+            tele.addData("Scan delay: ", scanDelayTimer.milliseconds());
+//            tele.addData("Is at goal speed ", robot.getOuttake().isAtGoalSpeed());
+//            tele.addData("Next Slot Available ", nextShotAvailable);
+        }
+
+        public void idleSpin(){
+            if (gamepad2.back){
+                robot.getIntake().spin(-1);
+            } else if (gamepad2.right_trigger > 0.1 || outtake) {
+                robot.getIntake().spin(0);
+            }else{
+                robot.getIntake().spin(spin);
+            }
         }
 
         public void processTroughCounter() {

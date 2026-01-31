@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.Modules.Drivetrain;
 import org.firstinspires.ftc.teamcode.Modules.Indicator;
 import org.firstinspires.ftc.teamcode.Modules.Intake;
 import org.firstinspires.ftc.teamcode.Modules.Outtake;
+import org.firstinspires.ftc.teamcode.Modules.TurnTable;
 import org.firstinspires.ftc.teamcode.Modules.Utils.Sequencer;
 
 import java.util.Arrays;
@@ -36,6 +37,8 @@ public class Robot {
     Outtake outtake;
 
     Camera camera;
+
+    TurnTable turntable;
 
     riptideUtil.TEAM_COLOR alliance = riptideUtil.TEAM_COLOR.RED; // change based on alliance
 
@@ -69,6 +72,7 @@ public class Robot {
         endgameServos = new EndgameServos(hardwareMap);
         outtake = new Outtake(hardwareMap);
         camera = new Camera(hardwareMap, alliance);
+        turntable = new TurnTable(hardwareMap);
 
         motifOrder = camera.scanMotifOrder();
     }
@@ -84,6 +88,8 @@ public class Robot {
     public Outtake getOuttake() {return outtake;}
 
     public Camera getCamera() {return camera;}
+
+    public TurnTable getTurntable() {return turntable;}
 
     /**TODO: This is going to run into a NPE if the camera doesn't see the goal*/
     public void setFlyWheelPowerOnDistance(boolean run, Telemetry tele){
