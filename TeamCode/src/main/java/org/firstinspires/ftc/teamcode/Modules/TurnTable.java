@@ -20,10 +20,13 @@ public class TurnTable {
     double prevGoalDeg = 0;
     double goalTicks = 0;
 
+    int startPos;
+
     PIDController motorController = new PIDController(TURNTABLE_KP, TURNTABLE_KI, TURNTABLE_KD);
 
     public TurnTable(HardwareMap hardwareMap) {
         motor = hardwareMap.dcMotor.get("turnTable");
+        startPos = motor.getCurrentPosition();
     }
 
     public void setGoalAngle(Double angle) {
@@ -34,6 +37,14 @@ public class TurnTable {
             goalDeg = angle;
         }
         goalTicks = goalDeg * DEGREES_TO_TICKS;
+    }
+
+    public int getCurrMotorPos() {
+        return motor.getCurrentPosition() - startPos;
+    }
+
+    public void zeroMotorPos() {
+        startPos = motor.getCurrentPosition();
     }
 
     /**
@@ -50,27 +61,31 @@ public class TurnTable {
         }
         setGoalAngle(d);
     }
+
     public void goToGoalAngle() {
 
         double localGoalTicks = goalTicks * 3; // gear ratio 1:3
 
-        double currPosTicks = motor.getCurrentPosition();
+        double currPosTicks = getCurrMotorPos();
         double setPower = motorController.calculate(currPosTicks, localGoalTicks) + TURNTABLE_KF;
         motor.setPower(setPower);
     }
+
     public void lockOnGoal() {
         goToGoalAngle();
     }
+
     public double getAngle() {
-        return motor.getCurrentPosition() * TICKS_TO_DEGREES;
+        return getCurrMotorPos() * TICKS_TO_DEGREES;
     }
+
     public double getGoalDeg() {
         return goalDeg;
     }
+
     public void shutOffMotors() {
         motor.setPower(0);
     }
-
 
     // tmp func
     public PIDController getPIDController() {
