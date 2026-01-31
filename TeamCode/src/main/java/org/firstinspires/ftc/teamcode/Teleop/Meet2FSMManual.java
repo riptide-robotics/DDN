@@ -264,7 +264,12 @@
                 xPressedG2 = true;
             }
 
-            if (gamepad2.b && !bPressedG2) {
+            if (gamepad2.right_trigger > 0.1){
+                currentTopRPMGoal = 0;
+                currentBottomRPMGoal = 0;
+            }
+
+            if (gamepad2.b) {
                 outtake = true;
                 recieve = false;
                 currentTopRPMGoal = SHORT_DIST_TOP;
@@ -272,7 +277,7 @@
                 spindexPosOuttake = robot.getIntake().getNextOuttakeSlot();
             }
 
-            if(gamepad2.right_bumper){
+            if (gamepad2.right_bumper){
                 outtake = true;
                 recieve = false;
                 currentTopRPMGoal = LONG_DIST_TOP;
