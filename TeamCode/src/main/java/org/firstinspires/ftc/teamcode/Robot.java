@@ -250,13 +250,13 @@ public class Robot {
         s.addImpulseAction(() -> {
             intake.bootkick(BOOT_KICKER_RESTING);
             tele.addLine("Boot kicker down");
-        },2);
+        },1);
         s.addImpulseAction(() -> {
             if (slotNum == 0){Intake.SLOT_0 = 'b';}
             if (slotNum == 1){Intake.SLOT_1 = 'b';}
             if (slotNum == 2){Intake.SLOT_2 = 'b';}
             riptideUtil.nextShotAvailable = true;
             tele.addLine("setting lost to blank");
-        },3);
+        },1);
     }
 }

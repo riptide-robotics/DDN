@@ -24,6 +24,7 @@ import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R_STDEV;
 import static org.firstinspires.ftc.teamcode.riptideUtil.PURPLE_R_STDEV_HOLE;
+import static org.firstinspires.ftc.teamcode.riptideUtil.delayIntake;
 import static org.firstinspires.ftc.teamcode.riptideUtil.moveToNextSlot;
 import static org.firstinspires.ftc.teamcode.riptideUtil.startedDelay;
 
@@ -42,6 +43,7 @@ import com.qualcomm.robotcore.hardware.SwitchableLight;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Modules.Utils.Sequencer;
 
 @Config
 public class Intake{

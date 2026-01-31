@@ -102,14 +102,14 @@ public class riptideUtil {
     public static double MAX_V = 12;                 // UNDETERMINED
 
 
-    public static double LONG_DIST_TOP = 3250; // UNDETERMINED
-    public static double LONG_DIST_BOT = 3730; // UNDETERMINED
+    public static double LONG_DIST_TOP = 4300; // UNDETERMINED
+    public static double LONG_DIST_BOT = 3000; // UNDETERMINED
 
-    public static double MID_DIST_TOP = 3270; // UNDETERMINED
-    public static double MID_DIST_BOT = 2800;// UNDETERMINED
+    public static double MID_DIST_TOP = 3270;
+    public static double MID_DIST_BOT = 2800;
 
-    public static double SHORT_DIST_TOP = 2950; // UNDETERMINED
-    public static double SHORT_DIST_BOT = 3480;// UNDETERMINED
+    public static double SHORT_DIST_TOP = 2750;
+    public static double SHORT_DIST_BOT = 2950;
 
     public static double KPTop = 0.001; //0.002
 //    public static double KPTop = 0; //0.002
@@ -118,11 +118,11 @@ public class riptideUtil {
 
     public static double KF_SHORT_BOT = 0.5;
     public static double KF_MEDIUM_BOT = 0.55;
-    public static double KF_LONG_BOT = 0.5;
+    public static double KF_LONG_BOT = 0.55;
 
     public static double KF_SHORT_TOP = 0.5;
     public static double KF_MEDIUM_TOP = 0.65;
-    public static double KF_LONG_TOP = 0.5;
+    public static double KF_LONG_TOP = 0.65;
 
     public static double KF_GENERIC = 0.5;
 
@@ -159,6 +159,7 @@ public class riptideUtil {
     public static boolean nextShotAvailable = true;
     public static boolean moveToNextSlot = false;
     public static boolean startedDelay = false;
+    public static boolean delayIntake = false;
 
     public static double endgameServosUp = 0.18;
 
