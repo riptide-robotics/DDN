@@ -280,11 +280,11 @@ public class Robot {
         s.addImpulseAction(() -> {
             intake.bootkick(BOOT_KICKER_UP);
             tele.addLine("Boot kicker up");
-        }, 0.5);
+        }, 0.15);
         s.addImpulseAction(() -> {
             intake.bootkick(BOOT_KICKER_RESTING);
             tele.addLine("Boot kicker down");
-        },1.5);
+        },0.75);
         s.addImpulseAction(() -> {
             if (slotNum == 0) {
                 Intake.SLOT_0 = 'b';
@@ -297,6 +297,6 @@ public class Robot {
             }
             riptideUtil.nextShotAvailable = true;
             tele.addLine("setting lost to blank");
-        },4);
+        },1.25);
     }
 }

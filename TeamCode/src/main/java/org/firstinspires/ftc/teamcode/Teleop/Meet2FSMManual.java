@@ -174,6 +174,9 @@ public class Meet2FSMManual extends LinearOpMode {
                 cycleSlots();
                 count();
 
+                if (gamepad2.dpad_up){
+                    currentState = states.ENDGAME;
+                }
                 // ENDGAME
                 //                if (gamepad2.dpad_up){
                 //                    currentState = states.ENDGAME;
@@ -327,7 +330,7 @@ public class Meet2FSMManual extends LinearOpMode {
                 spindexPosOuttake = robot.getIntake().getNextOuttakeSlot();
             }
 
-            if (gamepad2.right_bumper){
+            if (gamepad2.left_trigger > 0.1){
                 outtake = true;
                 recieve = false;
                 currentTopRPMGoal = LONG_DIST_TOP;
