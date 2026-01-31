@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
+import static org.firstinspires.ftc.teamcode.riptideUtil.BOOT_KICKER_RESTING;
 import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_B;
 import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_B_HOLE;
 import static org.firstinspires.ftc.teamcode.riptideUtil.GREEN_B_STDEV;
@@ -138,6 +139,7 @@ public class Intake{
         SLOT_0 = 'b';
         SLOT_1 = 'b';
         SLOT_2 = 'b';
+        bootkick(BOOT_KICKER_RESTING);
     }
 
     public void increaseCount(){

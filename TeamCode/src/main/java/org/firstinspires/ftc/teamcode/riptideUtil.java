@@ -118,9 +118,9 @@ public class riptideUtil {
     public static double SHORT_DIST_TOP = 2750;
     public static double SHORT_DIST_BOT = 2950;
 
-    public static double KPTop = 0.001; //0.002
+    public static double KPTop = 0.00001; //0.002
 //    public static double KPTop = 0; //0.002
-    public static double KPBottom = 0.001; // 0.0045
+    public static double KPBottom = 0.00001; // 0.0045
 //    public static double KPBottom = 0; // 0.0045
 
     public static double KF_SHORT_BOT = 0.5;
