@@ -275,23 +275,26 @@ public class Sequencer { // Done by Owen
      *  all that is needed is to put this in a loop that can be run.
      *  */
     public void loop() {
-        List<String> remove;
-        
-        
-        remove = processImpulseActions();
-        for (String s : remove) impulseactions.remove(s);
+        List<String> removeI;
+        List<String> removeL;
+        List<String> removeTI;
+        List<String> removeTL;
+        List<String> removeR;
 
-        remove = processLoopActions();
-        for (String s : remove) loopactions.remove(s);
 
-        remove = processTImpulseActions();
-        for (String s : remove) Timpulseactions.remove(s);
-        
-        remove = processTLoopActions();
-        for (String s : remove) Tloopactions.remove(s);
+        removeI = processImpulseActions();
+        removeL = processLoopActions();
+        removeTI = processTImpulseActions();
+        removeTL = processTLoopActions();
+        removeR = processRepeatingActions();
 
-        remove = processRepeatingActions();
-        for (String s : remove) repeatingactions.remove(s);
+        for (String s : removeTI) Timpulseactions.remove(s);
+        for (String s : removeR) repeatingactions.remove(s);
+        for (String s : removeTL) Tloopactions.remove(s);
+        for (String s : removeL) loopactions.remove(s);
+        for (String s : removeI) impulseactions.remove(s);
+
+
     }
     /**
      * Internal helper method to process specifically Impulse Actions. <br>
@@ -301,7 +304,7 @@ public class Sequencer { // Done by Owen
     private List<String> processImpulseActions() {
         List<String> remove = new ArrayList<>();
         
-        for (Map.Entry<String,ImpulseAction> entry : impulseactions.entrySet()) {
+        for (Map.Entry<String,ImpulseAction> entry : new HashMap<>(impulseactions).entrySet()) {
             if ((double) System.currentTimeMillis() /1000 - entry.getValue().startTime > entry.getValue().elapsedTime) {
                 entry.getValue().a.action();
                 remove.add(entry.getKey());
@@ -317,7 +320,7 @@ public class Sequencer { // Done by Owen
     private List<String> processLoopActions() {
         List<String> remove = new ArrayList<>();
         
-        for (Map.Entry<String, LoopAction> act : loopactions.entrySet()) {
+        for (Map.Entry<String, LoopAction> act : new HashMap<>(loopactions).entrySet()) {
             boolean overrideAction = act.getValue().killAction;
 
             if (!overrideAction && (double) System.currentTimeMillis()/1000 - act.getValue().startTime > act.getValue().elapsedTime)
@@ -335,7 +338,7 @@ public class Sequencer { // Done by Owen
     private List<String> processTImpulseActions() {
         List<String> remove = new ArrayList<>();
 
-        for (Map.Entry<String, TripImpulseAction> act : Timpulseactions.entrySet()) {
+        for (Map.Entry<String, TripImpulseAction> act : new HashMap<>(Timpulseactions).entrySet()) {
             if (act.getValue().area.botWithinArea(this.drive)) {
                 act.getValue().a.action();
                 remove.add(act.getKey());
@@ -351,7 +354,7 @@ public class Sequencer { // Done by Owen
     private List<String> processTLoopActions() {
         List<String> remove = new ArrayList<>();
 
-        for (Map.Entry<String,TripLoopAction> act : Tloopactions.entrySet()) {
+        for (Map.Entry<String,TripLoopAction> act : new HashMap<>(Tloopactions).entrySet()) {
             boolean overrideAction = act.getValue().killAction;
 
             if (!overrideAction && act.getValue().area.botWithinArea(this.drive))
@@ -371,7 +374,7 @@ public class Sequencer { // Done by Owen
         tele(0);
         List<String> remove = new ArrayList<>();
 
-        for (Map.Entry<String,RepeatingAction> act : repeatingactions.entrySet()) {
+        for (Map.Entry<String,RepeatingAction> act : new HashMap<>(repeatingactions).entrySet()) {
             boolean overrideAction = act.getValue().killAction;
             tele(1);
             if (!overrideAction && act.getValue().nextStep < System.currentTimeMillis()/1000) {

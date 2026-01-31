@@ -303,6 +303,7 @@ public class Drivetrain {
     }
 
     public boolean turnOnPointPID(double goal) {
+        pinpoint.update();
         double headingError = shortestAngleDiff(getCurrPos().getHeading(AngleUnit.DEGREES), goal);
         double turnPower = (headingError >= 0) ? turnControllerCCW.calculate(0, headingError) : turnControllerCW.calculate(0, headingError);
         this.setWheelPowers(

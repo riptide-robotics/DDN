@@ -14,11 +14,13 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Modules.Intake;
 import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 @Autonomous(name = "Auto Shoot Three")
 public class AutoShootThree extends LinearOpMode {
     Robot robot;
     double slot = 0;
+    boolean isRed = false;
 
     Telemetry t = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -39,66 +41,104 @@ public class AutoShootThree extends LinearOpMode {
         if (isStopRequested()) return;
 
         robot.s.addLoopAction(() -> {
-            robot.getDrivetrain().setWheelPowers(1, 1, 1, 1);
+            robot.getDrivetrain().setWheelPowers(-1, -1, -1, -1);
         }, 0,"Drive Forward");
 
         robot.s.addImpulseAction(() -> {
             robot.s.killLoopAction("Drive Forward", true);
-        },0.75);
+        },1.25);
 
         robot.s.addLoopAction(() -> {
             robot.getDrivetrain().setWheelPowers(0, 0, 0, 0);
-        }, 0.75,"Stop");
+            AprilTagDetection tag = robot.getCamera().getGoalApriltag();
+            if(tag != null) {
+                isRed = tag.metadata.name == "Red Goal";
+            }
+        }, 1.25,"Stop");
 
         robot.s.addImpulseAction(() -> {
             robot.s.killLoopAction("Stop", true);
-        },3);
+        },2);
 
         robot.s.addLoopAction(() -> {
-            robot.getDrivetrain().turnOnPointPID(-90);
-        }, 3,"Turn on Point");
+            if(isRed) {robot.getDrivetrain().turnOnPointPID(135);}
+            else {robot.getDrivetrain().turnOnPointPID(45);}
+            robot.setStatus((byte) 0);
+        }, 2,"Turn on Point");
 
         robot.s.addImpulseAction(() -> {
             robot.s.killLoopAction("Turn on Point", true);
-        },6);
+            robot.getDrivetrain().setWheelPowers(0, 0, 0, 0);
+        },3.5);
+
+        robot.s.addLoopAction(() -> {
+            robot.getDrivetrain().turnOnPointPID(0);
+        }, 3.5,"Turn Back");
+
+        robot.s.addImpulseAction(() -> {
+            robot.s.killLoopAction("Turn Back", true);
+            robot.getDrivetrain().setWheelPowers(0, 0, 0, 0);
+        },5);
 
         // Shoot
 
         robot.s.addLoopAction(() -> {
-            robot.getOuttake().setOuttakeRPM(MID_DIST_TOP, MID_DIST_BOT);
+            robot.getOuttake().setOuttakeRPM(SHORT_DIST_TOP, SHORT_DIST_BOT);
             robot.getOuttake().runOuttakePID(t);
-        }, 6, "Shoot");
+        }, 3, "Shoot");
 
         robot.s.addImpulseAction(() -> {
             slot = robot.getIntake().getNextOuttakeSlot();
             robot.getIntake().cycleOuttakeSlot(slot);
+        },5);
+
+        robot.s.addImpulseAction(() -> {
+            robot.outtake(slot, t);
+        },6);
+
+        robot.s.addImpulseAction(() -> {
+            slot = robot.getIntake().getNextOuttakeSlot();
+            robot.getIntake().cycleOuttakeSlot(slot);
+        },9);
+
+        robot.s.addImpulseAction(() -> {
+            robot.outtake(slot, t);
         },10);
 
         robot.s.addImpulseAction(() -> {
-            robot.outtake(slot, t);
-        },11);
-
-        robot.s.addImpulseAction(() -> {
             slot = robot.getIntake().getNextOuttakeSlot();
             robot.getIntake().cycleOuttakeSlot(slot);
+        },13);
+
+        robot.s.addImpulseAction(() -> {
+            robot.outtake(slot, t);
         },14);
 
         robot.s.addImpulseAction(() -> {
-            robot.outtake(slot, t);
+            robot.getIntake().bootkick(BOOT_KICKER_RESTING);
         },15);
 
         robot.s.addImpulseAction(() -> {
-            slot = robot.getIntake().getNextOuttakeSlot();
-            robot.getIntake().cycleOuttakeSlot(slot);
+            robot.getOuttake().setOuttakeRPM(0, 0);
+        },16);
+
+        robot.s.addLoopAction(() -> {
+            if(isRed) {robot.getDrivetrain().turnOnPointPID(45);}
+            else {robot.getDrivetrain().turnOnPointPID(-45);}
+        }, 16, "Turn Away");
+
+        robot.s.addImpulseAction(() -> {
+            robot.s.killLoopAction("Turn Away", true);
         },18);
 
-        robot.s.addImpulseAction(() -> {
-            robot.outtake(slot, t);
-        },19);
+        robot.s.addLoopAction(() -> {
+            robot.getDrivetrain().setWheelPowers(1, 1, 1, 1);
+        }, 18,"Drive Away");
 
         robot.s.addImpulseAction(() -> {
-            robot.getIntake().bootkick(BOOT_KICKER_RESTING);
-        },20);
+            robot.s.killLoopAction("Drive Away", true);
+            robot.getDrivetrain().setWheelPowers(0, 0, 0, 0);
+        },18.5);
 
         while (opModeIsActive()) {
             robot.s.loop();

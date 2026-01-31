@@ -376,11 +376,9 @@ public class Meet2FSMManual extends LinearOpMode {
         }
 
         public void idleSpin(){
-            if (gamepad2.back){
-                ballsintrough = 0;
-            } else if (gamepad2.right_trigger > 0.1 || outtake || delayIntake) {
+            if (gamepad2.right_trigger > 0.1) {
                 robot.getIntake().spin(0);
-            }else{
+            } else {
                 robot.getIntake().spin(spin);
             }
         }
