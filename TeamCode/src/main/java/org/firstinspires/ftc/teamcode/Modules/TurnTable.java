@@ -35,6 +35,12 @@ public class TurnTable {
         }
         goalTicks = goalDeg * DEGREES_TO_TICKS;
     }
+
+    /**
+     * @param h Robot heading, IN DEGREES
+     * @param x dx, IN INCHES
+     * @param y dy, IN INCHES
+     */
     public void setGoalAngle(double h, double x, double y) {
         double d = (Math.toDegrees(Math.atan2(y, x)) - h);
         if (d < -60) {
