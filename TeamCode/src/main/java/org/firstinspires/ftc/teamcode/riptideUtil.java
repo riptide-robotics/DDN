@@ -74,8 +74,8 @@ public class riptideUtil {
     // Maximums
     public static double MAX_V_TURN = 90;   // deg/s //UNDETERMINED
 
-    public static double MAX_A_VERT = 72;            // UNDETERMINED
-    public static double MAX_V_VERT = 96;            // UNDETERMINED
+    public static double MAX_A_VERT = 48;            // UNDETERMINED
+    public static double MAX_V_VERT = 24;            // UNDETERMINED
 
     public static double MAX_WHEEL_POWER = 1;       // Probably always going to be 1
 
@@ -105,14 +105,26 @@ public class riptideUtil {
     public static double LONG_DIST_TOP = 3250; // UNDETERMINED
     public static double LONG_DIST_BOT = 3730; // UNDETERMINED
 
-    public static double MID_DIST_TOP = 500; // UNDETERMINED
-    public static double MID_DIST_BOT = 500;// UNDETERMINED
+    public static double MID_DIST_TOP = 3270; // UNDETERMINED
+    public static double MID_DIST_BOT = 2800;// UNDETERMINED
 
     public static double SHORT_DIST_TOP = 2950; // UNDETERMINED
     public static double SHORT_DIST_BOT = 3480;// UNDETERMINED
 
-    public static double KPTop = 0.00021; //0.002
-    public static double KPBottom = 0.0035; // 0.0045
+    public static double KPTop = 0.001; //0.002
+//    public static double KPTop = 0; //0.002
+    public static double KPBottom = 0.001; // 0.0045
+//    public static double KPBottom = 0; // 0.0045
+
+    public static double KF_SHORT_BOT = 0.5;
+    public static double KF_MEDIUM_BOT = 0.55;
+    public static double KF_LONG_BOT = 0.5;
+
+    public static double KF_SHORT_TOP = 0.5;
+    public static double KF_MEDIUM_TOP = 0.65;
+    public static double KF_LONG_TOP = 0.5;
+
+    public static double KF_GENERIC = 0.5;
 
     public static double tolerance = 300; //?? what
 

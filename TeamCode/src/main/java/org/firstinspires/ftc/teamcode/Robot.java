@@ -120,7 +120,7 @@ public class Robot {
         if (1+1==2) throw new UnsupportedOperationException("Can't align just yet");
 
         double error = camera.getAngleToRedGoal();
-        outtake.SetTurretGoalAngle(/*get current angle of turret*/ 0 - error);
+        turntable.setGoalAngle(/*get current angle of turret*/ 0 - error);
 
 
     }
@@ -129,7 +129,7 @@ public class Robot {
         if (1+1==2) throw new UnsupportedOperationException("Can't align just yet");
 
         double error = camera.getAngleToBlueGoal();
-        outtake.SetTurretGoalAngle(/*get current angle of turret*/ 0 - error);
+        turntable.setGoalAngle(/*get current angle of turret*/ 0 - error);
 
     }
     @Placeholder

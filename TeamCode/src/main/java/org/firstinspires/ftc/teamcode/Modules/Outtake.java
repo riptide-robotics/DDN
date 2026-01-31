@@ -1,13 +1,6 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
-import static org.firstinspires.ftc.teamcode.riptideUtil.KPBottom;
-import static org.firstinspires.ftc.teamcode.riptideUtil.KPTop;
-import static org.firstinspires.ftc.teamcode.riptideUtil.TURNTABLE_KD;
-import static org.firstinspires.ftc.teamcode.riptideUtil.TURNTABLE_KI;
-import static org.firstinspires.ftc.teamcode.riptideUtil.TURNTABLE_KP;
-import static org.firstinspires.ftc.teamcode.riptideUtil.angularVelocity;
-import static org.firstinspires.ftc.teamcode.riptideUtil.econserved;
-import static org.firstinspires.ftc.teamcode.riptideUtil.tolerance;
+import static org.firstinspires.ftc.teamcode.riptideUtil.*;
 
 import android.annotation.SuppressLint;
 
@@ -36,20 +29,23 @@ public class Outtake {
     private PIDController RPMControllerTop = new PIDController(KPTop, 0, 0);
     private PIDController RPMControllerBottom = new PIDController(KPBottom, 0, 0);
     private double prevPosTop = 0;
-    private  double prevPosBottom = 0;
+    private double prevPosBottom = 0;
     private boolean atGoalSpeed = false;
     private double rpmTopGoal = 0;
     private double rpmBottomGoal = 0;
+
+    private double KFTop = 0;
+    private double KFBottom = 0;
 
     //Turntable
 
     private double turntableAngle = 0; // goal
     private PIDController turntableController = new PIDController(TURNTABLE_KP, TURNTABLE_KI, TURNTABLE_KD);
-    static final double ticksToDegrees = 360/751.8;
-    static final double degreesToTicks = 751.8/360;
+    static final double ticksToDegrees = 360 / 751.8;
+    static final double degreesToTicks = 751.8 / 360;
     private final DcMotor turntable;
 
-    public Outtake(HardwareMap hardwareMap){
+    public Outtake(HardwareMap hardwareMap) {
         topFlywheel = hardwareMap.dcMotor.get("topFlywheel");
         bottomFlywheel = hardwareMap.dcMotor.get("bottomFlywheel");
 
@@ -66,7 +62,7 @@ public class Outtake {
     /**
      * Prepares timer. Run this just before using anything else.
      **/
-    public void startFlywheel(){
+    public void startFlywheel() {
         this.startTime = System.nanoTime() / 1e9;  // Current Time in Seconds
     }
 
@@ -74,29 +70,31 @@ public class Outtake {
     /**
      * Recommended method of setting the outtake. Sets it moving.
      **/
-    public void runOuttakePID(double rpmTop, double rpmBottom, Telemetry tele){
+    public void runOuttakePID(double rpmTop, double rpmBottom, Telemetry tele) {
 
         pidtunedmotor(rpmTop, rpmBottom, tele);
 
         tele.addData("goalRPMTop", rpmTop);
         tele.addData("goalRPMBottom", rpmBottom);
 
-        if (rpmTopPrev != rpmTop) {
-            rpmTopPrev = rpmTop;
-            RPMControllerTop = new PIDController(KPTop, 0, 0);
-
-        }
-        if (rpmBottomPrev != rpmBottom) {
-            rpmBottomPrev = rpmBottom;
-            RPMControllerBottom = new PIDController(KPBottom, 0, 0);
-        }
+//        if (rpmTopPrev != rpmTop) {
+//            rpmTopPrev = rpmTop;
+//            RPMControllerTop = new PIDController(KPTop, 0, 0);
+//
+//        }
+//        if (rpmBottomPrev != rpmBottom) {
+//            rpmBottomPrev = rpmBottom;
+//            RPMControllerBottom = new PIDController(KPBottom, 0, 0);
+//        }
     }
 
 
     /**
      * Runs based on stored goal instead of target RPMs given by the user.
      **/
-    public void runOuttakePID(Telemetry tele){runOuttakePID(rpmTopGoal, rpmBottomGoal, tele);}
+    public void runOuttakePID(Telemetry tele) {
+        runOuttakePID(rpmTopGoal, rpmBottomGoal, tele);
+    }
 
 
     /**
@@ -111,8 +109,8 @@ public class Outtake {
         currPosBottom = currPosR();
 
 
-        double dThetaTop = (currPosTop - prevPosTop)/28;
-        double dThetaBottom = (currPosBottom - prevPosBottom)/28;
+        double dThetaTop = (currPosTop - prevPosTop) / 28;
+        double dThetaBottom = (currPosBottom - prevPosBottom) / 28;
 
         double dt = System.nanoTime() / 1e9 - startTime;
         startTime = System.nanoTime() / 1e9;
@@ -159,11 +157,11 @@ public class Outtake {
 //        averageBottom = bottomRecords.size() >= queueSize ? (bottomRecords.get(0)+bottomRecords.get(1)+bottomRecords.get(2)+bottomRecords.get(3)+bottomRecords.get(4))/5 : currRPMBottom;
 
 
-        double wantedWheelPowerTopAverage = RPMControllerTop.calculate(averageTop - 1250, rpmTop);
-        double wantedWheelPowerBottomAverage = RPMControllerBottom.calculate(averageBottom- 50, rpmBottom);
+        double wantedWheelPowerTopAverage = RPMControllerTop.calculate(averageTop, rpmTop) + KFTop;
+        double wantedWheelPowerBottomAverage = RPMControllerBottom.calculate(averageBottom, rpmBottom) + KFBottom;
 
 
-        setFlyWheelPower(rpmTop != 0 ? wantedWheelPowerTopAverage:0,rpmBottom != 0 ? wantedWheelPowerBottomAverage:0);
+        setFlyWheelPower(rpmTop != 0 ? wantedWheelPowerTopAverage : 0, rpmBottom != 0 ? wantedWheelPowerBottomAverage : 0);
 
 
         telemetry.addData("ready", bottomRecords.size() >= queueSize);
@@ -223,30 +221,60 @@ public class Outtake {
      * Places goals instead of directly commanding motors. <br>
      * "Now it's some other poor soul's job!" - this method
      **/
-    public void setOuttakeRPM(double rpmTop, double rpmBottom){rpmTopGoal = rpmTop; rpmBottomGoal = rpmBottom;}
+    public void setOuttakeRPM(double rpmTop, double rpmBottom) {
+        setFlyWheelTopGoal(rpmTop);
+        setFlywheelBottomGoal(rpmBottom);
+    }
 
     /**
      * Sets the the goal for the top motor to reach in its PID. For the future.
      **/
-    public void SetFlyWheelTopGoal(double rpm) {rpmTopGoal = rpm;}
+    public void setFlyWheelTopGoal(double rpm) {
+
+        rpmTopGoal = rpm;
+
+        if (rpm == LONG_DIST_TOP) {
+            KFTop = KF_LONG_TOP;
+        } else if (rpm == MID_DIST_TOP) {
+            KFTop = KF_MEDIUM_TOP;
+        } else if (rpm == SHORT_DIST_TOP) {
+            KFTop = KF_SHORT_TOP;
+        } else {
+            KFTop = KF_GENERIC;
+        }
+    }
 
 
-    /** Sets the the goal for the bottom motor to reach in its PID. For the future.
+    /**
+     * Sets the the goal for the bottom motor to reach in its PID. For the future.
      **/
-    public void setFlywheelBottomGoal(double rpm) {rpmBottomGoal = rpm;}
+    public void setFlywheelBottomGoal(double rpm) {
+        rpmBottomGoal = rpm;
+
+        if (rpm == LONG_DIST_BOT) {
+            KFBottom = KF_LONG_BOT;
+        } else if (rpm == MID_DIST_BOT) {
+            KFBottom = KF_MEDIUM_BOT;
+        } else if (rpm == SHORT_DIST_BOT) {
+            KFBottom = KF_SHORT_BOT;
+        } else {
+            KFBottom = KF_GENERIC;
+        }
+    }
 
 
     /**
      * Completely skip tuning and run both motors at the same voltage.
      **/
-    public void setFlywheelPowersNoPID(double speed){
+    public void setFlywheelPowersNoPID(double speed) {
         bottomFlywheel.setPower(speed);
         topFlywheel.setPower(speed);
     }
 
 
-    /**Completely skip tuning and set motor voltages individually. As fundamental as you get.
-     * */
+    /**
+     * Completely skip tuning and set motor voltages individually. As fundamental as you get.
+     */
     public void setFlyWheelPower(double speedT, double speedB) {
         bottomFlywheel.setPower(speedB);
         topFlywheel.setPower(speedT);
@@ -256,7 +284,7 @@ public class Outtake {
     /**
      * Directly stop power to both motors. Works surprisingly well, although not really used.
      **/
-    public void stop(){
+    public void stop() {
         bottomFlywheel.setPower(0);
         topFlywheel.setPower(0);
     }
@@ -265,15 +293,15 @@ public class Outtake {
     /**
      * Checks if it is within acceptable ranges.
      **/
-    public boolean isAtGoalSpeed(){
+    public boolean isAtGoalSpeed() {
         return atGoalSpeed;
     }
 
 
     /**
-     *Gets the current position, in ticks, of the top flywheel.
+     * Gets the current position, in ticks, of the top flywheel.
      **/
-    public double currPosL(){
+    public double currPosL() {
         return topFlywheel.getCurrentPosition();
     }
 
@@ -281,42 +309,16 @@ public class Outtake {
     /**
      * Gets the current position, in ticks, of the bottom flywheel.
      **/
-    public double currPosR(){
+    public double currPosR() {
         return bottomFlywheel.getCurrentPosition();
     }
 
-    /**
-     * Manual override. Maps a joystick input [-1, 1] to a (-90, 90) degree PID call
-     * @param joy a double in the range of [-1, 1].
-     * @return nothing
-     */
-    public void mapJoyToAngle(double joy){
-        joy = Math.max(-1, Math.min(1, joy));
-        double angle = 90 * joy;
-        setTurntableGoalAngle(angle);
-
+    public PIDController getRPMControllerTop() {
+        return RPMControllerTop;
     }
 
-    /**
-     * sets some internal variable that has an angle MAKE SURE THAT ANGLES ARE BOUNDED. Also not working just yet.
-     **/
-    public void setTurntableGoalAngle(double angle){
-        turntableAngle = angle;
+    public PIDController getRPMControllerBottom() {
+        return RPMControllerBottom;
     }
 
-    /**
-     * Pid Controller for the turntable
-     **/
-    public void updateTurntableAngle(Telemetry t) {
-        double currPos = turntable.getCurrentPosition();
-        double goalAngleInTicks = turntableAngle * 3 * degreesToTicks;
-        double power = turntableController.calculate(currPos, goalAngleInTicks);
-        turntable.setPower(power);
-        t.addData("Goal Angle", turntableAngle);
-        t.addData("Turntable angle", currPos * ticksToDegrees / 3);
-    }
-
-
-    public void SetTurretGoalAngle(double v) {
-    }
 }
