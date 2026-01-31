@@ -54,7 +54,7 @@ public class TurnTableLockTester extends LinearOpMode {
         robot.getDrivetrain().getPinpoint().setPosition(START_POSITION);
         robot.getDrivetrain().getPinpoint().update();
 
-        turnTable = new TurnTable(hardwareMap);
+        turnTable = robot.getTurntable();
 
         telemetry.addData("Robot status", "succesfully initiated");
         telemetry.update();
@@ -87,6 +87,7 @@ public class TurnTableLockTester extends LinearOpMode {
 
             if(gamepad1.a){
                 robot.getDrivetrain().getPinpoint().setPosition(START_POSITION);
+                turnTable.zeroMotorPos();
             }
             if(gamepad1.x) {
                 robot.getDrivetrain().getPinpoint().recalibrateIMU();

@@ -147,9 +147,11 @@ public class Robot {
         }
     }
 
-    public StartPos getStartStatus(){return startStatus;}
+    public StartPos getStartStatus() {
+        return startStatus;
+    }
 
-    public void setStartStatus(StartPos ss){
+    public void setStartStatus(StartPos ss) {
         startStatus = ss;
     }
 
@@ -173,7 +175,6 @@ public class Robot {
     }
 
 
-
     /**
      * Set indicator light based upon current spindexer. Put this in a loop.
      *
@@ -184,16 +185,16 @@ public class Robot {
 
         boolean contains =
                 order[0] == colorRequested ||
-                order[1] == colorRequested ||
-                order[2] == colorRequested ;
+                        order[1] == colorRequested ||
+                        order[2] == colorRequested;
 
         if (colorRequested == ' ') contains = true;
 
 
         byte amount = (byte) (
-                (order[0] != ' ' ? 1:0) +
-                (order[1] != ' ' ? 1:0) +
-                (order[2] != ' ' ? 1:0) );
+                (order[0] != ' ' ? 1 : 0) +
+                        (order[1] != ' ' ? 1 : 0) +
+                        (order[2] != ' ' ? 1 : 0));
 
 
         if (amount == 0) indicator.setRGB(Indicator.IndColor.ORANGE);
