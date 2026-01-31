@@ -129,7 +129,7 @@ public class Intake{
     }
 
     public void initSpindex() {
-        currAngle = 450;
+        currAngle = 465;
         setSpindexPosition(currAngle);
         ballsShot = 0;
         currentState = UnshiftedPositions.SLOT_0_RECEIVE;
@@ -196,37 +196,37 @@ public class Intake{
                         &&
                         colors.blue > GREEN_B - GREEN_B_STDEV) && colors.alpha > 0.8) {
             currColor = 'g';
-        } else {
-            checkClose = true;
-        }
-        if (checkClose){
-            if ((colors.red < PURPLE_R_HOLE + PURPLE_R_STDEV_HOLE
-                    &&
-                    colors.red > PURPLE_R_HOLE - PURPLE_R_STDEV_HOLE)
-                    &&
-                    (colors.green < PURPLE_G_HOLE + PURPLE_G_STDEV_HOLE
-                            &&
-                            colors.green > PURPLE_G_HOLE - PURPLE_G_STDEV_HOLE)
-                    &&
-                    (colors.blue < PURPLE_B_HOLE + PURPLE_B_STDEV_HOLE
-                            &&
-                            colors.blue > PURPLE_B_HOLE - PURPLE_B_STDEV_HOLE)) {
-                currColor = 'p';
-            } else if ((colors.red < GREEN_R_HOLE + GREEN_R_STDEV_HOLE
-                    &&
-                    colors.red > GREEN_R_HOLE - GREEN_R_STDEV_HOLE)
-                    &&
-                    (colors.green < GREEN_G_HOLE + GREEN_G_STDEV_HOLE
-                            &&
-                            colors.green > GREEN_G_HOLE - GREEN_G_STDEV_HOLE)
-                    &&
-                    (colors.blue < GREEN_B_HOLE + GREEN_B_STDEV_HOLE
-                            &&
-                            colors.blue > GREEN_B_HOLE - GREEN_B_STDEV_HOLE)) {
-                currColor = 'g';
-            } else{
-                currColor = 'b';
-            }
+//        } else {
+//            checkClose = true;
+//        }
+//        if (checkClose){
+//            if ((colors.red < PURPLE_R_HOLE + PURPLE_R_STDEV_HOLE
+//                    &&
+//                    colors.red > PURPLE_R_HOLE - PURPLE_R_STDEV_HOLE)
+//                    &&
+//                    (colors.green < PURPLE_G_HOLE + PURPLE_G_STDEV_HOLE
+//                            &&
+//                            colors.green > PURPLE_G_HOLE - PURPLE_G_STDEV_HOLE)
+//                    &&
+//                    (colors.blue < PURPLE_B_HOLE + PURPLE_B_STDEV_HOLE
+//                            &&
+//                            colors.blue > PURPLE_B_HOLE - PURPLE_B_STDEV_HOLE)) {
+//                currColor = 'p';
+//            } else if ((colors.red < GREEN_R_HOLE + GREEN_R_STDEV_HOLE
+//                    &&
+//                    colors.red > GREEN_R_HOLE - GREEN_R_STDEV_HOLE)
+//                    &&
+//                    (colors.green < GREEN_G_HOLE + GREEN_G_STDEV_HOLE
+//                            &&
+//                            colors.green > GREEN_G_HOLE - GREEN_G_STDEV_HOLE)
+//                    &&
+//                    (colors.blue < GREEN_B_HOLE + GREEN_B_STDEV_HOLE
+//                            &&
+//                            colors.blue > GREEN_B_HOLE - GREEN_B_STDEV_HOLE)) {
+//                currColor = 'g';
+//            } else{
+//                currColor = 'b';
+//            }
             checkClose = false;
         }
 
