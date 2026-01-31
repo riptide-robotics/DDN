@@ -179,6 +179,7 @@ public class Robot {
 
     /***/
     public void setStatus(byte artifactsInTrough) {
+        if (artifactsInTrough < 0) artifactsInTrough = 0;
         char[] badChar = {'b','b','b'};
 
         if (Arrays.equals(motifOrder, badChar)) motifOrder = camera.scanMotifOrder(); //is there a problem
