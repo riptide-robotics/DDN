@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.support.v4.app.INotificationSideChannel;
+
+import androidx.xr.runtime.math.Pose;
+
 import com.acmerobotics.dashboard.config.Config;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -63,6 +67,9 @@ public class riptideUtil {
     public static final double TURNTABLE_KI = 0.01;
     public static final double TURNTABLE_KD = 0.0002;
     public static final double TURNTABLE_KF = 0;
+
+    public static final Pose2D CLOSE_START_GOAL_POS = new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0);
+    public static final Pose2D FAR_START_GOAL_POS = new Pose2D(DistanceUnit.INCH, 48, 120, AngleUnit.DEGREES, 0);
 
     /**
      * Autonomous Constants

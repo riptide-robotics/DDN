@@ -6,6 +6,7 @@ import static org.firstinspires.ftc.teamcode.riptideUtil.BOOT_KICKER_UP;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Modules.EndgameServos;
 import org.firstinspires.ftc.teamcode.Modules.Camera;
@@ -46,26 +47,21 @@ public class Robot {
     public Sequencer s;
 
     char[] motifOrder;
-    final char[] badChar = {'b','b','b'};
+    final char[] badChar = {'b', 'b', 'b'};
 
-    static {
-
-        shootlookupblue[0] = new VelocityStorage();
-        shootlookupblue[1] = new VelocityStorage();
-        shootlookupblue[2] = new VelocityStorage();
-
-
-        shootlookupred[0] = new VelocityStorage();
-        shootlookupred[1] = new VelocityStorage();
-        shootlookupred[2] = new VelocityStorage();
-
-
+    public enum StartPos {
+        CLOSE_START,
+        FAR_START,
+        TELEOP_RESET,
+        NOT_SET,
     }
 
-    public Robot (HardwareMap map){
+    private StartPos startStatus = StartPos.NOT_SET;
+
+    public Robot(HardwareMap map) {
         hardwareMap = map;
 
-        indicator = new Indicator(hardwareMap,true);
+        indicator = new Indicator(hardwareMap, true);
         drivetrain = new Drivetrain(hardwareMap);
         s = new Sequencer(drivetrain);
         intake = new Intake(hardwareMap);
@@ -77,22 +73,34 @@ public class Robot {
         motifOrder = camera.scanMotifOrder();
     }
 
-    public Drivetrain getDrivetrain(){
+    public Drivetrain getDrivetrain() {
         return drivetrain;
     }
 
-    public Intake getIntake() {return intake;}
+    public Intake getIntake() {
+        return intake;
+    }
 
-    public EndgameServos getEndgameServos() {return endgameServos;}
+    public EndgameServos getEndgameServos() {
+        return endgameServos;
+    }
 
-    public Outtake getOuttake() {return outtake;}
+    public Outtake getOuttake() {
+        return outtake;
+    }
 
-    public Camera getCamera() {return camera;}
+    public Camera getCamera() {
+        return camera;
+    }
 
-    public TurnTable getTurntable() {return turntable;}
+    public TurnTable getTurntable() {
+        return turntable;
+    }
 
-    /**TODO: This is going to run into a NPE if the camera doesn't see the goal*/
-    public void setFlyWheelPowerOnDistance(boolean run, Telemetry tele){
+    /**
+     * TODO: This is going to run into a NPE if the camera doesn't see the goal
+     */
+    public void setFlyWheelPowerOnDistance(boolean run, Telemetry tele) {
         double distance = camera.getGoalDistance();
         outtake.setPowerOnDist(distance, run, tele);
     }
@@ -102,61 +110,77 @@ public class Robot {
         if (true) /*shut up IDE*/ throw new UnsupportedOperationException("Can't do this yet!");
         rotateToColor(color);
         if (true) /*TODO, run if no color*/ {
-        //vibrate(); todo
-        return;
+            //vibrate(); todo
+            return;
         }
         char[] artifacts = new char[3]; //todo get chars from the thing
         byte b = 0; //todo get current position of spindexer
-        if (artifacts[b] == color) {/*can eject NOW*/};
+        if (artifacts[b] == color) {/*can eject NOW*/}
+        ;
         //rotate to required position
         double[] velocity = getOuttakeRPMS(true /*todo again get team color here*/);
-        outtake.setOuttakeRPM(velocity[1],velocity[2]);
+        outtake.setOuttakeRPM(velocity[1], velocity[2]);
     }
+
     @Placeholder
     public void /*figure out what we are returning later*/ rotateToColor(char color) {
         throw new UnsupportedOperationException("Can't rotate just yet");
     }
 
+    public void alignTurretToGoal() {
+        switch (startStatus) {
+            case NOT_SET:
+                // Indicator Flash
+                turntable.setGoalAngle(0.0);
+            case CLOSE_START: {
+                double dx = riptideUtil.CLOSE_START_GOAL_POS.getX(DistanceUnit.INCH) - getDrivetrain().getCurrPos().getX(DistanceUnit.INCH);
+                double dy = riptideUtil.CLOSE_START_GOAL_POS.getY(DistanceUnit.INCH) - getDrivetrain().getCurrPos().getY(DistanceUnit.INCH);
+                double h = getDrivetrain().getCurrPos().getHeading(AngleUnit.DEGREES);
+                turntable.setGoalAngle(h, dx, dy);
+            }
+            case FAR_START: {
+                double dx = riptideUtil.FAR_START_GOAL_POS.getX(DistanceUnit.INCH) - getDrivetrain().getCurrPos().getX(DistanceUnit.INCH);
+                double dy = riptideUtil.FAR_START_GOAL_POS.getY(DistanceUnit.INCH) - getDrivetrain().getCurrPos().getY(DistanceUnit.INCH);
+                double h = getDrivetrain().getCurrPos().getHeading(AngleUnit.DEGREES);
+                turntable.setGoalAngle(h, dx, dy);
+            }
+        }
+    }
+
+    public StartPos getStartStatus(){return startStatus;}
+
+    public void setStartStatus(StartPos ss){
+        startStatus = ss;
+    }
+
     @Placeholder
     public void alignTurretToRedGoal() {
-        if (1+1==2) throw new UnsupportedOperationException("Can't align just yet");
+        if (1 + 1 == 2) throw new UnsupportedOperationException("Can't align just yet");
 
         double error = camera.getAngleToRedGoal();
         turntable.setGoalAngle(/*get current angle of turret*/ 0 - error);
 
 
     }
+
     @Placeholder
     public void alignTurretToBlueGoal() {
-        if (1+1==2) throw new UnsupportedOperationException("Can't align just yet");
+        if (1 + 1 == 2) throw new UnsupportedOperationException("Can't align just yet");
 
         double error = camera.getAngleToBlueGoal();
         turntable.setGoalAngle(/*get current angle of turret*/ 0 - error);
 
     }
-    @Placeholder
-    public void aimToRedGoal(){ // copy for blue
-        double dist = camera.getDistanceToRedGoal();
-        double[] velocity = getOuttakeRPMS(true);
-        outtake.setOuttakeRPM(velocity[1],velocity[2]);
-        /**
-         * split maximum shooting distance into 5 "sections", set flywheel powers based on a lookup table (array)
-         * based on which section we fall into.
-         */
-    }
-    /**Launch an artifact based on position. Does not properly function as of this moment.*/
-    @Placeholder
-    public void aimToBlueGoal(){ // copy for blue
-        double dist = camera.getDistanceToBlueGoal();
-        double[] velocity = getOuttakeRPMS(true);
-        outtake.setOuttakeRPM(velocity[1],velocity[2]);
-    }
+
+
+
     /**
      * Set indicator light based upon current spindexer. Put this in a loop.
+     *
      * @param colorRequested The color that is checked for existence. Use a space for no check.
-     * **/
+     **/
     public void setStatus(char colorRequested) {
-        char[] order = new char[] {intake.slot0CurrColor(),intake.slot1CurrColor(),intake.slot2CurrColor()};
+        char[] order = new char[]{intake.slot0CurrColor(), intake.slot1CurrColor(), intake.slot2CurrColor()};
 
         boolean contains =
                 order[0] == colorRequested ||
@@ -172,24 +196,26 @@ public class Robot {
                 (order[2] != ' ' ? 1:0) );
 
 
-
-             if (amount == 0)                        indicator.setRGB(Indicator.IndColor.ORANGE);
-        else if (amount == 3 && !contains)           indicator.setRGB(Indicator.IndColor.RED);
+        if (amount == 0) indicator.setRGB(Indicator.IndColor.ORANGE);
+        else if (amount == 3 && !contains) indicator.setRGB(Indicator.IndColor.RED);
 
         else if (!contains && colorRequested == 'p') indicator.setRGB(Indicator.IndColor.BLUE);
         else if (!contains && colorRequested == 'g') indicator.setRGB(Indicator.IndColor.YELLOW);
-        else if ( contains && colorRequested == 'p') indicator.setRGB(Indicator.IndColor.INDIGO);
-        else if ( contains && colorRequested == 'g') indicator.setRGB(Indicator.IndColor.GREEN);
+        else if (contains && colorRequested == 'p') indicator.setRGB(Indicator.IndColor.INDIGO);
+        else if (contains && colorRequested == 'g') indicator.setRGB(Indicator.IndColor.GREEN);
 
         else indicator.setRGB(Indicator.IndColor.NONE); //err
 
     }
 
-    /**Set the indicator status of the robot, with respect to the number of artifacts in the trough.*/
+    /**
+     * Set the indicator status of the robot, with respect to the number of artifacts in the trough.
+     */
     public void setStatus(byte artifactsInTrough) {
         if (artifactsInTrough < 0) artifactsInTrough = 0; //warn the driver??
 
-        if (Arrays.equals(motifOrder, badChar)) motifOrder = camera.scanMotifOrder(); //is there a problem
+        if (Arrays.equals(motifOrder, badChar))
+            motifOrder = camera.scanMotifOrder(); //is there a problem
         if (Arrays.equals(motifOrder, badChar)) { //is there still a problem
             indicator.setRGB(Indicator.IndColor.NONE);
             return;
@@ -198,12 +224,16 @@ public class Robot {
         setStatus(motifOrder[artifactsInTrough % 3]);
     }
 
-    /**Designed and intended for testing, but might work before an actual match.*/
+    /**
+     * Designed and intended for testing, but might work before an actual match.
+     */
     public void setTeamColor(riptideUtil.TEAM_COLOR color) {
         alliance = color;
     }
 
-    /**get flywheel RPMs based upon distance. Not tested.*/
+    /**
+     * get flywheel RPMs based upon distance. Not tested.
+     */
     public double[] getOuttakeRPMS(boolean onBlueGoal) {
         double distance = onBlueGoal ? camera.getDistanceToBlueGoal() : camera.getDistanceToRedGoal();
         double[] returned = new double[2];
@@ -225,7 +255,9 @@ public class Robot {
     }
 
 
-    /**Only access outside of Robot for the purposes of reading data from it.*/
+    /**
+     * Only access outside of Robot for the purposes of reading data from it.
+     */
     private static class VelocityStorage {
         public double upperRPM;
         public double lowerRPM;
@@ -236,12 +268,14 @@ public class Robot {
             this.lowerRPM = lowerRPM;
             this.distance = distanceININCHES;
         }
+
         public VelocityStorage() {
             this.upperRPM = 0;
             this.lowerRPM = 0;
             this.distance = 0;
         }
     }
+
     public void outtake(double slotNum, Telemetry tele) {
         s.addImpulseAction(() -> {
             intake.bootkick(BOOT_KICKER_UP);
@@ -252,9 +286,15 @@ public class Robot {
             tele.addLine("Boot kicker down");
         },1.5);
         s.addImpulseAction(() -> {
-            if (slotNum == 0){Intake.SLOT_0 = 'b';}
-            if (slotNum == 1){Intake.SLOT_1 = 'b';}
-            if (slotNum == 2){Intake.SLOT_2 = 'b';}
+            if (slotNum == 0) {
+                Intake.SLOT_0 = 'b';
+            }
+            if (slotNum == 1) {
+                Intake.SLOT_1 = 'b';
+            }
+            if (slotNum == 2) {
+                Intake.SLOT_2 = 'b';
+            }
             riptideUtil.nextShotAvailable = true;
             tele.addLine("setting lost to blank");
         },4);
