@@ -12,14 +12,41 @@ import org.firstinspires.ftc.teamcode.Placeholder;
 public class Indicator {
     private final HardwareMap hardwareMap;
     private final Servo rgbLightServo;
+    private final PwmControl rgbLight2;
+    private Servo rgbLightServo2;
     private final PwmControl rgbLight;
+
+    private final boolean istwo;
     /**Access Indicator.*/
     public Indicator(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
         this.rgbLightServo = hardwareMap.servo.get("indicator");
         this.rgbLight = (PwmControl) rgbLightServo;
+        rgbLightServo2 = null;
+        rgbLight2 = rgbLight;
+        istwo = false;
 
         rgbLight.setPwmRange(new PwmControl.PwmRange(500,2500));
+        rgbLight2.setPwmRange(new PwmControl.PwmRange(500,2500));
+
+    }
+
+    public Indicator(HardwareMap hardwareMap, boolean createSecond) {
+        this.hardwareMap = hardwareMap;
+        this.rgbLightServo = hardwareMap.servo.get("indicator");
+        this.rgbLight = (PwmControl) rgbLightServo;
+
+
+        if (createSecond) {
+            rgbLightServo2 = hardwareMap.servo.get("indicatorSecondary");
+            this.rgbLight2 = (PwmControl) rgbLightServo2;
+        } else this.rgbLight2 = this.rgbLight;
+
+        istwo = createSecond;
+
+        rgbLight.setPwmRange(new PwmControl.PwmRange(500,2500));
+        rgbLight2.setPwmRange(new PwmControl.PwmRange(500,2500));
+
     }
 
     /**Already defined colors to represent the status of the bot. Not final.*/
@@ -44,15 +71,21 @@ public class Indicator {
     }
     /**Set status lights to values intended to display that of the bot. The colors are not final.*/
     public void setStatusColor(statusLights lights) {
+        if (istwo)
+            rgbLightServo2.setPosition(lights.pos);
         rgbLightServo.setPosition(lights.pos);
     }
     /**Apply a color using one of several templates.*/
     public void setRGB(IndColor c) {
+        if (istwo)
+            rgbLightServo2.setPosition(c.getColor());
         rgbLightServo.setPosition(c.getColor());
     }
 
     /**Set color without any safeguards. May result in the wrong color.*/
     public void setColor(double rotation) {
+        if (istwo)
+            rgbLightServo2.setPosition(rotation);
         rgbLightServo.setPosition(rotation);
     }
     /**This enum represents a range of colors that the indicator lights can be set to.*/

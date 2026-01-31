@@ -16,6 +16,8 @@ public class EndgameServoAngleTest extends LinearOpMode {
     public static boolean dpadUpPressed = false;
     public static boolean dpadDownPressed = false;
 
+    public static double pos = 0.18;
+
     @Override
     public void runOpMode() throws InterruptedException {
         /*
@@ -41,20 +43,28 @@ public class EndgameServoAngleTest extends LinearOpMode {
          */
 
         while(opModeIsActive()) {
-            double pos = endgameServos.getPos();
-            if (gamepad1.dpad_up && !dpadUpPressed) {
-                endgameServos.testLift(pos + 0.1);
-                dpadUpPressed = true;
-            } else if (!gamepad1.dpad_up) {
-                dpadUpPressed = false;
+//            double pos = endgameServos.getPos();
+//            if (gamepad1.dpad_up && !dpadUpPressed) {
+//                endgameServos.testLift(pos + 0.1);
+//                dpadUpPressed = true;
+//            } else if (!gamepad1.dpad_up) {
+//                dpadUpPressed = false;
+//            }
+//            if (gamepad1.dpad_down && !dpadDownPressed) {
+//                endgameServos.testLift(pos - 0.1);
+//                dpadDownPressed = true;
+//            } else if (!gamepad1.dpad_down) {
+//                dpadDownPressed = false;
+//            }
+//            if (gamepad1.x) {
+//                endgameServos.lower();
+//            }
+
+            if (gamepad2.dpad_up){
+                endgameServos.lift(pos);
             }
-            if (gamepad1.dpad_down && !dpadDownPressed) {
-                endgameServos.testLift(pos - 0.1);
-                dpadDownPressed = true;
-            } else if (!gamepad1.dpad_down) {
-                dpadDownPressed = false;
-            }
-            if (gamepad1.x) {
+
+            if(gamepad2.dpad_down){
                 endgameServos.lower();
             }
             telemetry.addData("currPos", endgameServos.getPos());

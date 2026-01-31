@@ -6,6 +6,7 @@
     import static org.firstinspires.ftc.teamcode.riptideUtil.BOOT_KICKER_UP;
     import static org.firstinspires.ftc.teamcode.riptideUtil.moveToNextSlot;
     import static org.firstinspires.ftc.teamcode.riptideUtil.nextShotAvailable;
+    import static org.firstinspires.ftc.teamcode.riptideUtil.endgameServosUp;
 
     import com.acmerobotics.dashboard.FtcDashboard;
     import com.acmerobotics.dashboard.config.Config;
@@ -15,8 +16,6 @@
     import com.qualcomm.robotcore.util.ElapsedTime;
 
     import org.firstinspires.ftc.robotcore.external.Telemetry;
-    import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-    import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
     import org.firstinspires.ftc.teamcode.Modules.Intake;
     import org.firstinspires.ftc.teamcode.Robot;
 
@@ -60,11 +59,12 @@
         ElapsedTime scanDelayTimer;
         public static double spindexDelay = 500; // IN MS
         boolean resetBootKick = false;
-        public static double scanDelay = 500;
+        public static double scanDelay = 1000;
 
         boolean didRumble = false;
         boolean startedDelay = false;
         boolean moveToNextOuttakeSlot = false;
+        int ballsintrough = 0;
 
 
 
@@ -133,13 +133,16 @@
 
 //                double currTime = endTimer.seconds();
 //                robot.getOuttake().mapJoyToAngle(gamepad2.right_stick_x);
-                robot.getOuttake().updateTurntableAngle(tele);
+//                robot.getOuttake().updateTurntableAngle(tele);
                 tele.update();
             }
         }
 
 
         private void FSM(){
+            processTroughCounter();
+            robot.setStatus((byte) ballsintrough);
+
             switch(currentState) {
                 case TELEOP:
                     if (!hasrun) {
@@ -160,7 +163,7 @@
                     break;
                 case ENDGAME:
                     if (!hasrun){
-                        robot.getEndgameServos().lift();
+                        robot.getEndgameServos().lift(endgameServosUp);
                         hasrun = true;
                     }
 
@@ -249,6 +252,8 @@
                     robot.getIntake().delayMovementToNextSlot(spindexDelayTimer, spindexDelay, tele);
                 }
 
+
+                // Idle spin
                 if (gamepad2.back){
                     robot.getIntake().spin(-1);
                 } else{
@@ -274,11 +279,14 @@
                 currentTopRPMGoal = 0;
                 currentBottomRPMGoal = 0;
                 outtake = true;
+                spindexPosOuttake = robot.getIntake().getNextOuttakeSlot();
                 xPressedG2 = true;
                 isOuttakeOn = false;
             }
 
             if (outtake){
+                currentTopRPMGoal = MID_DIST_TOP;
+                currentBottomRPMGoal = MID_DIST_BOT;
                 robot.getIntake().spin(0);
                 spindexPosIntake = -1;
                 robot.getIntake().cycleOuttakeSlot(spindexPosOuttake);
@@ -296,6 +304,7 @@
                                 Add turntable stuff here
                  *************************************************/
 
+
                if(gamepad2.left_trigger > 0){
                   robot.getTurntable().lockOnGoal();
                }
@@ -312,5 +321,11 @@
             tele.addData("Current Color: ", robot.getIntake().checkColor());
             tele.addData("Is at goal speed ", robot.getOuttake().isAtGoalSpeed());
             tele.addData("Next Slot Available ", nextShotAvailable);
+        }
+
+        public void processTroughCounter() {
+            if (gamepad1.leftBumperWasPressed()) ballsintrough--;
+            if (gamepad1.rightBumperWasPressed()) ballsintrough++;
+            if (ballsintrough < 0) ballsintrough = 0;
         }
     }

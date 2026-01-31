@@ -28,7 +28,7 @@ public class RotateLiftTemp extends LinearOpMode {
         telemetry.update();
 
         while (opModeIsActive()) {
-            servos.lift();
+            servos.lift(0);
         }
     }
 
