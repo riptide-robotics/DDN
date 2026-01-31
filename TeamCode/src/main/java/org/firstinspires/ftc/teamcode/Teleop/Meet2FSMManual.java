@@ -114,7 +114,8 @@
 
                 FSM();
                 tankDrive();
-                robot.getOuttake().runOuttakePID(currentTopRPMGoal,currentBottomRPMGoal,tele);
+                robot.getOuttake().setOuttakeRPM(currentTopRPMGoal, currentBottomRPMGoal);
+                robot.getOuttake().runOuttakePID(tele);
                 robot.s.loop();
                 robot.setStatus((byte) Intake.ballsShot);
                 robot.getTurntable().goToGoalAngle();

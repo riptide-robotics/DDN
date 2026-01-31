@@ -239,6 +239,8 @@ public class Outtake {
             KFTop = KF_MEDIUM_TOP;
         } else if (rpm == SHORT_DIST_TOP) {
             KFTop = KF_SHORT_TOP;
+        } else if (rpm == 0) {
+            KFTop = 0;
         } else {
             KFTop = KF_GENERIC;
         }
@@ -257,6 +259,8 @@ public class Outtake {
             KFBottom = KF_MEDIUM_BOT;
         } else if (rpm == SHORT_DIST_BOT) {
             KFBottom = KF_SHORT_BOT;
+        } else if (rpm == 0) {
+            KFBottom = 0;
         } else {
             KFBottom = KF_GENERIC;
         }
