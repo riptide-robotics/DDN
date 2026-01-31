@@ -72,7 +72,7 @@ public class AutoShootThree extends LinearOpMode {
         },3.5);
 
         robot.s.addLoopAction(() -> {
-            robot.getDrivetrain().turnOnPointPID(0);
+            robot.getDrivetrain().turnOnPointPID(90);
         }, 3.5,"Turn Back");
 
         robot.s.addImpulseAction(() -> {
