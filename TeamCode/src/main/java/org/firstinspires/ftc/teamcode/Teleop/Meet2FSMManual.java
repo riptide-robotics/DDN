@@ -184,8 +184,8 @@
         public void tankDrive() {
             double slowdown = gamepad1.right_trigger > 0 ? 0.25 : 1;
             robot.getDrivetrain().setWheelPowers(
-                    gamepad1.left_stick_y * slowdown,
-                    gamepad1.right_stick_y * slowdown,
+                    -gamepad1.left_stick_y * slowdown,
+                    -gamepad1.right_stick_y * slowdown,
                     -gamepad1.right_stick_y * slowdown,
                     -gamepad1.left_stick_y * slowdown
             );
