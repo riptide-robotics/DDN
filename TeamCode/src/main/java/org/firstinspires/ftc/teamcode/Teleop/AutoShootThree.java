@@ -29,7 +29,7 @@ public class AutoShootThree extends LinearOpMode {
         robot = new Robot(hardwareMap);
 
         robot.getIntake().initSpindex();
-        robot.getIntake().setSlotColors('p','p','p');
+        robot.getIntake().setSlotColors('g','p','p');
 
         t.addData("Robot status:", "succesfully initiated");
         t.update();
@@ -46,7 +46,7 @@ public class AutoShootThree extends LinearOpMode {
 
         robot.s.addImpulseAction(() -> {
             robot.s.killLoopAction("Drive Forward", true);
-        },1.25);
+        },1.3);
 
         robot.s.addLoopAction(() -> {
             robot.getDrivetrain().setWheelPowers(0, 0, 0, 0);
@@ -54,7 +54,7 @@ public class AutoShootThree extends LinearOpMode {
             if(tag != null) {
                 isRed = tag.metadata.name == "Red Goal";
             }
-        }, 1.25,"Stop");
+        }, 1.3,"Stop");
 
         robot.s.addImpulseAction(() -> {
             robot.s.killLoopAction("Stop", true);
@@ -72,7 +72,8 @@ public class AutoShootThree extends LinearOpMode {
         },3.5);
 
         robot.s.addLoopAction(() -> {
-            robot.getDrivetrain().turnOnPointPID(90);
+            if(isRed) {robot.getDrivetrain().turnOnPointPID(92.5);}
+            else {robot.getDrivetrain().turnOnPointPID(87.5);}
         }, 3.5,"Turn Back");
 
         robot.s.addImpulseAction(() -> {
@@ -124,7 +125,7 @@ public class AutoShootThree extends LinearOpMode {
 
         robot.s.addLoopAction(() -> {
             if(isRed) {robot.getDrivetrain().turnOnPointPID(45);}
-            else {robot.getDrivetrain().turnOnPointPID(-45);}
+            else {robot.getDrivetrain().turnOnPointPID(135);}
         }, 16, "Turn Away");
 
         robot.s.addImpulseAction(() -> {
