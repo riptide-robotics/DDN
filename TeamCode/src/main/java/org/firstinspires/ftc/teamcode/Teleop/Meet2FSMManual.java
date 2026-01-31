@@ -56,6 +56,7 @@
         public static double scanDelay = 1000;
         boolean moveToNextOuttakeSlot = false;
         int ballsintrough = 0;
+        boolean checkGhostScan = false;
 
 
 
@@ -87,6 +88,7 @@
             moveToNextOuttakeSlot = false;
             nextShotAvailable = true;
             isOuttakeOn = false;
+            checkGhostScan = false;
             spindexPosIntake = robot.getIntake().getNextIntakeSlot();
 
             robot.getIntake().initSpindex();
@@ -136,7 +138,7 @@
                         currentBottomRPMGoal = 0;
                         hasrun = true;
                     }
-
+                    idleSpin();
                     cycleSlots();
                     count();
 
@@ -211,11 +213,13 @@
         }
 
         public void cycleSlots(){
-            if (gamepad2.y && !yPressedG2 && !recieve) {
+            if (gamepad2.y && !yPressedG2) {
                 scanDelayTimer.reset();
                 scanDelayTimer.startTime();
 
                 isOuttakeOn = false;
+                checkGhostScan = false;
+//                recieve = true;
                 currentTopRPMGoal = 0;
                 currentBottomRPMGoal = 0;
                 outtake = false;
@@ -227,10 +231,9 @@
                 robot.getTurntable().setGoalAngle(0.0);
             }
 
-            if (scanDelayTimer.milliseconds() >= scanDelay){
+            if (!checkGhostScan && scanDelayTimer.milliseconds() >= scanDelay && !outtake) {
                 recieve = true;
-            } else{
-                recieve = false;
+                checkGhostScan = true;
             }
 
             if (recieve){
@@ -241,17 +244,6 @@
                     robot.getIntake().moveToNextIntakeSlot(spindexPosIntake);
                     robot.getIntake().delayMovementToNextSlot(spindexDelayTimer, spindexDelay, tele);
                 }
-
-
-                // Idle spin
-                if (gamepad2.back){
-                    robot.getIntake().spin(-1);
-                } else if (gamepad2.right_trigger > 0.1) {
-                    robot.getIntake().spin(0);
-                }else{
-                    robot.getIntake().spin(spin);
-                }
-
 
                 tele.addLine("Spindex is Receiving");
                 tele.addData("moveToNextSlot: ", moveToNextSlot);
@@ -279,7 +271,6 @@
             if (outtake){
                 currentTopRPMGoal = MID_DIST_TOP;
                 currentBottomRPMGoal = MID_DIST_BOT;
-                robot.getIntake().spin(0);
                 spindexPosIntake = -1;
                 robot.getIntake().cycleOuttakeSlot(spindexPosOuttake);
                 if (gamepad2.a && !aPressedG2 && nextShotAvailable) {
@@ -314,6 +305,16 @@
             tele.addData("Scan delay: ", scanDelayTimer.milliseconds());
 //            tele.addData("Is at goal speed ", robot.getOuttake().isAtGoalSpeed());
 //            tele.addData("Next Slot Available ", nextShotAvailable);
+        }
+
+        public void idleSpin(){
+            if (gamepad2.back){
+                robot.getIntake().spin(-1);
+            } else if (gamepad2.right_trigger > 0.1 || outtake) {
+                robot.getIntake().spin(0);
+            }else{
+                robot.getIntake().spin(spin);
+            }
         }
 
         public void processTroughCounter() {
