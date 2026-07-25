@@ -4,6 +4,7 @@ public class TimedSequenceBase extends SequenceBase {
     public long destinationTimer;
     public TimedSequenceBase(Runnable runnable, long msDelay) {
         super(runnable);
+        // super(runnable);
         destinationTimer = System.currentTimeMillis() + msDelay;
     }
 
