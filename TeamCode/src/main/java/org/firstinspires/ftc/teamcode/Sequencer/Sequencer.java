@@ -28,6 +28,8 @@ public class Sequencer {
         sequence.add(new RepeatedSequence(runnable, msDelay, msRepeatDelay));
     }
 
+    @SuppressWarnings("AssignmentUsedAsCondition") //PLEASE DONT CHANGE IT
+    /** Executes the Sequencer's stored sequences, handling all conditions. Place this in your loop.*/
     public synchronized void iterate() {
 
         {
@@ -36,7 +38,8 @@ public class Sequencer {
 
             for (int i = 0; i < sequence.size(); i++) {
                 SequenceBase seqbase = sequence.get(i);
-                if (seqbase.iterationLoop()) seqbase.runnable.run();
+
+                if (seqbase.canExecute = seqbase.iterationLoop()) seqbase.runnable.run();
                 if (seqbase.end) remove[deletedCount++] = i;
             }
             remove = Arrays.copyOf(remove, deletedCount + 1);
