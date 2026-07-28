@@ -1,8 +1,14 @@
 package org.firstinspires.ftc.teamcode.Sequencer;
 
+import android.os.Build;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class Sequencer {
     /*
@@ -27,6 +33,11 @@ public class Sequencer {
     public void addRepeatedSequence(Runnable runnable, long msDelay,long msRepeatDelay) {
         sequence.add(new RepeatedSequence(runnable, msDelay, msRepeatDelay));
     }
+    public Map<SequenceBase, List<SequenceBase>> waiting = new HashMap<SequenceBase, List<SequenceBase>>();
+    public void addAfterExecution(SequenceBase watched, SequenceBase add) {
+        if (!waiting.containsKey(watched)) waiting.put(watched, new ArrayList<>());
+        waiting.get(watched).add(add);
+    }
 
     @SuppressWarnings("AssignmentUsedAsCondition") //PLEASE DONT CHANGE IT
     /** Executes the Sequencer's stored sequences, handling all conditions. Place this in your loop.*/
@@ -47,6 +58,21 @@ public class Sequencer {
             while(remove.length > 0) {
                 sequence.remove(remove[remove.length - 1]);
                 remove = Arrays.copyOf(remove, remove.length - 1);
+            }
+
+            boolean modified = true;
+
+            while (modified) {
+                modified = false;
+                for (Map.Entry<SequenceBase, List<SequenceBase>> pair : waiting.entrySet()) {
+                    if (pair.getKey().canExecute) {
+                        modified = true;
+                        sequence.addAll(pair.getValue());
+                        pair.setValue(new ArrayList<>());
+                    }
+                }
+                waiting.entrySet().removeIf(entry -> entry.getValue().isEmpty());
+
             }
         }
     }
