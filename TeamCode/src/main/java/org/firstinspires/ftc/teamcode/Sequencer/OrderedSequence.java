@@ -7,6 +7,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Stream;
 
+/**The OrderedSequence is a system that will attempt to run sequences in a specific order. <br>
+ * If it is forbidden to execute by the next sequence's logic, it will stop executing for this cycle. <br>
+ * It will pick up from the same spot next cycle, potentially doing nothing if it is forbidden again.
+ * */
 public class OrderedSequence extends SequenceBase{
     LinkedList<SequenceBase> sequences = new LinkedList<>();
     Stream<SequenceBase> sequenceBaseStream = sequences.stream();
@@ -40,7 +44,7 @@ public class OrderedSequence extends SequenceBase{
         sequences.remove(slot);
         return this;
     }
-    /**Chainable*/
+    /**Chainable.*/
     public OrderedSequence addAll(SequenceBase... base) {
         sequences.addAll(Arrays.asList(base));
         return this;

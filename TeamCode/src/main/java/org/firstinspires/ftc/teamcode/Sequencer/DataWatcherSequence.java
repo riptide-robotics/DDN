@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.Sequencer;
 
-import java.lang.invoke.TypeDescriptor;
-
+/**the DataWatcherSequence is a sequence that constantly processes one form of data into another. */
 public class DataWatcherSequence<T> extends FullLoopSequence {
     public T tracked;
     public interface returningRunnable {Object run();}

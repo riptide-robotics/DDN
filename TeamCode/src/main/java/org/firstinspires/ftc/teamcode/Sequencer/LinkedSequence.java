@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Sequencer;
 
 import kotlin.sequences.Sequence;
 
+/**This sequence simply will run after another sequence. This may be on this cycle or the next.*/
 public class LinkedSequence extends SequenceBase {
 
     public SequenceBase link;
