@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.Sequencer;
 
-import org.firstinspires.ftc.teamcode.Sequencer.SequenceTypes.*;
+import org.firstinspires.ftc.teamcode.Sequencer.SequenceTypes.SequenceBase;
 
 import java.util.ArrayList;
 import java.util.Arrays;
