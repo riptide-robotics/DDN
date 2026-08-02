@@ -26,21 +26,25 @@ public class Sequencer {
     public Sequencer() {
         sequence = new ArrayList<>();
     };
-    public void addTimedSequenceBase(Runnable runnable, long msDelay) {
-        sequence.add(new TimedSequenceBase(runnable, msDelay));
+
+    /**Add any sequence to the list, processing as necessary/*/
+    public void addSequence(SequenceBase base) {
+        sequence.add(base);
     }
 
-    public void addRepeatedSequence(Runnable runnable, long msDelay,long msRepeatDelay) {
-        sequence.add(new RepeatedSequence(runnable, msDelay, msRepeatDelay));
-    }
     public Map<SequenceBase, List<SequenceBase>> waiting = new HashMap<SequenceBase, List<SequenceBase>>();
+
+    /**
+     * @param watched The sequence that the other is waiting on.
+     * @param add The sequence to add after watched.
+     * */
     public void addAfterExecution(SequenceBase watched, SequenceBase add) {
         if (!waiting.containsKey(watched)) waiting.put(watched, new ArrayList<>());
         waiting.get(watched).add(add);
     }
 
     @SuppressWarnings("AssignmentUsedAsCondition") //PLEASE DONT CHANGE IT
-    /** Executes the Sequencer's stored sequences, handling all conditions. Place this in your loop.*/
+    /** Executes the Sequencer's stored sequences, handling all conditions. Place this in your loop. Redundant in SequencedOpMode.*/
     public synchronized void iterate() {
 
         {
