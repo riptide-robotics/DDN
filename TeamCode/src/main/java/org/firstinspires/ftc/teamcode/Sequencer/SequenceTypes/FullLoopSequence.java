@@ -1,7 +1,7 @@
-package org.firstinspires.ftc.teamcode.Sequencer;
+package org.firstinspires.ftc.teamcode.Sequencer.SequenceTypes;
 
 /**A variant of TimedSequeneBase that runs every cycle.*/
-public class FullLoopSequence extends  RepeatedSequence{
+public class FullLoopSequence extends RepeatedSequence {
     public FullLoopSequence(Runnable runnable) {
         super(runnable, 0, 0); //can only run once per iter anyways
     }

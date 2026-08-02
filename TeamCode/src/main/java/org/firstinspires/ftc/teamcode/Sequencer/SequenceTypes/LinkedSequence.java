@@ -1,6 +1,4 @@
-package org.firstinspires.ftc.teamcode.Sequencer;
-
-import kotlin.sequences.Sequence;
+package org.firstinspires.ftc.teamcode.Sequencer.SequenceTypes;
 
 /**This sequence simply will run after another sequence. This may be on this cycle or the next.*/
 public class LinkedSequence extends SequenceBase {

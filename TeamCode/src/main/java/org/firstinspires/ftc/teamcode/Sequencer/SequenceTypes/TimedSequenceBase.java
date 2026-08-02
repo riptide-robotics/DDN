@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Sequencer;
+package org.firstinspires.ftc.teamcode.Sequencer.SequenceTypes;
 
 /**
  * This class is a basic sequence that waits for a segment of time, then executes.

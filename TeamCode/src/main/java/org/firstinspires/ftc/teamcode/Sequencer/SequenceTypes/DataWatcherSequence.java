@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Sequencer;
+package org.firstinspires.ftc.teamcode.Sequencer.SequenceTypes;
 
 /**the DataWatcherSequence is a sequence that constantly processes one form of data into another. */
 public class DataWatcherSequence<T> extends FullLoopSequence {

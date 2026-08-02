@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.Sequencer;
 
+import org.firstinspires.ftc.teamcode.Sequencer.SequenceTypes.RepeatedSequence;
+import org.firstinspires.ftc.teamcode.Sequencer.SequenceTypes.SequenceBase;
+import org.firstinspires.ftc.teamcode.Sequencer.SequenceTypes.TimedSequenceBase;
+
 /**This enum is a way of storing sequences that are often run.*/
 public enum CommonSequences {
     TEMPLATE(new RepeatedSequence(() -> {

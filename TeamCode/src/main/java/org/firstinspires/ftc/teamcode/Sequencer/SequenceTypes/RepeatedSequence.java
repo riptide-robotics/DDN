@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Sequencer;
+package org.firstinspires.ftc.teamcode.Sequencer.SequenceTypes;
 
 
 /**
