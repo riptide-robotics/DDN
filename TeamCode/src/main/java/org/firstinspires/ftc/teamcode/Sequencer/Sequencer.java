@@ -30,6 +30,12 @@ public class Sequencer {
         sequence.add(base);
     }
 
+    public void addFromEnum(CommonSequences sequences, Object... args) {
+        addSequence(sequences.getSequence(args));
+    }
+
+
+
     public Map<SequenceBase, List<SequenceBase>> waiting = new HashMap<SequenceBase, List<SequenceBase>>();
 
     /**
