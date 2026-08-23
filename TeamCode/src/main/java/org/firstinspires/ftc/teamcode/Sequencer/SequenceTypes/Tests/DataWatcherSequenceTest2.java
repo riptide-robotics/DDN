@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.Modules.Utils.GoBildaPinpointDriver;
 import org.firstinspires.ftc.teamcode.Sequencer.SequenceTypes.DataWatcherSequence;
 import org.firstinspires.ftc.teamcode.Sequencer.SequencedOpMode;
 
-@TeleOp(name = "adasd")
+@TeleOp(name = "DataWatcherSequenceTest2")
 public class DataWatcherSequenceTest2 extends SequencedOpMode {
     GoBildaPinpointDriver odoComputer;
     public DataWatcherSequence<Double> dws;

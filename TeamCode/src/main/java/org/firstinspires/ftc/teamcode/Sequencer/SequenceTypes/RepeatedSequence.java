@@ -12,16 +12,19 @@ public class RepeatedSequence extends TimedSequenceBase {
      * @param msDelay the starting delay.
      * @param msRepeatDelay the delay between one execution from the next.
      * */
-    public RepeatedSequence(Runnable runnable, long msDelay, long msRepeatDelay) {
+    public RepeatedSequence(SequenceDataLambda runnable, long msDelay, long msRepeatDelay) {
         super(runnable, msDelay);
         this.msRepeatDelay = msRepeatDelay;
+        values.set(0,0);
     }
 
     @Override
     public boolean iterationLoop() {
         boolean value =  System.currentTimeMillis() < destinationTimer;
-        if (value) destinationTimer += msRepeatDelay;
+        if (value) {
+            destinationTimer += msRepeatDelay;
+            values.set(0, values.get(0,Integer.class) + 1);
+        };
         return value;
     }
-
 }

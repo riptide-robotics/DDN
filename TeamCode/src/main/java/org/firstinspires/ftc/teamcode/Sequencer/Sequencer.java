@@ -9,14 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 public class Sequencer {
-    /*
-    saving and loading sequences
-
-
-
-
-     */
-
 
     public List<SequenceBase> sequence;
 
@@ -28,6 +20,10 @@ public class Sequencer {
     /**Add any sequence to the list, processing as necessary/*/
     public void addSequence(SequenceBase base) {
         sequence.add(base);
+    }
+
+    public void addSequences(SequenceBase... base) {
+        for (int i = 0; i < base.length; i++) addSequence(base[i]);
     }
 
     public void addFromEnum(CommonSequences sequences, Object... args) {
@@ -58,7 +54,7 @@ public class Sequencer {
             for (int i = 0; i < sequence.size(); i++) {
                 SequenceBase seqbase = sequence.get(i);
 
-                if (seqbase.canExecute = seqbase.iterationLoop()) seqbase.runnable.run();
+                if (seqbase.canExecute = seqbase.iterationLoop()) seqbase.run();
                 if (seqbase.end) remove[deletedCount++] = i;
             }
             remove = Arrays.copyOf(remove, deletedCount + 1);

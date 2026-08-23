@@ -1,11 +1,14 @@
 package org.firstinspires.ftc.teamcode.Sequencer.SequenceTypes;
 
-/**This sequence simply will run after another sequence. This may be on this cycle or the next.*/
+/**
+ * This sequence simply will run after another sequence. <br>
+ * This may be on this cycle or the next.
+ * */
 public class LinkedSequence extends SequenceBase {
 
     public SequenceBase link;
 
-    public LinkedSequence(Runnable runnable, SequenceBase link) {
+    public LinkedSequence(SequenceDataLambda runnable, SequenceBase link) {
         super(runnable);
         this.link = link;
     }
