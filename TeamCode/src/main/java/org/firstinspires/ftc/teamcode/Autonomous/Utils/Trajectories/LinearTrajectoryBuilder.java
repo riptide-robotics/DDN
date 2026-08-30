@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.Autonomous.Utils.Trajectories;
 
+// this will be transfered, but we'll probably need to put this into a separate folder for tank
+
+// READY TO TRANSFER
+
 import static org.firstinspires.ftc.teamcode.riptideUtil.MAX_A_VERT;
 import static org.firstinspires.ftc.teamcode.riptideUtil.MAX_V;
 import static org.firstinspires.ftc.teamcode.riptideUtil.MAX_V_VERT;
@@ -15,6 +19,8 @@ import java.util.ArrayList;
 // This is for tank drive. There is no "free heading interpolation" in this mode. The heading will always be set to the direction of the path points.
 // if you need help expanding to holonomic drive trains, you can always hit me up
 // --Aaron Xie
+
+// thanks btw Aroon
 public class LinearTrajectoryBuilder {
     ArrayList<Pose2D> controlPoints;
     ArrayList<Pair<Integer, Double>> speedScalars; // To scale the speed of a certain segment
