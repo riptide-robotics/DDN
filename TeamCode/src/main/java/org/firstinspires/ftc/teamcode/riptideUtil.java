@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
+// this will be transfered but will need a lot of updates and refractoring
+
+// READY TO TRANSFER
+
 import android.support.v4.app.INotificationSideChannel;
 
 import androidx.xr.runtime.math.Pose;
