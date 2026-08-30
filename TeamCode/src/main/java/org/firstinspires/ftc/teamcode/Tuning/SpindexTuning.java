@@ -1,5 +1,10 @@
 package org.firstinspires.ftc.teamcode.Tuning;
 
+// everything else in tuning but this and another file will not be transfered
+// delete if it is to reduce clutter
+
+// DO NOT TRANSFER
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
