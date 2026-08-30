@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Autonomous.Utils.Trajectories;
 
+// READY TO TRANSFER
+
 import java.util.ArrayList;
 
 /**
