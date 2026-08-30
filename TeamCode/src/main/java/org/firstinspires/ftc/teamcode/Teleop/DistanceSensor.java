@@ -1,5 +1,10 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 
+// again idk if we are really going to use this but this will probably be good for 
+// referance and docs so...
+
+// READY TO TRANSFER
+
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
