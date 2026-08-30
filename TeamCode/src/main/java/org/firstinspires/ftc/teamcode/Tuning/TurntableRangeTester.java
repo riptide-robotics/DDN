@@ -1,3 +1,8 @@
+// this and spindex tuning files will not be transfered
+// delete if it is to reduce clutter
+
+// DO NOT TRANSFER
+
 //package org.firstinspires.ftc.teamcode.Tuning;
 //
 //import com.acmerobotics.dashboard.FtcDashboard;
