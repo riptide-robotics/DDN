@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.UnitTests;
 
+// idk if this is actually even usefull for reference any more
+// up to owen if it should be transfered
+
 import static org.firstinspires.ftc.teamcode.riptideUtil.BOOT_KICKER_RESTING;
 import static org.firstinspires.ftc.teamcode.riptideUtil.BOOT_KICKER_UP;
 
