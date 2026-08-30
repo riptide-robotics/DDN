@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.Autonomous.AutonomousScripts;
 
+// it would be very sad if we would actually have to transfer this so...
+
+// DO NOT TRANSFER
+
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
