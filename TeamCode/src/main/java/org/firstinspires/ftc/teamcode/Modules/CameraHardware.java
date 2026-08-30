@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
+// READY TO TRANSFER
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
