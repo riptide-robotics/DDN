@@ -1,5 +1,11 @@
 package org.firstinspires.ftc.teamcode.Teleop;
 
+// ig we should keep this, but like in a separate folder
+// specifically for tank
+// but hopefully we will never use this ever again
+
+// READY TO TRANSFER
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
