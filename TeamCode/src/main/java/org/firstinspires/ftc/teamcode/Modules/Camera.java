@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
+// omg this is when I actually put effort into my code
+
+// READY TO TRANSFER
+
 // --- CONSTANTS & OTHER STUFF --- //
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
