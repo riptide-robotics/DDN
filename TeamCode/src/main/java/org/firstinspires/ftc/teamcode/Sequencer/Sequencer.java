@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Sequencer;
 
+// owen you choose what to transfer out of this
+
 import org.firstinspires.ftc.teamcode.Sequencer.SequenceTypes.SequenceBase;
 
 import java.util.ArrayList;
