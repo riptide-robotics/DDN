@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.Autonomous.AutonomousScripts;
 
+// idk how this works but seems usefull so
+
+// READY TO TRANSFER
+
 import androidx.xr.runtime.math.Pose;
 
 import com.acmerobotics.dashboard.FtcDashboard;
