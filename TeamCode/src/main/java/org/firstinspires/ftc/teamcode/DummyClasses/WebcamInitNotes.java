@@ -1,3 +1,9 @@
+// this is some really old code and I remeber trying to use this to get
+// contours of artifacts in the beginning of the season last year
+// tbh we can transfer this but only for referance, not for actual usage
+
+// READY TO TRANSFER
+
 //package org.firstinspires.ftc.teamcode;
 //
 //import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
