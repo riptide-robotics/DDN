@@ -1,5 +1,10 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
+// need to add support for 3 wheel code just in case
+
+// NEEDS REFRACTORING WHEN TRANSFER
+// READY TO TRANSFER
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
