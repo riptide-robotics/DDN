@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Autonomous.Utils;
 
+// tbh just transfer all of these auton files
+
 import static org.firstinspires.ftc.teamcode.riptideUtil.MAX_A_VERT;
 import static org.firstinspires.ftc.teamcode.riptideUtil.MAX_V_VERT;
 
