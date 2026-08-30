@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.UnitTests;
 
+// might be generalizable to any motor so it can be tranfered
+
+// READY TO TRANSFER
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
