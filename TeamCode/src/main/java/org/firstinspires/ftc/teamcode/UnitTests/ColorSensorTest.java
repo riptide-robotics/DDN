@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.UnitTests;
 
+// this can be tranfered but only for referance, I don't think we're actually going to use this
+
+// READY TO TRANSFER
+
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
