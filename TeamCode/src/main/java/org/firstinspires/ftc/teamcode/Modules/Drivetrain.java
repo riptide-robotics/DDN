@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Modules;
 
+// READY TO TRANSFER
+
 import static org.firstinspires.ftc.teamcode.riptideUtil.*;
 import static java.lang.Thread.sleep;
 
