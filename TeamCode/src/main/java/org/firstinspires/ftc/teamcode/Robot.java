@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
+// needs quite a bit of cleanup, but will obviously be transfered
+
+// READY FOR TRANSFER
+
 import static org.firstinspires.ftc.teamcode.riptideUtil.BOOT_KICKER_RESTING;
 import static org.firstinspires.ftc.teamcode.riptideUtil.BOOT_KICKER_UP;
 
