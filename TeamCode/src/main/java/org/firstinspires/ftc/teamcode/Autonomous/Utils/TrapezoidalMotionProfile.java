@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.Autonomous.Utils;
 
+// genuinely foundational auton stuff here
+
+// READY TO TRANSFER
+
 /**
  * Creates a trapezoidal motion profile for 1 dimension.
  * Usage guide in the documentation on discord
